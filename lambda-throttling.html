@@ -65,13 +65,13 @@ When dealing with high-concurrency workloads, scaling AWS Lambda effectively whi
 
 
     <link rel="alternate" type="application/rss+xml" title="index" href="index.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: aws" href="tag-aws.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: jvm" href="tag-jvm.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: java" href="tag-java.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: garbage-collector" href="tag-garbage-collector.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: kotlin" href="tag-kotlin.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: jvm" href="tag-jvm.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: aws" href="tag-aws.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: lambda" href="tag-lambda.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
     <link rel="alternate" type="application/rss+xml" title="author: pedrohbl_" href="author-pedrohbl.rss">
     <link rel="alternate" type="application/rss+xml" title="year: 2025" href="archive-2025.rss">
     
@@ -472,7 +472,7 @@ Total Time = 1,000 * 120 ms = 120,000 ms
 <pre><code class="language-html">Total Time = 120,000 ms = 120 seconds = 2 minutes
 </code></pre>
 <h4><a href="#the-importance-of-fifo-queues" aria-hidden="true" class="anchor" id="the-importance-of-fifo-queues"></a>The Importance of FIFO Queues</h4>
-<p>To maintain consistency in DynamoDB, it is essential to configure the SQS queue as FIFO (First-In, First-Out). This ensures that messages are processed in the exact order they are received, which is critical in systems where the order of operations affects the final state of the database. For example:</p>
+<p>To maintain consistency in DynamoDB, it is essential to configure the SQS queue as FIFO (First-In, First-Out) in this case. This ensures that messages are processed in the exact order they are received, which is critical in systems where the order of operations affects the final state of the database. For example:</p>
 <ol>
 <li>
 <p><strong>Out-of-Order Processing Issues:</strong> If two updates to the same DynamoDB record are processed out of order (e.g., Update1 followed by Update2), but Update2 depends on Update1, the database could end up in an inconsistent state. FIFO queues prevent this by enforcing strict order. For our case, there was not duplicated entries on the file so FIFO was not in considerated despite being absolutely important for this usecase.</p>
@@ -488,7 +488,6 @@ Total Time = 1,000 * 120 ms = 120,000 ms
 </ul>
 </li>
 </ol>
-<p>Despite these trade-offs, using a FIFO queue is often the most reliable way to ensure data consistency in scenarios involving DynamoDB or similar stateful systems. When consistency is critical, the benefits of FIFO queues far outweigh the downsides.</p>
 <hr />
 <h4><a href="#pros-1" aria-hidden="true" class="anchor" id="pros-1"></a>Pros:</h4>
 <ul>
@@ -503,8 +502,6 @@ Total Time = 1,000 * 120 ms = 120,000 ms
 <li><strong>Introduces latency:</strong> Messages may wait in the queue before being processed, depending on the Lambda polling rate and queue depth. For example, a queue depth of 10,000 messages and a polling rate of 1,000 messages per second would result in a processing delay.</li>
 </ul>
 <hr />
-<h3><a href="#architectural-insights" aria-hidden="true" class="anchor" id="architectural-insights"></a>Architectural Insights</h3>
-<p>For small workloads, async invocation can provide faster results, as it avoids the latency of queuing and batch processing. However, as the number of requests increases, direct invocation becomes inefficient and computationally expensive due to the high TPS demand and risk of breaching AWS limits. In contrast, decoupled architectures using SQS and batch processing scale more efficiently, ensuring stability and cost-effectiveness under heavy loads.</p>
 <h2><a href="#conclusion" aria-hidden="true" class="anchor" id="conclusion"></a>Conclusion</h2>
 <p>AWS Lambda throttling issues, particularly for high-concurrency workloads, can be effectively managed using a combination of strategies such as concurrency control, retry mechanisms, and decoupling with SQS. Each of these approaches has its strengths and trade-offs:</p>
 <ul>
@@ -518,10 +515,10 @@ Total Time = 1,000 * 120 ms = 120,000 ms
 <p><strong>Use SQS for Decoupling</strong>: The most scalable and efficient approach when <code>T_batch = T + k</code>, with <code>k</code> being sufficiently small. While it introduces latency and complexity, its benefits make it the go-to solution for large-scale systems.</p>
 </li>
 </ul>
+<p>As an ending insight, we can assure that for small workloads, async invocation can provide faster results, as it avoids the latency of queuing and batch processing. However, as the number of requests increases, direct invocation becomes inefficient and computationally expensive due to the high TPS demand and risk of breaching AWS limits. In contrast, decoupled architectures using SQS and batch processing scale more efficiently, ensuring stability and cost-effectiveness under heavy loads.</p>
 <h3><a href="#next-steps-implementing-a-poc" aria-hidden="true" class="anchor" id="next-steps-implementing-a-poc"></a>Next Steps: Implementing a POC</h3>
-<p>While this post has focused on explaining the challenges, strategies, and theoretical calculations for mitigation, an actual Proof of Concept (POC) is essential to validate these solutions in practice. A future post might  explore how to design and execute a POC to measure the performance, reliability, and cost implications of these approaches in a real-world scenario.</p>
+<p>While this post has focused on explaining the challenges, strategies, and theoretical calculations for mitigation, an actual Proof of Concept (POC) would be very cool to validate and visualize these solutions in practice. A future post might explore how to design and execute a POC to measure the overall performance in a real-world scenario.</p>
 <p>For more details on Lambda throttling, refer to the <a href="https://docs.aws.amazon.com/lambda/latest/dg/invocation-scaling.html">AWS Lambda Developer Guide</a> and the <a href="https://aws.amazon.com/blogs/compute/understanding-aws-lambdas-invoke-throttle-limits/">AWS Compute Blog</a>.</p>
-<p>[1]: <a href="https://aws.amazon.com/blogs/compute/understanding-aws-lambdas-invoke-throttle-limits">https://aws.amazon.com/blogs/compute/understanding-aws-lambdas-invoke-throttle-limits</a> on the introduction of new article talk a little about garbage collectors, things I wish I knew when I first started programming or creating images or whatever, discuss just a little bit how it works on onther languages just for curiosity in the begginining</p>
 <!-- Content Injected to every content markdown footer -->
 </div>
   
