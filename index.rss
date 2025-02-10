@@ -1,4 +1,237 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Pedro Lopes</title><link></link><description>Comput. Sci.</description><pubDate>Sat, 25 Jan 2025 00:00:00 GMT</pubDate><lastBuildDate>Tue, 28 Jan 2025 22:21:02 GMT</lastBuildDate><generator>marmite</generator><item><title>Understanding and Mitigating AWS Lambda Throttling in High-Concurrency Workloads</title><link>/lambda-throttling.html</link><author>pedrohbl_</author><category>aws</category><category>lambda</category><category>throttling</category><guid>/lambda-throttling.html</guid><pubDate>Sat, 25 Jan 2025 00:00:00 GMT</pubDate><source url="">index</source><content:encoded><![CDATA[<!-- Content Injected to every content markdown header -->
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Pedro Lopes</title><link></link><description>Comput. Sci.</description><pubDate>Sat, 08 Feb 2025 00:00:00 GMT</pubDate><lastBuildDate>Mon, 10 Feb 2025 14:45:37 GMT</lastBuildDate><generator>marmite</generator><item><title>Microservices: Hidden Technical Debt (and how to possibly avoid the traps)</title><link>/microservices-debt.html</link><author>pedrohbl_</author><category>microservices</category><category>technical-debt</category><category>distributed-systems</category><category>software-architecture</category><guid>/microservices-debt.html</guid><pubDate>Sat, 08 Feb 2025 00:00:00 GMT</pubDate><source url="">index</source><content:encoded><![CDATA[<!-- Content Injected to every content markdown header -->
+<h2><a href="#introduction" aria-hidden="true" class="anchor" id="introduction"></a>Introduction</h2>
+<p>These days, I keep seeing microservices being treated as the answer to every software problem. Having worked with various architectures throughout my career, I've noticed how many players often jump into microservices without considering the long-term implications. It reminds me of a project where we turned a perfectly functional monolith into a distributed system just because &quot;that's what modern companies do.&quot;</p>
+<p>But here's the thing: microservices aren't a silver bullet. In fact, they can become a massive technical debt that's incredibly hard to pay off. Matt Ranney, DoorDash's Scalability Engineer Lead, makes this point brilliantly in his talk &quot;Microservices are Technical Debt.&quot; After experiencing similar challenges, I decided to dive into this topic, including some cientific papers that covered similar issues like &quot;Microservices Anti-Patterns: A Taxonomy,&quot; to understand what's really going on.</p>
+<p>In this post, I'll try to cover:</p>
+<ol>
+<li>Why microservices are often misunderstood and misused</li>
+<li>Common anti-patterns I've encountered (and how to avoid them)</li>
+<li>Evidence-based approaches to build systems that actually work</li>
+</ol>
+<h2><a href="#the-overuse-of-microservices" aria-hidden="true" class="anchor" id="the-overuse-of-microservices"></a>The Overuse of Microservices</h2>
+<h3><a href="#why-do-we-default-to-microservices" aria-hidden="true" class="anchor" id="why-do-we-default-to-microservices"></a>Why Do We Default to Microservices?</h3>
+<ol>
+<li>
+<p><strong>The Hype Factor</strong></p>
+<ul>
+<li>Companies often adopt microservices because it's trendy, without analyzing their actual needs.</li>
+<li><strong>Example:</strong> Imagine you’re at a startup trying to attract investors. Your team decides to split a simple app into 10 microservices just to showcase &quot;scalability.&quot; Fast forward six months: you’re drowning in Kubernetes configurations and service mesh setups, while competitors with monoliths ship features twice as fast.</li>
+</ul>
+</li>
+<li>
+<p><strong>The Independence Illusion</strong></p>
+<ul>
+<li>While microservices promise independent teams and deployments, this only works with proper service boundaries.</li>
+<li><strong>Example:</strong> Picture working on a user service. You update a field in the <code>UserProfile</code> class, only to discover the notifications service crashes because it hardcoded a dependency on the old field structure. Now you’re stuck updating three services for what should have been a simple change.</li>
+</ul>
+</li>
+<li>
+<p><strong>The Monolith Misconception</strong></p>
+<ul>
+<li>I've noticed a strange fear of monoliths in the industry. But here's what I've learned: for many applications, a well-structured modular monolith is actually the better choice.</li>
+<li><strong>Example:</strong> A software development team spent months breaking their monolith into microservices, only to realize they had created a <strong>distributed monolith</strong>—a system that was just as hard to manage, but with added complexity. What if it was just a simplified collection of function calls instead of a bunch of meaningless HTTP calls?</li>
+</ul>
+</li>
+</ol>
+<h2><a href="#microservices-as-technical-debt" aria-hidden="true" class="anchor" id="microservices-as-technical-debt"></a>Microservices as Technical Debt</h2>
+<p>Matt Ranney makes a compelling case for why microservices can be considered <strong>technical debt</strong>. Here’s why:</p>
+<ol>
+<li><strong>Initial Speed, Long-Term Pain</strong>
+<ul>
+<li>Microservices can speed up development in the short term, but they often lead to long-term maintenance challenges.</li>
+<li><strong>Example:</strong> Imagine you’re building a feature to let users reset passwords. You start with a simple service:</li>
+</ul>
+</li>
+</ol>
+<pre><code class="language-java">    public void resetPassword(String userId, String newPassword) {
+         User user = userService.getUser(userId);
+         try{
+           userService.updateProfile(user, newPassword);
+         }
+     }
+</code></pre>
+<p>But obviously the requirements grow and now this evolves into:</p>
+<pre><code class="language-java">  // look at the complexity added to the same function
+  try {
+      userService.updateProfile(user);
+      notificationService.notifyProfileUpdate(user.getId());
+      authService.refreshUserSession(user.getId());
+      analyticsService.trackProfileUpdate(user.getId());
+  } catch (ServiceException e) {
+      // now you need complex rollback logic =D
+      compensationService.handleFailure(user.getId(), &quot;PROFILE_UPDATE&quot;);
+  }
+</code></pre>
+<p>Now, a simple password reset requires four services to work perfectly together. Miss one, and you’ve got angry users or security holes and a fresh war room to deal.</p>
+<h2><a href="#2-the-distributed-monolith-trap" aria-hidden="true" class="anchor" id="2-the-distributed-monolith-trap"></a>2. The Distributed Monolith Trap</h2>
+<p>Let’s get real: most companies end up with distributed monoliths, not true microservices. Here’s why this happens and why it’s worse than a traditional monolith.</p>
+<h3><a href="#practical-example-the-loyalty-points-nightmare" aria-hidden="true" class="anchor" id="practical-example-the-loyalty-points-nightmare"></a>Practical Example: The Loyalty Points Nightmare</h3>
+<p>Imagine you’re working on an e-commerce system. You need to add a <code>loyaltyPoints</code> field to user profiles. Here’s what happens:</p>
+<ol>
+<li>
+<p><strong>User Service:</strong></p>
+<pre><code class="language-java">public class User {
+    private String id;
+    private int loyaltyPoints; // New field
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Payments Service:</strong></p>
+<pre><code class="language-java">public class PaymentProcessor {
+    public void applyDiscount(String userId) {
+        User user = userService.getUser(userId);
+        if (user.getLoyaltyPoints() &gt; 1000) { // Now depends on User's new field
+            applyDiscount();
+        }
+    }
+}
+</code></pre>
+</li>
+<li>
+<p><strong>Analytics Service:</strong></p>
+<pre><code class="language-java">public class Analytics {
+    public void trackPurchase(String userId) {
+        User user = userService.getUser(userId);
+        log(&quot;Purchase by user with &quot; + user.getLoyaltyPoints() + &quot; points&quot;);
+    }
+}
+</code></pre>
+</li>
+</ol>
+<p>Suddenly, updating a single field requires:</p>
+<ul>
+<li>Coordinating deployments across three teams</li>
+<li>Ensuring all services update dependencies simultaneously</li>
+<li>Risking system-wide failures if any service lags</li>
+</ul>
+<p>This is the distributed monolith trap—a system with all the complexity of microservices but none of the benefits. As Newman (2021) notes, this anti-pattern is rampant in teams that prioritize speed over thoughtful design.</p>
+<h2><a href="#3-hidden-costs-of-microservices" aria-hidden="true" class="anchor" id="3-hidden-costs-of-microservices"></a>3. Hidden Costs of Microservices</h2>
+<ul>
+<li>
+<p>Microservices introduce hidden costs, such as network latency, service discovery, and inter-service communication.</p>
+</li>
+<li>
+<p><strong>Example:</strong> Imagine you’re debugging why user sessions expire randomly. After days of checking code, you discover a 200ms delay between the auth service and session service. The timeout configuration didn’t account for this latency, causing sporadic failures. The fix? Hours and hours wasted of meaningless debugging time, as the root cause for the problem was a bad-optimized code deployed by the auth team.</p>
+</li>
+</ul>
+<hr />
+<h2><a href="#common-anti-patterns-in-microservices" aria-hidden="true" class="anchor" id="common-anti-patterns-in-microservices"></a>Common Anti-Patterns in Microservices</h2>
+<p>The paper <em>Microservices Anti-Patterns: A Taxonomy</em> by Taibi et al. (2018) provides a solid framework for understanding these issues. Here are some key anti-patterns and real-world examples:</p>
+<h3><a href="#1-the-shared-database-anti-pattern" aria-hidden="true" class="anchor" id="1-the-shared-database-anti-pattern"></a>1. <strong>The Shared Database Anti-Pattern</strong></h3>
+<ul>
+<li>One of the most common mistakes is sharing databases between microservices. This creates tight coupling and defeats the purpose of having independent services.</li>
+<li><strong>Example:</strong> Imagine you’re working on a notifications service that shares a database with the user service:</li>
+</ul>
+<pre><code class="language-sql">   -- Both services read from the same table
+   SELECT email FROM users WHERE id = '123';
+</code></pre>
+<ul>
+<li>When the user service adds a new <code>is_email_verified</code> column and starts deleting unverified accounts, your notifications service starts failing because it wasn’t updated to handle the new logic.</li>
+</ul>
+<h3><a href="#2-hardcoded-urls-and-tight-coupling" aria-hidden="true" class="anchor" id="2-hardcoded-urls-and-tight-coupling"></a>2. <strong>Hardcoded URLs and Tight Coupling</strong></h3>
+<ul>
+<li>Hardcoding URLs or endpoints between services is a recipe for disaster. It creates tight coupling and makes the system more fragile.</li>
+<li><strong>Example:</strong> Picture this code in your payments service:</li>
+</ul>
+<pre><code class="language-java">   // Bad: Hardcoded URL
+   String userServiceUrl = &quot;http://user-service-prod:8080/api/users&quot;;
+</code></pre>
+<ul>
+<li>When you try to test this service locally, it fails because it can’t reach the production user service.</li>
+</ul>
+<h3><a href="#3-the-too-many-services-problem" aria-hidden="true" class="anchor" id="3-the-too-many-services-problem"></a>3. <strong>The &quot;Too Many Services&quot; Problem</strong></h3>
+<ul>
+<li>This one is a classig example... Splitting your system into too many tiny services can lead to chaos. Each service adds overhead in terms of deployment, monitoring, and maintenance.</li>
+<li><strong>Example:</strong> Imagine you’re working on a food delivery app with these services:
+<ol>
+<li><code>user-service</code></li>
+<li><code>restaurant-service</code></li>
+<li><code>menu-service</code> (for restaurant menus)</li>
+<li><code>menu-item-service</code> (for individual dishes)</li>
+<li><code>menu-category-service</code> (for dish categories)</li>
+</ol>
+</li>
+</ul>
+<p>Now, displaying a restaurant’s menu requires calls to three services. A simple feature like adding a new dish category takes weeks to implement across teams.</p>
+<h3><a href="#4-lack-of-governance" aria-hidden="true" class="anchor" id="4-lack-of-governance"></a>4. <strong>Lack of Governance</strong></h3>
+<ul>
+<li>Without proper guidelines, teams end up creating services that overlap or don’t integrate well.</li>
+<li><strong>Example:</strong> A very known company had two teams building nearly identical services because there was no governance in place to coordinate their efforts.</li>
+</ul>
+<hr />
+<h2><a href="#solutions-and-best-practices" aria-hidden="true" class="anchor" id="solutions-and-best-practices"></a>Solutions and Best Practices</h2>
+<p>So, how do we avoid these pitfalls? First, it's important to recognize that both monolith decomposition and microservices modeling are complex fields, extensively studied in research and industry, but in general here are some widely adopted strategies:</p>
+<h3><a href="#1-monolith-first" aria-hidden="true" class="anchor" id="1-monolith-first"></a>1. <strong>Monolith First</strong></h3>
+<ul>
+<li>As Martin Fowler suggests, <em>&quot;monolith first.&quot;</em> Build a monolith, and only split it into microservices when necessary.</li>
+<li><strong>Example:</strong> Imagine you’re building a new fitness tracking app. Start with a monolith:</li>
+</ul>
+<pre><code class="language-java">   public class Workout {
+      private String userId;
+      private LocalDateTime startTime;
+      private int durationMinutes;
+   }
+</code></pre>
+<ul>
+<li>
+<p><strong>Only split into microservices when</strong>:</p>
+<ol>
+<li>
+<p>Different components have clearly different scaling needs.</p>
+</li>
+<li>
+<p>Teams are large enough to justify separate ownership.</p>
+</li>
+<li>
+<p>There's a structured governance process in your company over building decoupled services.</p>
+</li>
+<li>
+<p>Automated tests are available for each service.</p>
+</li>
+<li>
+<p>Automated deployments are available for each service.</p>
+</li>
+<li>
+<p>Live monitoring, distributed tracing and health checks are available for each service.</p>
+</li>
+<li>
+<p>Automated rollback during deployment are also available for each service.</p>
+</li>
+</ol>
+</li>
+</ul>
+<h3><a href="#2-domain-driven-design-ddd" aria-hidden="true" class="anchor" id="2-domain-driven-design-ddd"></a>2. <strong>Domain-Driven Design (DDD)</strong></h3>
+<ul>
+<li>Define clear boundaries for each service based on business domains. This helps avoid tight coupling and ensures that services are truly independent.</li>
+<li><strong>Example:</strong> For an e-commerce platform:
+<ol>
+<li><strong>Bounded Context:</strong> Payments</li>
+<li><strong>Bounded Context:</strong> Inventory</li>
+<li><strong>Bounded Context:</strong> Shipping</li>
+</ol>
+</li>
+</ul>
+<p>Each context has its own database and API boundaries. Changes to payment logic don’t affect shipping =D.</p>
+<h3><a href="#3-the-reverse-conway-maneuver" aria-hidden="true" class="anchor" id="3-the-reverse-conway-maneuver"></a>3. <strong>The Reverse Conway Maneuver</strong></h3>
+<ul>
+<li>The <strong>Conway’s Law</strong> states that organizations design systems that mirror their communication structures. The <strong>Reverse Conway Maneuver</strong> flips this around: design your teams to match the architecture you want, basically, the teams designing a go-to system architecture based on current needs, tech debts and throttles. Just like a &quot;reference architecture&quot; based on reverse engineering. This way you have clear boundaries designed for each team and let they execute their goal software architecture independently.</li>
+<li><strong>Example:</strong> Consider a given company X, instead of having frontend, backend, and ops teams working in silos, they restructured teams around business capabilities: a 'Payments Team' owning both backend and UI for payments, and a 'Shipping Team' handling logistics end-to-end. This allowed them to scale services independently while keeping architecture cohesive.</li>
+</ul>
+<hr />
+<h2><a href="#conclusion" aria-hidden="true" class="anchor" id="conclusion"></a>Conclusion</h2>
+<p>I didn't mean to be the devil’s advocate here, but I tried to highlight some key points because, in many cases, the direction that microservices adoption takes ends up being unsustainable. That’s why it’s crucial to pay attention to the trade-offs and pitfalls discussed.</p>
+<p>This is not supposed to be an exhaustive analysis—far from it. As microservices, technical debt, and distributed architectures are vast and evolving fields, hundreds of thousands of cientific papers already discussed these topics. My goal was to cover some of the major issues I’ve encountered, and hopefully, this discussion helps you navigate the complexities of microservices with a more critical perspective.</p>
+<hr />
+<h2><a href="#references" aria-hidden="true" class="anchor" id="references"></a>References</h2>
+<ol>
+<li>Matt Ranney, <em>Microservices are Technical Debt</em> <a href="https://www.youtube.com/watch?v=LcJKxPXYudE">link</a>.</li>
+<li>Taibi et al., <em>Microservices Anti-Patterns: A Taxonomy</em> (2018).</li>
+<li>Martin Fowler, <em>Monolith First</em>  <a href="https://martinfowler.com/bliki/MonolithFirst.html">link</a>.</li>
+<li>Conway’s Law and the Reverse Conway Maneuver (Various Sources).</li>
+</ol>
+<!-- Content Injected to every content markdown footer -->
+]]></content:encoded></item><item><title>Understanding and Mitigating AWS Lambda Throttling in High-Concurrency Workloads</title><link>/lambda-throttling.html</link><author>pedrohbl_</author><category>aws</category><category>lambda</category><category>throttling</category><guid>/lambda-throttling.html</guid><pubDate>Sat, 25 Jan 2025 00:00:00 GMT</pubDate><source url="">index</source><content:encoded><![CDATA[<!-- Content Injected to every content markdown header -->
 <h2><a href="#introduction" aria-hidden="true" class="anchor" id="introduction"></a>Introduction</h2>
 <p>When dealing with high-concurrency workloads, scaling AWS Lambda effectively while avoiding throttling can become a challenge. This post explores a real-world scenario where an application(just like a worker), written in Kotlin, processed over 1,000,000 records in a blob located in S3 using a custom asynchronous iteration method. Each record triggered an asynchronous Lambda invocation that interacted with DynamoDB. However, the setup led to 429 Too Many Requests errors occurring consistently during peak loads exceeding 10,000 TPS, indicating throttling issues with AWS Lambda.
 The article will:</p>
