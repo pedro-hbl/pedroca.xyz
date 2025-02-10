@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Pedro Lopes</title><link></link><description>Comput. Sci.</description><pubDate>Wed, 05 Feb 2025 00:00:00 GMT</pubDate><lastBuildDate>Sun, 09 Feb 2025 00:47:41 GMT</lastBuildDate><generator>marmite</generator><item><title>How to trigger multiple AWS lambdas from a single S3 operation (Terraform approach)</title><link>/microservices-debt.html</link><author>pedrohbl_</author><category>aws</category><category>lambda</category><category>s3</category><category>eventbridge</category><category>event</category><guid>/microservices-debt.html</guid><pubDate>Wed, 05 Feb 2025 00:00:00 GMT</pubDate><source url="">tag-eventbridge</source><content:encoded><![CDATA[<!-- Content Injected to every content markdown header -->
+<h2><a href="#introduction" aria-hidden="true" class="anchor" id="introduction"></a>Introduction</h2>
+<p>In modern cloud architectures, it's common to have multiple services reacting to the same event. For example, when a file is uploaded to an S3 bucket, you might want to trigger a notification service and also send the file metadata to a data mesh for compliance purposes. However, AWS S3 events are designed to trigger a single Lambda function by default. So, how can we trigger multiple Lambda functions from a single S3 operation?</p>
+<p>In this post, we'll explore how to achieve this using <strong>AWS EventBridge</strong> and <strong>Terraform</strong>. By the end, you'll have a clear understanding of how to set up this architecture and deploy it using Infrastructure as Code (IaC).</p>
+<hr />
+<h2><a href="#use-case" aria-hidden="true" class="anchor" id="use-case"></a>Use Case</h2>
+<p>To illustrate the situation and solutions, let's consider this use case:</p>
+<ul>
+<li><strong>AWS Lambda 1 - <em>Notification Service</em>:</strong> This lambda receives S3::PutObject operations to trigger a notification service for users.</li>
+<li><strong>AWS Lambda 2 - <em>Mesh Service</em>:</strong> This lambda sends the S3::PutObject operation object and attributes to a data mesh team for compliance purposes.</li>
+<li><strong>Bucket S3 - <em>active-contracts-bucket</em>:</strong> This is the source bucket that triggers both Lambda functions when an object is uploaded.</li>
+<li><strong>EventBridge Notification - <em>multiple-lambda-trigger</em>:</strong> This is the event configuration that maps both Lambdas to the S3 operations.</li>
+</ul>
+<hr />
+<h2><a href="#solution-overview" aria-hidden="true" class="anchor" id="solution-overview"></a>Solution Overview</h2>
+<p>To trigger multiple Lambda functions from a single S3 operation, we'll use <strong>AWS EventBridge</strong>. EventBridge allows you to create event-driven architectures by routing events from various sources (like S3) to multiple targets (like Lambda functions). Here's how it works:</p>
+<ol>
+<li><strong>S3 Event Notification:</strong> When an object is uploaded to the S3 bucket, it sends an event to EventBridge.</li>
+<li><strong>EventBridge Rule:</strong> A rule in EventBridge captures the S3 event and routes it to multiple Lambda functions.</li>
+<li><strong>Lambda Functions:</strong> Both Lambda functions are triggered simultaneously, each performing its specific task.</li>
+</ol>
+<p>This approach decouples the S3 bucket from the Lambda functions, making the architecture more scalable and maintainable.</p>
+<hr />
+<h2><a href="#implementation-with-terraform" aria-hidden="true" class="anchor" id="implementation-with-terraform"></a>Implementation with Terraform</h2>
+<p>Now, let's implement this solution using Terraform. Below is the step-by-step configuration:</p>
+<h3><a href="#1-s3-bucket-configuration" aria-hidden="true" class="anchor" id="1-s3-bucket-configuration"></a>1. S3 Bucket Configuration</h3>
+<p>First, we'll create the S3 bucket that will trigger the event:</p>
+<pre><code class="language-hcl">resource &quot;aws_s3_bucket&quot; &quot;active_contracts_bucket&quot; {
+  bucket = &quot;active-contracts-bucket&quot;
+  acl    = &quot;private&quot;
+}
+
+&lt;!-- Content Injected to every content markdown footer --&gt;
+
+[github]: https://github.com/pedro-hbl
+</code></pre>
+]]></content:encoded></item></channel></rss>
