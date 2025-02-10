@@ -65,17 +65,17 @@ These days, I keep seeing microservices being treated as the answer to every sof
 
 
     <link rel="alternate" type="application/rss+xml" title="index" href="index.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: garbage-collector" href="tag-garbage-collector.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: java" href="tag-java.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: lambda" href="tag-lambda.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: aws" href="tag-aws.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: jvm" href="tag-jvm.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: microservices" href="tag-microservices.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: technical-debt" href="tag-technical-debt.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: kotlin" href="tag-kotlin.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: software-architecture" href="tag-software-architecture.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: lambda" href="tag-lambda.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: distributed-systems" href="tag-distributed-systems.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: kotlin" href="tag-kotlin.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: technical-debt" href="tag-technical-debt.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: software-architecture" href="tag-software-architecture.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: java" href="tag-java.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: microservices" href="tag-microservices.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: garbage-collector" href="tag-garbage-collector.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: aws" href="tag-aws.rss">
     <link rel="alternate" type="application/rss+xml" title="author: pedrohbl_" href="author-pedrohbl.rss">
     <link rel="alternate" type="application/rss+xml" title="year: 2025" href="archive-2025.rss">
     
@@ -224,7 +224,7 @@ These days, I keep seeing microservices being treated as the answer to every sof
 <p>But obviously the requirements grow and now this evolves into:</p>
 <pre><code class="language-java">  // look at the complexity added to the same function
   try {
-      userService.updateProfile(user);
+      userService.updateProfile(user, newPassword);
       notificationService.notifyProfileUpdate(user.getId());
       authService.refreshUserSession(user.getId());
       analyticsService.trackProfileUpdate(user.getId());
