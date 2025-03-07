@@ -1,4 +1,178 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Pedro Lopes</title><link></link><description>Comput. Sci.</description><pubDate>Mon, 03 Mar 2025 00:00:00 GMT</pubDate><lastBuildDate>Fri, 07 Mar 2025 13:26:49 GMT</lastBuildDate><generator>marmite</generator><item><title>How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin</title><link>/kotlin-result-functional.html</link><author>pedrohbl_</author><category>kotlin</category><category>exception</category><category>functional-programming</category><category>haskell</category><guid>/kotlin-result-functional.html</guid><pubDate>Mon, 03 Mar 2025 00:00:00 GMT</pubDate><source url="">tag-kotlin</source><content:encoded><![CDATA[<!-- Content Injected to every content markdown header -->
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="./static/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark" />
+    <meta name="generator" content="Marmite" />
+    
+<meta property="og:title" content="How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin">
+
+<meta property="og:description" content="
+Introduction
+If you've been programming in Kotlin or Java, you're probably used to handling errors ...">
+
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Pedro Lopes">
+
+<meta property="article:published_time" content=" 2025-03-03T00:00:00+00:00">
+
+
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "/kotlin-result-functional.html"
+    },
+    "url": "/kotlin-result-functional.html",
+    "headline": "How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin",
+    "description": "Introduction
+If you've been programming in Kotlin or Java, you're probably used to handling errors with try-catch blocks. While this approac...",
+    
+    "author": {
+        "@type": "Person",
+        "name": "Pedro Lopes",
+        "url": "/author-pedrohbl_.html",
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pedro Lopes",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "/"
+        }
+    },
+    "datePublished": "2025-03-03T00:00:00+00:00"
+}
+</script>
+
+
+    <title>How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin | Pedro Lopes</title>
+    <link rel="stylesheet" type="text/css" href="./static/pico.min.css">
+    <link rel="stylesheet" type="text/css" href="./static/marmite.css">
+    
+    <link rel="stylesheet" type="text/css" href="./static/colorschemes/iceberg.css">
+    
+    <link rel="stylesheet" type="text/css" href="./static/custom.css">
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css" id="highlightjs-theme" />
+
+
+
+    <link rel="alternate" type="application/rss+xml" title="index" href="index.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: kotlin" href="tag-kotlin.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: microservices" href="tag-microservices.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: exception" href="tag-exception.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: functional-programming" href="tag-functional-programming.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: lambda" href="tag-lambda.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: distributed-systems" href="tag-distributed-systems.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: haskell" href="tag-haskell.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: garbage-collector" href="tag-garbage-collector.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: aws" href="tag-aws.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: technical-debt" href="tag-technical-debt.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: software-architecture" href="tag-software-architecture.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: java" href="tag-java.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: jvm" href="tag-jvm.rss">
+    <link rel="alternate" type="application/rss+xml" title="author: pedrohbl_" href="author-pedrohbl.rss">
+    <link rel="alternate" type="application/rss+xml" title="year: 2025" href="archive-2025.rss">
+    
+
+    
+    
+    
+</head>
+<body>
+    
+    <main class="container">
+        
+        <header class="header-content">
+            <nav class="header-nav">
+                <ul class="header-name">
+                    <li>
+                        <hgroup>
+                            <h2><a href="./" class="contrast">Pedro Lopes</a></h2>
+                             <p>Comput. Sci.</p> 
+                        </hgroup>
+                    </li>
+                </ul>
+                <button id="menu-toggle" class="hamburger">&#9776;</button>
+                
+                <ul class="header-menu" id="header-menu">
+                    
+                      
+                      
+                    <li>
+                        
+                        <a class="menu-item secondary"  href="./tags.html">Tags</a>
+                        
+                    </li>
+                    
+                      
+                      
+                    <li>
+                        
+                        <a class="menu-item secondary"  href="./archive.html">Archive</a>
+                        
+                    </li>
+                    
+                      
+                      
+                    <li>
+                        
+                        <a class="menu-item secondary"  href="./authors.html">Authors</a>
+                        
+                    </li>
+                    
+                    <li><span class="theme-toggle secondary" title="dark mode">&#9789;</span></li>
+                    
+                    <li><a href="#" id="search-toggle" class="secondary" title="Search (Ctrl + Shift + F)"> <span class="search-txt">Search</span><span class="search-magnifier"></span></a></li>
+                    
+                    <div class="underline"></div>
+                </ul>
+            </nav>
+            
+            <div class="marmite-background-overlay" id="overlay-close"></div>
+            <div class="marmite-search-bar hidden">
+                <span></span>
+                <button class="marmite-close-button" id="search-close">X</button>
+                <input placeholder="Search" id="marmite-search-input" />
+                <div class="marmite-search-bar-result">
+                    <ul id="marmite-search-bar-result"></ul>
+                </div>
+            </div>
+            
+        </header>
+        
+        <section class="main-content">
+            
+
+
+
+<article>
+
+  
+
+
+<div class="content-title" id="title">
+    <h1>How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin</h1> 
+    
+
+
+<span class="content-date">
+    <small> Mar  3, 2025 - &#10710; 14 min</small>
+</span>
+
+</div>
+
+  
+
+  <div class="content-html"><!-- Content Injected to every content markdown header -->
 <h2><a href="#introduction" aria-hidden="true" class="anchor" id="introduction"></a>Introduction</h2>
 <p>If you've been programming in Kotlin or Java, you're probably used to handling errors with <code>try-catch</code> blocks. While this approach is standard, it can become really messy in complex scenarios, leading to verbose and difficult-to-maintain code. More critically, traditional exception handling forces developers to constantly anticipate where exceptions might be thrown, increasing cognitive load and potential oversight.</p>
 <p>Functional programming offers a powerful set of tools for improving code quality, especially when it comes to error handling. The goal here is to focus on the core concepts that can help you write cleaner, more robust, and more predictable error-handling code. I’m not here to dive into Haskell or push its philosophical depths, being really honest I’m very scared of the Haskell nerds in general. Instead, I’ll explore how these functional programming ideas can be practically applied in Kotlin, with real-world use cases in mind.</p>
@@ -339,282 +513,106 @@ I'd recommend this lecture if you want to dive deeper in some o these topics or 
 </ul>
 <hr />
 <!-- Content Injected to every content markdown footer -->
-]]></content:encoded></item><item><title>Choosing a Garbage Collector for Your Java/Kotlin Application: Things I Wish I Knew Back Then</title><link>/garbage-collector.html</link><author>pedrohbl_</author><category>java</category><category>garbage-collector</category><category>kotlin</category><category>jvm</category><guid>/garbage-collector.html</guid><pubDate>Sun, 12 Jan 2025 00:00:00 GMT</pubDate><source url="">tag-kotlin</source><content:encoded><![CDATA[<!-- Content Injected to every content markdown header -->
-<h2><a href="#introduction" aria-hidden="true" class="anchor" id="introduction"></a>Introduction</h2>
-<p>When I first started building Java and Kotlin applications, I didn’t really pay much attention to garbage collection. It was this magical process that &quot;just worked.&quot; But as I moved into more complex systems—batch processing, high-throughput APIs, and distributed architectures—I realized that choosing the right garbage collector could make or break my application’s performance, and also prevent some later production incidents.</p>
-<p>Some of my early APIs even experienced breakdowns due to memory leaks, leading to unresponsive systems under heavy load. These episodes taught me the critical importance of understanding how GC works and how to configure it for specific workloads. Failing to consider GC for high-throughput APIs, for example, can lead to severe latency spikes, memory fragmentation, or outright crashes.</p>
-<p>This article is a guide for those who, like me, wish they had a clearer understanding of JVM garbage collectors earlier. I will try to cover:</p>
-<ol>
-<li>How garbage collection works in the JVM.</li>
-<li>The different types of GCs available.</li>
-<li>Real-world use cases and configs for each GC.</li>
-<li>Choosing the right garbage collector (references for informed decision-making).</li>
-<li>Conclusion &amp; Exercises ;-).</li>
-</ol>
-<p>Let’s dive in and make garbage collection work <em>for</em> you, not against you.</p>
-<hr />
-<h2><a href="#how-garbage-collection-works-in-the-jvm" aria-hidden="true" class="anchor" id="how-garbage-collection-works-in-the-jvm"></a>How Garbage Collection Works in the JVM</h2>
-<p>Garbage collection in the JVM is all about managing heap memory(imagine it's the playground where all your objects live). When objects are no longer referenced, they become eligible for garbage collection, freeing up memory for new allocations. But the process isn’t always seamless—GC pauses and overhead can significantly impact performance.</p>
-<h3><a href="#key-concepts" aria-hidden="true" class="anchor" id="key-concepts"></a>Key Concepts</h3>
-<h4><a href="#heap-memory" aria-hidden="true" class="anchor" id="heap-memory"></a>Heap Memory</h4>
-<ol>
-<li>
-<p><strong>Eden Space (in the Young Generation):</strong></p>
-<ul>
-<li><strong>Purpose:</strong> This is where new objects are first allocated.</li>
-<li><strong>Garbage Collection Behavior:</strong> Objects in Eden are short-lived and quickly collected during a minor GC cycle if they are no longer in use.</li>
-<li><strong>Example:</strong> Suppose you’re creating multiple instances of a <code>Minion</code> class. And those minions are from <em>League of Legends</em> or <em>Despicable Me</em>—your choice:
-<pre><code class="language-java">for (int i = 0; i &lt; 1000; i++) {
-    Minion minion = new Minion(&quot;Minion &quot; + i);
-}
-</code></pre>
-All these minions will initially be created in the Eden space. If they are not referenced anymore after their creation, they will be collected during the next minor GC.</li>
-</ul>
-</li>
-<li>
-<p><strong>Survivor Spaces (in the Young Generation):</strong></p>
-<ul>
-<li><strong>Purpose:</strong> Objects that survive one or more minor GC cycles in Eden are moved to Survivor spaces.</li>
-<li><strong>Garbage Collection Behavior:</strong> Survivor spaces act as a staging area before objects are promoted to the Old Generation.</li>
-<li><strong>Example:</strong> In a game application, temporary data like dead minions or player movement logs might survive for a short time in Survivor spaces before being discarded or promoted if reused frequently.</li>
-</ul>
-</li>
-<li>
-<p><strong>Old Generation:</strong></p>
-<ul>
-<li><strong>Purpose:</strong> Objects that have a long lifespan or survive multiple minor GC cycles are moved to the Old Generation.</li>
-<li><strong>Garbage Collection Behavior:</strong> Garbage collection here is less frequent but more time-consuming.</li>
-<li><strong>Example:</strong> Imagine you’re building a game where each <code>Player</code> represents a connected user on the match. These objects are long-lived compared to temporary data like minions or projectiles and may look like this:
-<pre><code class="language-java">public class Player {
-    private final String name;
-    private final Inventory inventory;
+</div>
+  
+  <footer class="data-tags-footer">
 
-    public Player(String name) {
-        this.name = name;
-        this.inventory = new Inventory();
-    }
-}
-</code></pre>
-A <code>Player</code> object, which holds data such as the player’s inventory and stats, will likely reside in the Old Generation as it persists for the entire application session.</li>
-</ul>
-</li>
-<li>
-<p><strong>Metaspace:</strong></p>
-<ul>
-<li><strong>Purpose:</strong> Think of Metaspace as the library(outside the heap) of your application—it keeps the blueprints (class metadata) for all the objects your application creates.</li>
-<li><strong>Garbage Collection Behavior:</strong> Metaspace grows dynamically as new class loaders are introduced and is cleaned up when those class loaders are no longer needed. This ensures that unused blueprints don’t mess up your libraries.</li>
-<li><strong>Example:</strong> Imagine you’re running a game that supports mods, and players can load new heroes dynamically. Each mod represents a new class dynamically loaded at runtime:
-<pre><code class="language-java">Class&lt;?&gt; heroClass = Class.forName(&quot;com.game.dynamic.Hero&quot;);
-Object hero = heroClass.getDeclaredConstructor().newInstance();
-</code></pre>
-The blueprint for the <code>Hero</code> class will be stored in Metaspace. When the mod is unloaded or the player exits the game, the class loader is no longer needed, and the JVM will clean up the associated Metaspace memory. This ensures that your application remains efficient, even with dynamic features.</li>
-</ul>
-</li>
-</ol>
-<h4><a href="#garbage-collector-phases" aria-hidden="true" class="anchor" id="garbage-collector-phases"></a>Garbage Collector Phases</h4>
-<ol>
-<li>
-<p><strong>Mark:</strong></p>
-<ul>
-<li><strong>Purpose:</strong> Identify live objects by traversing references starting from the root set (e.g., static fields, local variables).</li>
-<li><strong>Practical Example:</strong> Consider this code:
-<pre><code class="language-java">Player player = new Player(&quot;Hero&quot;);
-player.hitMinion();
-</code></pre>
-The <code>player</code> object is reachable because it’s referenced in the method. During the Mark phase, the GC identifies <code>player</code> and its dependencies as live objects.</li>
-</ul>
-</li>
-<li>
-<p><strong>Sweep:</strong></p>
-<ul>
-<li><strong>Purpose:</strong> Reclaim memory occupied by objects not marked as live.</li>
-<li><strong>Practical Example:</strong> If the <code>player</code> reference is set to <code>null</code>:
-<pre><code class="language-java">player = null;
-</code></pre>
-The next GC cycle’s Sweep phase will reclaim the memory occupied by the <code>player</code> object and its associated data.</li>
-</ul>
-</li>
-<li>
-<p><strong>Compact:</strong></p>
-<ul>
-<li><strong>Purpose:</strong> Reduce fragmentation by moving objects closer together in memory.</li>
-<li><strong>Practical Example:</strong> After reclaiming memory, gaps may exist in the heap. Compacting ensures efficient allocation for future objects:
-<pre><code class="language-java">// Before compaction: [Minion 1][   ][Minion 3][   ]
-// After compaction:  [Minion 1][Minion 3][       ]
-</code></pre>
-This step is particularly important in systems with frequent allocations and deallocations(Related to CPU efficiency).</li>
-</ul>
-</li>
-</ol>
-<p>For a deep understanding, the JVM GC documentation provides wider insights (<a href="https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/">source</a>).</p>
-<hr />
-<h2><a href="#types-of-jvm-garbage-collectors" aria-hidden="true" class="anchor" id="types-of-jvm-garbage-collectors"></a>Types of JVM Garbage Collectors</h2>
-<h3><a href="#1-serial-garbage-collector-serial-gc" aria-hidden="true" class="anchor" id="1-serial-garbage-collector-serial-gc"></a>1. Serial Garbage Collector (Serial GC)</h3>
-<h4><a href="#overview" aria-hidden="true" class="anchor" id="overview"></a>Overview:</h4>
-<p>The Serial GC is single-threaded and optimized for simplicity. It processes the Young and Old Generations one at a time, pausing application threads during GC.</p>
-<h4><a href="#when-to-use" aria-hidden="true" class="anchor" id="when-to-use"></a>When to Use:</h4>
-<ul>
-<li>VERY SMALL applications with SINGLE-THREAD workloads.</li>
-<li>Low-memory environments (e.g., embedded systems).</li>
-</ul>
-<h4><a href="#limitations" aria-hidden="true" class="anchor" id="limitations"></a>Limitations:</h4>
-<ul>
-<li>
-<p>Not suitable for high-concurrency, high-throughput systems.</p>
-</li>
-<li>
-<p>Maximum throughput is low due to its single-threaded nature.</p>
-</li>
-</ul>
-<h4><a href="#example" aria-hidden="true" class="anchor" id="example"></a>Example:</h4>
-<p>Consider a system managing API calls for IoT devices that periodically send sensor data (e.g., room temperature). Each device sends minimal data in a predictable pattern, and the system handles only one request per thread. The Serial GC ensures predictable, low-overhead memory management, making it an ideal choice for such an environment.</p>
-<h4><a href="#docker-example" aria-hidden="true" class="anchor" id="docker-example"></a>Docker Example:</h4>
-<pre><code class="language-dockerfile">FROM openjdk:17-jdk-slim
-CMD java -XX:+UseSerialGC -Xmx512m -jar app.jar
-</code></pre>
-<hr />
-<h3><a href="#2-parallel-garbage-collector-parallel-gc" aria-hidden="true" class="anchor" id="2-parallel-garbage-collector-parallel-gc"></a>2. Parallel Garbage Collector (Parallel GC)</h3>
-<h4><a href="#overview-1" aria-hidden="true" class="anchor" id="overview-1"></a>Overview:</h4>
-<p>Parallel GC, also known as the Throughput Collector, uses multiple threads to speed up garbage collection. It aims to maximize application throughput by minimizing the total GC time. You can check some crazy a** graphs and get better explanation at the official documentation <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/parallel.html#gen_arrangement_parallel">here</a>.</p>
-<h4><a href="#when-to-use-1" aria-hidden="true" class="anchor" id="when-to-use-1"></a>When to Use:</h4>
-<ul>
-<li>Batch processing systems.</li>
-<li>Applications prioritizing throughput over low latency.</li>
-</ul>
-<h4><a href="#example-1" aria-hidden="true" class="anchor" id="example-1"></a>Example:</h4>
-<p>Imagine a financial service API that consolidates transactions into daily reports. Since the workload prioritizes throughput over latency, Parallel GC is ideal for processing large transaction sets efficiently.</p>
-<h4><a href="#docker-example-1" aria-hidden="true" class="anchor" id="docker-example-1"></a>Docker Example:</h4>
-<pre><code class="language-dockerfile">FROM openjdk:17-jdk-slim
-CMD java -XX:+UseParallelGC -Xmx2g -jar app.jar
-</code></pre>
-<hr />
-<h3><a href="#3-g1-garbage-collector-g1gc" aria-hidden="true" class="anchor" id="3-g1-garbage-collector-g1gc"></a>3. G1 Garbage Collector (G1GC)</h3>
-<h4><a href="#overview-2" aria-hidden="true" class="anchor" id="overview-2"></a>Overview:</h4>
-<p>G1GC divides the heap into regions and collects garbage incrementally, making it a good balance between throughput and low latency.</p>
-<h4><a href="#when-to-use-2" aria-hidden="true" class="anchor" id="when-to-use-2"></a>When to Use:</h4>
-<ul>
-<li>General-purpose applications.</li>
-<li>Systems requiring predictable pause times.</li>
-</ul>
-<h4><a href="#example-2" aria-hidden="true" class="anchor" id="example-2"></a>Example:</h4>
-<p>Any SaaS platform serving user requests in under 200ms with moderate traffic spikes.</p>
-<h4><a href="#docker-example-2" aria-hidden="true" class="anchor" id="docker-example-2"></a>Docker Example:</h4>
-<pre><code class="language-dockerfile">FROM openjdk:17-jdk-slim
-CMD java -XX:+UseG1GC -Xmx4g -XX:MaxGCPauseMillis=200 -jar app.jar
-</code></pre>
-<h4><a href="#important-considerations-about-g1gc" aria-hidden="true" class="anchor" id="important-considerations-about-g1gc"></a>Important considerations about G1GC:</h4>
-<p>You might be wondering: &quot;If G1GC supports both good throughput and low latency, why not use it for every application? Sounds like a no-brainer...&quot;</p>
-<p>But well, not quite. While G1GC is a fantastic general-purpose garbage collector, it’s not the universal solution for all workloads. Think of it as the &quot;jack of all trades&quot; of GCs—good at many things, but not necessarily the best at any one thing. <em>Poof!</em> Now that you’re out of the cave, let’s analyze:</p>
-<ul>
-<li>
-<p><strong>Throughput-Focused Applications:</strong> If your application doesn’t care about pause times—for example, batch processing systems or data aggregation pipelines—why would you burden it with G1GC’s incremental collection overhead? Parallel GC is better suited here, offering raw performance without worrying about predictable pauses.</p>
-</li>
-<li>
-<p><strong>Ultra-Low Latency Needs:</strong> If you’re building a real-time trading system or managing huge heaps (think terabytes), G1GC might struggle to meet your strict latency requirements. Collectors like ZGC or Shenandoah GC are designed specifically for these use cases, offering sub-10ms pause times.</p>
-</li>
-</ul>
-<p>In short, G1GC is like that versatile tool in your toolbox—it works well for a variety of tasks, especially if you’re building the classic CRUD API (yes pretty much all of your messy simple Spring CRUDs). But if you’re running specialized workloads, you’ll want to pick a collector that’s optimized to your needs.</p>
-<hr />
-<h3><a href="#4-z-garbage-collector-zgc" aria-hidden="true" class="anchor" id="4-z-garbage-collector-zgc"></a>4. Z Garbage Collector (ZGC)</h3>
-<h4><a href="#overview-3" aria-hidden="true" class="anchor" id="overview-3"></a>Overview:</h4>
-<p>ZGC is designed for ultra-low-latency applications with large heaps (up to terabytes). Its pause times are typically under 10 milliseconds.</p>
-<h4><a href="#when-to-use-3" aria-hidden="true" class="anchor" id="when-to-use-3"></a>When to Use:</h4>
-<ul>
-<li>Real-time systems.</li>
-<li>Applications with very large heaps.</li>
-</ul>
-<h4><a href="#when-to-do-not-use" aria-hidden="true" class="anchor" id="when-to-do-not-use"></a>When to DO NOT use:</h4>
-<ul>
-<li>Imagine you have a batch processing system using ZGC. There is very high chance of facing inceased CPU utilization($$$) without any latency benefit. For example, a data ingestion pipeline optimized for high throughput but insensitive to pause times would waste resources managing unnecessary low-latency GC cycles.</li>
-</ul>
-<h4><a href="#example-3" aria-hidden="true" class="anchor" id="example-3"></a>Example:</h4>
-<p>A trading system processing market data streams in real time.</p>
-<h4><a href="#docker-example-3" aria-hidden="true" class="anchor" id="docker-example-3"></a>Docker Example:</h4>
-<pre><code class="language-dockerfile">FROM openjdk:17-jdk-slim
-CMD java -XX:+UseZGC -Xmx16g -jar app.jar
-</code></pre>
-<hr />
-<h3><a href="#5-shenandoah-garbage-collector" aria-hidden="true" class="anchor" id="5-shenandoah-garbage-collector"></a>5. Shenandoah Garbage Collector</h3>
-<h4><a href="#overview-4" aria-hidden="true" class="anchor" id="overview-4"></a>Overview:</h4>
-<p>Shenandoah GC minimizes pause times by performing concurrent compaction. It’s ideal for latency-sensitive applications.</p>
-<h4><a href="#when-to-use-4" aria-hidden="true" class="anchor" id="when-to-use-4"></a>When to Use:</h4>
-<ul>
-<li><strong>Payment gateways</strong> with strict SLA requirements for latency.</li>
-<li><strong>APIs with spiky traffic</strong> patterns, such as social media feeds or live voting systems.</li>
-<li>Applications where reducing GC pause time is critical to user experience, such as gaming servers or interactive web applications.</li>
-</ul>
-<h4><a href="#when-to-do-not-use-1" aria-hidden="true" class="anchor" id="when-to-do-not-use-1"></a>When to DO NOT use:</h4>
-<p>Using Shenandoah GC for batch processing systems or workloads optimized for high throughput over low latency (e.g., nightly data aggregation) may lead to inefficient CPU utilization. The additional overhead of concurrent compaction provides no benefits when predictable pauses are acceptable, reducing overall throughput compared to <strong>Parallel GC</strong>.</p>
-<p>For exampe, a financial reconciliation batch process configured with Shenandoah might experience reduced throughput due to unnecessary focus on low pause times, delaying report generation.</p>
-<h4><a href="#example-4" aria-hidden="true" class="anchor" id="example-4"></a>Example:</h4>
-<p>A payment processing API handling high transaction volumes cannot afford GC-induced latency spikes during peak hours. Shenandoah’s low-pause nature ensures that transaction processing continues smoothly even under heavy load.</p>
-<p>Another example is a real-time multiplayer gaming server, where latency spikes could lead to a poor player experience. Shenandoah ensures consistent frame updates and server responsiveness.</p>
-<h4><a href="#docker-example-4" aria-hidden="true" class="anchor" id="docker-example-4"></a>Docker Example:</h4>
-<pre><code class="language-dockerfile">FROM openjdk:17-jdk-slim
-CMD java -XX:+UseShenandoahGC -Xmx8g -XX:+UnlockExperimentalVMOptions -jar app.jar
-</code></pre>
-<hr />
-<h2><a href="#choosing-the-right-garbage-collector" aria-hidden="true" class="anchor" id="choosing-the-right-garbage-collector"></a>Choosing the Right Garbage Collector</h2>
-<p>Here you can find a cheatsheet. But remember... you should always evaluate your own workload before choosing it's garbage collector.</p>
-<table>
-<thead>
-<tr>
-<th>Garbage Collector</th>
-<th>Best For</th>
-<th>JVM Version Support</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Serial GC</td>
-<td>Small, single-threaded apps</td>
-<td>All versions</td>
-</tr>
-<tr>
-<td>Parallel GC</td>
-<td>High-throughput batch systems</td>
-<td>All versions</td>
-</tr>
-<tr>
-<td>G1GC</td>
-<td>General-purpose apps</td>
-<td>Java 9+</td>
-</tr>
-<tr>
-<td>ZGC</td>
-<td>Real-time, large heap apps</td>
-<td>Java 11+</td>
-</tr>
-<tr>
-<td>Shenandoah GC</td>
-<td>Low-latency apps</td>
-<td>Java 11+</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2><a href="#conclusion" aria-hidden="true" class="anchor" id="conclusion"></a>Conclusion</h2>
-<p>Choosing the right garbage collector for your application requires some knowledge over the tools I discussed in this post. But once you learn about it, you may have the power of taking decisions, and this is extremely valuable in Software Engineering field, also, by selecting the right GC you can significantly improve performance, stability and save some costs for your future applications based on JVM. Don’t let GC be a black box—embrace it, tune it, and let it work for you.</p>
-<hr />
-<h2><a href="#training-real-world-scenarios-and-solutions" aria-hidden="true" class="anchor" id="training-real-world-scenarios-and-solutions"></a>Training: Real-World Scenarios and Solutions</h2>
-<h3><a href="#scenario-1-payment-gateway-latency" aria-hidden="true" class="anchor" id="scenario-1-payment-gateway-latency"></a>Scenario 1: Payment Gateway Latency</h3>
-<p>You are building a payment gateway API that must process transactions in real-time with strict SLA requirements. The workload is spiky, with heavy traffic during sales events or specific times of the day. Which garbage collector would you choose to ensure low latency?</p>
-<h3><a href="#scenario-2-batch-data-processing-system" aria-hidden="true" class="anchor" id="scenario-2-batch-data-processing-system"></a>Scenario 2: Batch Data Processing System</h3>
-<p>Your application processes daily financial reconciliation batches, which involve large amounts of data. Latency is not a concern, but throughput must be maximized to complete processing as fast as possible. Which garbage collector fits this use case?</p>
-<h3><a href="#scenario-3-real-time-multiplayer-game" aria-hidden="true" class="anchor" id="scenario-3-real-time-multiplayer-game"></a>Scenario 3: Real-Time Multiplayer Game</h3>
-<p>You are designing a server for a real-time multiplayer game. The server must manage thousands of players, each generating events continuously. Latency spikes during garbage collection are unacceptable as they could lead to lag and a poor user experience. What GC configuration would you use?</p>
-<hr />
-<h2><a href="#solutions" aria-hidden="true" class="anchor" id="solutions"></a>Solutions</h2>
-<h3><a href="#solution-1-payment-gateway-latency" aria-hidden="true" class="anchor" id="solution-1-payment-gateway-latency"></a>Solution 1: Payment Gateway Latency</h3>
-<p>Use <strong>Shenandoah GC</strong> to ensure low latency and consistent response times. Its concurrent compaction minimizes pause times, making it ideal for latency-sensitive workloads.</p>
-<h3><a href="#solution-2-batch-data-processing-system" aria-hidden="true" class="anchor" id="solution-2-batch-data-processing-system"></a>Solution 2: Batch Data Processing System</h3>
-<p>Use <strong>Parallel GC</strong> to maximize throughput. Since latency isn’t a concern, the Parallel GC’s focus on high efficiency during garbage collection fits this workload.</p>
-<h3><a href="#solution-3-real-time-multiplayer-game" aria-hidden="true" class="anchor" id="solution-3-real-time-multiplayer-game"></a>Solution 3: Real-Time Multiplayer Game</h3>
-<p>Use <strong>ZGC</strong> to achieve ultra-low latency and scale with large heaps. It ensures that garbage collection does not interfere with real-time gameplay.</p>
-<h3><a href="#references" aria-hidden="true" class="anchor" id="references"></a>References:</h3>
-<ol>
-<li><a href="https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/">Java Garbage Collection Basics - Oracle</a></li>
-</ol>
-<hr />
-<!-- Content Injected to every content markdown footer -->
-]]></content:encoded></item></channel></rss>
+    <div class="content-authors-flex">
+      <div class="content-authors-full">
+        
+<div class="content-authors">
+    <ul>
+        
+            
+            
+            <li>
+                <a href="author-pedrohbl_.html">
+                    <img src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" alt="Pedro Lopes" class="avatar">
+                    Pedro Lopes
+                </a>
+            </li>
+            
+        
+    </ul>
+</div>
+
+
+      </div>
+
+      <div class="date-tags-container">
+        <div class="content-date">
+          
+
+
+<span class="content-date">
+    <small> Mar  3, 2025 - &#10710; 14 min</small>
+</span>
+
+        </div>
+
+        <ul class="content-tags">
+          
+          <li><a href="./tag-kotlin.html">kotlin</a></li>
+          
+          <li><a href="./tag-exception.html">exception</a></li>
+          
+          <li><a href="./tag-functional-programming.html">functional-programming</a></li>
+          
+          <li><a href="./tag-haskell.html">haskell</a></li>
+          
+        </ul>
+      </div>
+    </div>
+  </footer>
+  
+</article>
+
+
+
+
+  
+  
+  
+  
+  <article>
+    Related kotlin content
+    <ul>
+      
+      
+      
+      
+      <li><a href="./garbage-collector.html">Choosing a Garbage Collector for Your Java/Kotlin Application: Things I Wish I Knew Back Then</a></li>
+      
+    </ul>
+  </article>
+  
+
+
+
+
+
+        </section>
+        
+        <footer class="footer-content grid">
+            <div>Powered by <a href="https://github.com/rochacbruno/marmite">Marmite</a> | <small><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY_NC-SA</a></small></div>
+            
+        </footer>
+        
+    </main>
+
+    <script src="./static/marmite.js"></script>
+    <script src="./static/custom.js"></script>
+    
+    <script type="module" src="./static/search.js"></script>
+    
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+<script>
+  hljs.highlightAll();
+</script>
+
+
+
+</body>
+</html>
