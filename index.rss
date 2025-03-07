@@ -1,4 +1,345 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Pedro Lopes</title><link></link><description>Comput. Sci.</description><pubDate>Sat, 08 Feb 2025 00:00:00 GMT</pubDate><lastBuildDate>Mon, 10 Feb 2025 15:10:28 GMT</lastBuildDate><generator>marmite</generator><item><title>Microservices: Hidden Technical Debt (and how to possibly avoid the traps)</title><link>/microservices-debt.html</link><author>pedrohbl_</author><category>microservices</category><category>technical-debt</category><category>distributed-systems</category><category>software-architecture</category><guid>/microservices-debt.html</guid><pubDate>Sat, 08 Feb 2025 00:00:00 GMT</pubDate><source url="">index</source><content:encoded><![CDATA[<!-- Content Injected to every content markdown header -->
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Pedro Lopes</title><link></link><description>Comput. Sci.</description><pubDate>Mon, 03 Mar 2025 00:00:00 GMT</pubDate><lastBuildDate>Fri, 07 Mar 2025 13:26:49 GMT</lastBuildDate><generator>marmite</generator><item><title>How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin</title><link>/kotlin-result-functional.html</link><author>pedrohbl_</author><category>kotlin</category><category>exception</category><category>functional-programming</category><category>haskell</category><guid>/kotlin-result-functional.html</guid><pubDate>Mon, 03 Mar 2025 00:00:00 GMT</pubDate><source url="">index</source><content:encoded><![CDATA[<!-- Content Injected to every content markdown header -->
+<h2><a href="#introduction" aria-hidden="true" class="anchor" id="introduction"></a>Introduction</h2>
+<p>If you've been programming in Kotlin or Java, you're probably used to handling errors with <code>try-catch</code> blocks. While this approach is standard, it can become really messy in complex scenarios, leading to verbose and difficult-to-maintain code. More critically, traditional exception handling forces developers to constantly anticipate where exceptions might be thrown, increasing cognitive load and potential oversight.</p>
+<p>Functional programming offers a powerful set of tools for improving code quality, especially when it comes to error handling. The goal here is to focus on the core concepts that can help you write cleaner, more robust, and more predictable error-handling code. I’m not here to dive into Haskell or push its philosophical depths, being really honest I’m very scared of the Haskell nerds in general. Instead, I’ll explore how these functional programming ideas can be practically applied in Kotlin, with real-world use cases in mind.</p>
+<p>One such concept is the <strong>monad</strong>, which provides a structured approach to handling side effects, errors, and sequencing operations. In Kotlin, while not purely functional, it can achieve some of these principles through libraries like <a href="https://github.com/michaelbull/kotlin-result">kotlin-result</a>.</p>
+<p>Basically, in this post I'll try to cover:</p>
+<ol>
+<li><strong>Why traditional exception handling can be problematic.</strong></li>
+<li><strong>Core functional programming concepts relevant to error handling.</strong></li>
+<li><strong>How <code>kotlin-result</code> addresses these concerns.</strong></li>
+<li><strong>Designing APIs with Error Handling in Mind</strong></li>
+<li><strong>Addressing the errors listed in 1 using <code>kotlin-result</code> and functional programming concepts.</strong></li>
+</ol>
+<h2><a href="#the-problem-traditional-exception-handling" aria-hidden="true" class="anchor" id="the-problem-traditional-exception-handling"></a>The Problem: Traditional Exception Handling</h2>
+<p>Traditional exception handling introduces several issues that can compromise code clarity, reliability, and make it a complete mess. Below I've listed some common problematic uses:</p>
+<ul>
+<li>
+<p><strong>Hidden Control Flow:</strong> Exception-based error handling introduces invisible jumps in your code execution, making it hard to follow:</p>
+<pre><code class="language-kotlin">fun processUser(user: User) {
+    validateUser(user)
+    updateProfile(user)
+    notifyUser(user)
+}
+</code></pre>
+<p>Any of these functions could throw an exception, turning the flow unpredictable. This way, Raymond Chen from Microsoft describes exceptions as &quot;Exceptions are like non-local goto statements&quot; which results in:</p>
+<ul>
+<li>Hard-to-trace execution paths.</li>
+<li>Unintended disruptions.</li>
+<li>Increased difficulty in ensuring consistent error handling.</li>
+</ul>
+<p>A better approach would make errors explicit and handle them systematically.</p>
+</li>
+<li>
+<p><strong>The Checked vs. Unchecked Dilemma:</strong> Checked exceptions in Java force developers to catch and handle exceptions at every step, cluttering codebases:</p>
+<pre><code class="language-kotlin">try {
+    fileOperation()  // throws IOException
+    networkCall()    // throws NetworkException
+    dbOperation()    // throws SQLException
+} catch (IOException e) {
+    // Handle file error
+} catch (NetworkException e) {
+    // Handle network error
+} catch (SQLException e) {
+    // Handle DB error
+}
+</code></pre>
+<p>Unchecked exceptions, while more flexible, introduce uncertainty, as function signatures do not explicitly indicate possible failure cases.</p>
+</li>
+<li>
+<p><strong>Resource Management Complexity:</strong> Managing resources manually often leads to nested <code>try-finally</code> blocks that makes code difficult to maintain and understand later on:</p>
+<pre><code class="language-kotlin">fun processOrders() {
+    val connection = dataSource.connection
+    try {
+        val statement = connection.createStatement()
+        try {
+            val result = statement.executeQuery(&quot;SELECT * FROM orders&quot;)
+            try {
+                // Process result
+            } finally {
+                result.close()
+            }
+        } finally {
+            statement.close()
+        }
+    } finally {
+        connection.close()
+    }
+}
+</code></pre>
+<p>This structure is:</p>
+<ul>
+<li>Verbose and difficult to read.</li>
+<li>Vulnerable to resource leaks if exceptions are not handled correctly.</li>
+<li>Hard to maintain.</li>
+</ul>
+<p>This just looks ugly overall, let's be honest.</p>
+</li>
+<li>
+<p><strong>Loss of Type Safety:</strong> Traditional exceptions break type safety because failure conditions are not represented in function signatures:</p>
+<pre><code class="language-kotlin">fun getUserProfile(id: String): UserProfile {
+    // This function might throw exceptions that aren’t apparent from the signature. That's one of the most important points of the post
+    throw new UserNotFoundException()
+}
+</code></pre>
+<p>This approach:</p>
+<ul>
+<li>Leads to unexpected runtime failures.</li>
+<li>Reduces predictability in API contracts.</li>
+<li>Makes error handling an afterthought instead of a first-class concern.</li>
+</ul>
+</li>
+</ul>
+<h2><a href="#core-functional-programming-concepts-relevant-to-error-handling" aria-hidden="true" class="anchor" id="core-functional-programming-concepts-relevant-to-error-handling"></a>Core Functional Programming Concepts Relevant to Error Handling</h2>
+<h3><a href="#what-is-functional-programming" aria-hidden="true" class="anchor" id="what-is-functional-programming"></a>What is Functional Programming?</h3>
+<p>Functional programming is a paradigm where functions are treated as first-class citizens, and computation is done through the evaluation of EXPRESSIONS rather than the execution of statements(like mostly done in imperative languages C, java, cpp...). It emphasizes immutability, no side effects, and the use of pure functions. This paradigm, while vast with numerous research areas like lambda calculus, category theory, and type systems, provides a lot of nerdy tools for managing complexity in software.
+I'd recommend this lecture if you want to dive deeper in some o these topics or if you really hate yourself -&gt; &quot;Learn You a Haskell for Great Good!&quot; by Miran Lipovaca (<a href="http://learnyouahaskell.com/">link</a>) and <a href="https://www.haskell.org/">Haskell.org</a> for deeper dives into functional concepts.</p>
+<p><strong>Key Points:</strong></p>
+<ul>
+<li><strong>Immutability:</strong> Data cannot be changed once created, promoting safer parallel processing.</li>
+<li><strong>Pure Functions:</strong> Functions always produce the same output for the same input, without affecting or being affected by the external behaviors.</li>
+<li><strong>Higher-Order Functions:</strong> Functions can take other functions as arguments or return them.</li>
+</ul>
+<p>This post will focus only on a few of these concepts, particularly functors and monads.</p>
+<h3><a href="#functors-safe-value-transformations" aria-hidden="true" class="anchor" id="functors-safe-value-transformations"></a>Functors: Safe Value Transformations</h3>
+<p>Functor is like a box or container. You can apply a transformation (or function) to what's inside the box without opening it. In programming terms, this means you can alter or map over the contents of a data structure without changing its structure:</p>
+<ul>
+<li>
+<p><strong>List as a Functor:</strong> If you have a list of numbers, you can double each number without altering the list itself:</p>
+<pre><code class="language-kotlin">  val numbers = listOf(1, 2, 3)
+  val doubled = numbers.map { it * 2 } // [2, 4, 6]
+</code></pre>
+</li>
+<li>
+<p><strong>Conceptually:</strong> Functors allow you to work with data in a way that's safe and predictable because you're not directly manipulating the data but rather transforming it through a mapping operation.</p>
+</li>
+</ul>
+<h3><a href="#monads-chaining-operations-with-context" aria-hidden="true" class="anchor" id="monads-chaining-operations-with-context"></a>Monads: Chaining Operations with Context</h3>
+<p>Monads extend the concept of functors by allowing operations to be chained together while preserving some form of 'context' or 'state':</p>
+<ul>
+<li>
+<p><strong>Monad:</strong> Monads help to ensure that each step in the sequence is checked before proceeding. It sounds complex(and it possibly is a little bit) but it's a way to wrapping things and provide methods to do operations on the wrapped stuff without unwrapping it.</p>
+<p>Let's take an example to make it more practical, consider monads as the operation of baking a cake. You need flour before you can add eggs. If there's no flour, you don't add the eggs.</p>
+</li>
+<li>
+<p><strong>In Code:</strong> Monads provide a way to wrap values in context, manage that context through operations, and decide on the next step based on the outcome of the previous one:</p>
+<pre><code class="language-kotlin">  val maybeFlour = checkForFlour()
+  val maybeCake = maybeFlour.flatMap { flour -&gt; 
+      if (flour) {
+          addEggs()
+      } else {
+          Result.failure(NoFlourException())
+      }
+  }
+</code></pre>
+</li>
+<li>
+<p><strong>Practical Use:</strong> In error handling, monads can encapsulate whether an operation was successful or not, allowing you to sequence operations where one depends on the success of another without explicit exception checks.</p>
+</li>
+</ul>
+<h2><a href="#how-kotlin-result-addresses-these-concerns" aria-hidden="true" class="anchor" id="how-kotlin-result-addresses-these-concerns"></a>How <code>kotlin-result</code> Addresses These Concerns</h2>
+<p><code>kotlin-result</code> is a Kotlin library that encapsulates the monadic approach to error handling, offering a <code>Result</code> type which is <strong>a monadic type that holds either a successful value or an error</strong>. Here's how it adress some issues:</p>
+<ul>
+<li>
+<p><strong>Explicit Success or Failure:</strong> Rather than using exceptions, <code>Result</code> explicitly represents outcomes as either success (<code>Result.Success</code>) or failure (<code>Result.Failure</code>). This makes error paths clear and predictable, every call should return success or  failure.</p>
+</li>
+<li>
+<p><strong>Type-Safe Error Handling:</strong> By leveraging sealed classes for error types, <code>kotlin-result</code> ensures at compile-time that all possible outcomes are accounted for. This prevents runtime surprises, similar to how a monadic type system ensures all paths are considered.</p>
+</li>
+<li>
+<p><strong>Reduces Error Boilerplate:</strong> The library allows operations to be chained with methods like <code>map</code>, <code>flatMap</code>, or <code>andThen</code>. This reduces the need for extensive <code>try-catch</code> blocks, promoting cleaner code by handling errors in a functional manner.</p>
+</li>
+<li>
+<p><strong>Resource Management:</strong> Combining Kotlin's scope functions with <code>Result</code> simplifies resource management. Operations can ensure resources are released properly, even on failure, without the clutter of nested <code>try-finally</code> blocks.</p>
+</li>
+<li>
+<p><strong>Promotes Composable Code:</strong> Functions return <code>Result</code> types, enabling them to be composed into more complex operations. This modularity and reusability reflect the functional programming ethos of treating functions as building blocks.</p>
+</li>
+</ul>
+<h3><a href="#key-use-cases" aria-hidden="true" class="anchor" id="key-use-cases"></a>Key Use Cases</h3>
+<ul>
+<li>
+<p><strong>Replacing Traditional Exception Handling:</strong> When you want to avoid exceptions for scenarios where error is part of the normal flow, like input validation or network calls. Instead of exceptions, you return <code>Result</code> to explicitly handle both success and failure.</p>
+</li>
+<li>
+<p><strong>API Design:</strong> When designing APIs, <code>kotlin-result</code> helps in creating interfaces that are clear about what can go wrong, allowing clients to handle errors gracefully without exception handling boilerplate.</p>
+</li>
+<li>
+<p><strong>Error Propagation:</strong> In large codebases, propagating errors up the call stack can be done in a way that's clear and doesn't rely on exceptions, making the code easier to navigate and understand.</p>
+</li>
+</ul>
+<h2><a href="#designing-apis-with-error-handling-in-mind" aria-hidden="true" class="anchor" id="designing-apis-with-error-handling-in-mind"></a>Designing APIs with Error Handling in Mind</h2>
+<p>When you're designing your Kotlin APIs, consider the following to ensure your error handling is effective:</p>
+<ul>
+<li>
+<p><strong>Use Exceptions only when strictly needed:</strong> Reserve exceptions for true programming errors where recovery is not feasible, like accessing an index out of bounds in an array. These signify bugs that should be caught and reported, not handled routinely.</p>
+</li>
+<li>
+<p><strong>Use <code>Result</code> for Flow:</strong> For scenarios where failure is part of normal operation (like validation, network calls, or data parsing), return <code>Result</code> types. This makes error handling explicit, giving you control over how failures are managed without resorting to exceptions.</p>
+</li>
+<li>
+<p><strong>Wrap logic and adapt it:</strong> When you're interfacing with legacy or external APIs that throw exceptions for conditions that aren't logic errors, wrap these calls. Create functions that transform exceptions into <code>Result</code> types, giving your API users a cleaner, more predictable interface:</p>
+<pre><code class="language-kotlin">  fun fetchUserData(userId: Int): Result&lt;UserData, NetworkError&gt; {
+      return try {
+          Result.success(api.getUserData(userId))
+      } catch (e: IOException) {
+          Result.failure(NetworkError.IOError(e.message ?: &quot;Network error&quot;))
+      } catch (e: TimeoutException) {
+          Result.failure(NetworkError.Timeout(&quot;Request timed out&quot;))
+      }
+  }
+
+  // Where NetworkError could be defined as:
+  sealed class NetworkError {
+      data class IOError(val message: String) : NetworkError()
+      data class Timeout(val message: String) : NetworkError()
+  }
+</code></pre>
+</li>
+<li>
+<p><strong>Multiple Error Scenarios:</strong> For functions that can fail in various ways, define a sealed class to represent these outcomes:</p>
+<pre><code class="language-kotlin">  sealed class InputError {
+      data class Empty(val field: String) : InputError()
+      data class InvalidFormat(val field: String, val reason: String) : InputError()
+      data class OutOfRange(val field: String) : InputError()
+  }
+</code></pre>
+</li>
+</ul>
+<h2><a href="#addressing-the-problems-listed-in-first-section-using-kotlin-result" aria-hidden="true" class="anchor" id="addressing-the-problems-listed-in-first-section-using-kotlin-result"></a>Addressing the Problems Listed in first section Using <code>kotlin-result</code></h2>
+<h3><a href="#example-1-hidden-control-flow" aria-hidden="true" class="anchor" id="example-1-hidden-control-flow"></a>Example 1: Hidden Control Flow</h3>
+<p>Instead of implicit exception flow:</p>
+<ul>
+<li>
+<p><strong>Problem:</strong> Exceptions make execution unpredictable—any call could derail the flow.</p>
+</li>
+<li>
+<p><strong>Solution with <code>Result</code>:</strong> Make every step of the process explicit:</p>
+<pre><code class="language-kotlin">  fun processUser(user: User): Result&lt;ProcessedUser, UserError&gt; =
+      validateUser(user)
+          .andThen { updateProfile(it) }
+          .andThen { notifyUser(it) }
+</code></pre>
+</li>
+<li>
+<p><strong>Why It Works:</strong> Instead of invisible jumps, each function returns a <code>Result</code>, letting you handle success or failure explicitly. The flow stays linear and predictable, directly addressing the &quot;non-local goto&quot; issue.</p>
+</li>
+</ul>
+<h3><a href="#example-2-checked-vs-unchecked-dilemma" aria-hidden="true" class="anchor" id="example-2-checked-vs-unchecked-dilemma"></a>Example 2: Checked vs. Unchecked Dilemma</h3>
+<ul>
+<li>
+<p><strong>Problem:</strong> The approach listed in 1 bloats code with repetitive handling or leaves failures undocumented if unchecked exceptions are used.</p>
+</li>
+<li>
+<p><strong>Solution with <code>Result</code>:</strong> Consolidate errors into a single, type-safe return type:</p>
+<pre><code class="language-kotlin">  sealed class OperationError {
+      data class FileError(val message: String) : OperationError()
+      data class NetworkError(val message: String) : OperationError()
+      data class DatabaseError(val message: String) : OperationError()
+  }
+
+  fun performOperations(): Result&lt;SuccessData, OperationError&gt; =
+      fileOperation().andThen { networkCall() }.andThen { dbOperation() }
+
+  fun fileOperation(): Result&lt;Unit, OperationError.FileError&gt; = try {
+      // File logic
+      Result.success(Unit)
+  } catch (e: IOException) {
+      Result.failure(OperationError.FileError(e.message ?: &quot;File error&quot;))
+  }
+
+  fun networkCall(): Result&lt;Unit, OperationError.NetworkError&gt; = try {
+      // Network logic
+      Result.success(Unit)
+  } catch (e: NetworkException) {
+      Result.failure(OperationError.NetworkError(e.message ?: &quot;Network error&quot;))
+  }
+
+  fun dbOperation(): Result&lt;SuccessData, OperationError.DatabaseError&gt; = try {
+      // DB logic
+      Result.success(SuccessData())
+  } catch (e: SQLException) {
+      Result.failure(OperationError.DatabaseError(e.message ?: &quot;DB error&quot;))
+  }
+</code></pre>
+</li>
+<li>
+<p><strong>Why It Works:</strong> Instead of the messy code with multiple catch blocks or risking hidden unchecked exceptions, <code>Result</code> wraps all possible failures into a single <code>OperationError</code> hierarchy. The <code>andThen</code> chaining ensures each step only proceeds if the previous one succeeds, making errors explicit in the function signatures. This eliminates verbosity, ensures type-safe handling with Kotlin <code>when</code> expression downstream, and resolves the checked vs. unchecked trade-off by making every failure mode clear and manageable.</p>
+</li>
+</ul>
+<h3><a href="#example-3-resource-management-complexity" aria-hidden="true" class="anchor" id="example-3-resource-management-complexity"></a>Example 3: Resource Management Complexity</h3>
+<ul>
+<li>
+<p><strong>Problem:</strong> Managing resources with <code>try-finally</code> blocks are verbose and leak-prone.</p>
+</li>
+<li>
+<p><strong>Solution with <code>Result</code>:</strong> Combine <code>Result</code> with Kotlin functions <code>use</code>:</p>
+<pre><code class="language-kotlin">  fun processOrders(): Result&lt;List&lt;Order&gt;, DBError&gt; =
+      dataSource.connection.use { connection -&gt;
+          connection.createStatement().use { statement -&gt;
+              statement.executeQuery(&quot;SELECT * FROM orders&quot;).use { result -&gt;
+                  runCatching { result.toOrders() }
+                      .mapError { DBError.QueryFailed(it.message) }
+              }
+          }
+      }
+</code></pre>
+</li>
+<li>
+<p><strong>Why It Works:</strong> <code>use</code> auto-closes resources, and <code>Result</code> captures errors, eliminating nesting. This directly simplifies the ugly, error-prone structure from before.</p>
+</li>
+</ul>
+<h3><a href="#example-4-loss-of-type-safety" aria-hidden="true" class="anchor" id="example-4-loss-of-type-safety"></a>Example 4: Loss of Type Safety</h3>
+<ul>
+<li>
+<p><strong>Problem:</strong> Exceptions hide failure modes, breaking type safety. This is a very simple example, but possibly the biggest catch of the post. See how calling the function <code>getUserProfile</code> makes it now easier to understand and manage errors in the domain of the codebase.</p>
+</li>
+<li>
+<p><strong>Solution with <code>Result</code>:</strong> Functions return <code>Result</code> with explicit error type:</p>
+<pre><code class="language-kotlin">  fun getUserProfile(id: String): Result&lt;UserProfile, UserFetchError&gt; = try {
+      Result.success(database.getUserProfile(id))
+  } catch (e: SQLException) {
+      Result.failure(UserFetchError.DatabaseError(e.message ?: &quot;Unknown error&quot;))
+  }
+</code></pre>
+</li>
+<li>
+<p><strong>Why It Works:</strong> The signature now declares possible failures, ensuring errors are handled upfront. This eliminates runtime surprises and strengthens the API contract, fixing the type safety gap.</p>
+</li>
+</ul>
+<h2><a href="#conclusion" aria-hidden="true" class="anchor" id="conclusion"></a>Conclusion</h2>
+<p>Functional programming and monads, via <code>kotlin-result</code>, transform error handling into something explicit, type-safe, and composable. They tackle hidden control flow with clear paths, resolve the checked/unchecked mess with typed errors, simplify resource management, and restore type safety—all while boosting readability and maintainability.</p>
+<p>So, when should you go for <code>Result</code> or <code>try-catch</code>?</p>
+<ul>
+<li>
+<p><strong>Use <code>Result</code>:</strong></p>
+<ul>
+<li>For <strong>expected failures</strong> in normal flow: validation errors, network timeouts, or parsing issues. These are business logic concerns where you want fine-grained control and explicit outcomes in your code.</li>
+<li>When designing <strong>APIs or libraries</strong>, to give users predictable, exception-free contracts.</li>
+<li>In <strong>functional pipelines</strong>, where chaining operations with error propagation feels natural.</li>
+</ul>
+</li>
+<li>
+<p><strong>Use <code>try-catch</code> (Exceptions):</strong></p>
+<ul>
+<li>For <strong>unexpected, unrecoverable errors</strong>: null dereferences, file corruption, or logic bugs. These signal something’s broken, not a routine failure, and are best caught at a higher level (e.g., app-wide handlers).</li>
+<li>When working with <strong>legacy code</strong> or external APIs that throw exceptions, and wrapping them in <code>Result</code> isn’t practical yet.</li>
+<li>For <strong>centralized recovery</strong>, like logging crashes or restarting a service, where granular handling isn’t the goal.</li>
+</ul>
+</li>
+</ul>
+<p>Think of it this way: <code>Result</code> is for errors you <em>plan to handle locally</em>, while exceptions are for errors you <em>escalate or crash on</em>. Roman Elizarov’s take on Kotlin’s exception philosophy (<a href="https://elizarov.medium.com/kotlin-and-exceptions-8062f589d07">link</a>) echoes this: exceptions are for the exceptional, not the everyday.</p>
+<h2><a href="#references" aria-hidden="true" class="anchor" id="references"></a>References</h2>
+<ul>
+<li>Elizarov, Roman. &quot;Kotlin and Exceptions.&quot; Medium, 2021. <a href="https://elizarov.medium.com/kotlin-and-exceptions-8062f589d07">https://elizarov.medium.com/kotlin-and-exceptions-8062f589d07</a>.</li>
+<li>Bull, Michael. <em>kotlin-result</em>. GitHub repository. <a href="https://github.com/michaelbull/kotlin-result">https://github.com/michaelbull/kotlin-result</a>.</li>
+<li>Chen, Raymond. &quot;Exceptions are like non-local goto statements&quot; (paraphrased concept). Commonly referenced in discussions on exception handling, e.g., Microsoft Developer Blogs.</li>
+<li>Lipovaca, Miran. <em>Learn You a Haskell for Great Good!</em> Online book. <a href="http://learnyouahaskell.com/">http://learnyouahaskell.com/</a>.</li>
+<li>Haskell Community. <em>Haskell Official Website</em>. <a href="https://www.haskell.org/">https://www.haskell.org/</a>.</li>
+</ul>
+<hr />
+<!-- Content Injected to every content markdown footer -->
+]]></content:encoded></item><item><title>Microservices: Hidden Technical Debt (and how to possibly avoid the traps)</title><link>/microservices-debt.html</link><author>pedrohbl_</author><category>microservices</category><category>technical-debt</category><category>distributed-systems</category><category>software-architecture</category><guid>/microservices-debt.html</guid><pubDate>Sat, 08 Feb 2025 00:00:00 GMT</pubDate><source url="">index</source><content:encoded><![CDATA[<!-- Content Injected to every content markdown header -->
 <h2><a href="#introduction" aria-hidden="true" class="anchor" id="introduction"></a>Introduction</h2>
 <p>These days, I keep seeing microservices being treated as the answer to every software problem. Having worked with various architectures throughout my career, I've noticed how many players often jump into microservices without considering the long-term implications. It reminds me of a project where we turned a perfectly functional monolith into a distributed system just because &quot;that's what modern companies do.&quot;</p>
 <p>But here's the thing: microservices aren't a silver bullet. In fact, they can become a massive technical debt that's incredibly hard to pay off. Matt Ranney, DoorDash's Scalability Engineer Lead, makes this point brilliantly in his talk &quot;Microservices are Technical Debt.&quot; After experiencing similar challenges, I decided to dive into this topic, including some cientific papers that covered similar issues like &quot;Microservices Anti-Patterns: A Taxonomy,&quot; to understand what's really going on.</p>
