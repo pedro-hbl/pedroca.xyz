@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Pedro Lopes</title><link></link><description>Comput. Sci.</description><pubDate>Mon, 03 Mar 2025 00:00:00 GMT</pubDate><lastBuildDate>Fri, 07 Mar 2025 13:26:49 GMT</lastBuildDate><generator>marmite</generator><item><title>How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin</title><link>/kotlin-result-functional.html</link><author>pedrohbl_</author><category>kotlin</category><category>exception</category><category>functional-programming</category><category>haskell</category><guid>/kotlin-result-functional.html</guid><pubDate>Mon, 03 Mar 2025 00:00:00 GMT</pubDate><source url="">tag-haskell</source><content:encoded><![CDATA[<!-- Content Injected to every content markdown header -->
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Pedro Lopes</title><link></link><description>Comput. Sci.</description><pubDate>Mon, 03 Mar 2025 00:00:00 GMT</pubDate><lastBuildDate>Wed, 09 Apr 2025 17:04:22 GMT</lastBuildDate><generator>marmite</generator><item><title>How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin</title><link>/kotlin-result-functional.html</link><author>pedrohbl_</author><category>kotlin</category><category>exception</category><category>functional-programming</category><category>haskell</category><guid>/kotlin-result-functional.html</guid><pubDate>Mon, 03 Mar 2025 00:00:00 GMT</pubDate><source url="">tag-haskell</source><content:encoded><![CDATA[<!-- Content Injected to every content markdown header -->
 <h2><a href="#introduction" aria-hidden="true" class="anchor" id="introduction"></a>Introduction</h2>
 <p>If you've been programming in Kotlin or Java, you're probably used to handling errors with <code>try-catch</code> blocks. While this approach is standard, it can become really messy in complex scenarios, leading to verbose and difficult-to-maintain code. More critically, traditional exception handling forces developers to constantly anticipate where exceptions might be thrown, increasing cognitive load and potential oversight.</p>
 <p>Functional programming offers a powerful set of tools for improving code quality, especially when it comes to error handling. The goal here is to focus on the core concepts that can help you write cleaner, more robust, and more predictable error-handling code. I’m not here to dive into Haskell or push its philosophical depths, being really honest I’m very scared of the Haskell nerds in general. Instead, I’ll explore how these functional programming ideas can be practically applied in Kotlin, with real-world use cases in mind.</p>
@@ -179,15 +179,15 @@ I'd recommend this lecture if you want to dive deeper in some o these topics or 
 </li>
 <li>
 <p><strong>Wrap logic and adapt it:</strong> When you're interfacing with legacy or external APIs that throw exceptions for conditions that aren't logic errors, wrap these calls. Create functions that transform exceptions into <code>Result</code> types, giving your API users a cleaner, more predictable interface:</p>
-<pre><code class="language-kotlin">  fun fetchUserData(userId: Int): Result&lt;UserData, NetworkError&gt; {
-      return try {
-          Result.success(api.getUserData(userId))
-      } catch (e: IOException) {
-          Result.failure(NetworkError.IOError(e.message ?: &quot;Network error&quot;))
-      } catch (e: TimeoutException) {
-          Result.failure(NetworkError.Timeout(&quot;Request timed out&quot;))
-      }
-  }
+<pre><code class="language-kotlin">  fun fetchUserData(userId: Int): Result&lt;UserData, NetworkError&gt; =
+      runCatching { api.getUserData(userId) }
+          .mapError {
+              when (it) {
+                  is IOException -&gt; NetworkError.IOError(it.message ?: &quot;Network error&quot;)
+                  is TimeoutException -&gt; NetworkError.Timeout(&quot;Request timed out&quot;)
+                  else -&gt; throw it // ou mapear para outro erro genérico, se necessário
+              }
+          }
 
   // Where NetworkError could be defined as:
   sealed class NetworkError {
