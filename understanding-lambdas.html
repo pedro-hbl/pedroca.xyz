@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="./static/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark" />
+    <meta name="generator" content="Marmite" />
+    
+<meta property="og:title" content="AWS Lambda: Cold Starts, Infrastructure, and Enterprise Applications">
+
+<meta property="og:description" content="
+
+NOTE: This post is still under construction come back later please
+
+Introduction
+When AWS introduc...">
+
+<meta property="og:image" content="/media/lambda/lambda_execution_life.png">
+
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Pedro Lopes">
+
+<meta property="article:published_time" content=" 2025-04-09T00:00:00+00:00">
+
+
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "/understanding-lambdas.html"
+    },
+    "url": "/understanding-lambdas.html",
+    "headline": "AWS Lambda: Cold Starts, Infrastructure, and Enterprise Applications",
+    "description": "NOTE: This post is still under construction come back later please
+
+Introduction
+When AWS introduced Lambda in 2014, it fundamentally change...",
+    "image": "/media/lambda/lambda_execution_life.png",
+    "author": {
+        "@type": "Person",
+        "name": "Pedro Lopes",
+        "url": "/author-pedrohbl_.html",
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "Pedro Lopes",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "/"
+        }
+    },
+    "datePublished": "2025-04-09T00:00:00+00:00"
+}
+</script>
+
+
+    <title>AWS Lambda: Cold Starts, Infrastructure, and Enterprise Applications | Pedro Lopes</title>
+    <link rel="stylesheet" type="text/css" href="./static/pico.min.css">
+    <link rel="stylesheet" type="text/css" href="./static/marmite.css">
+    
+    <link rel="stylesheet" type="text/css" href="./static/colorschemes/iceberg.css">
+    
+    <link rel="stylesheet" type="text/css" href="./static/custom.css">
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css" id="highlightjs-theme" />
+
+
+
+    <link rel="alternate" type="application/rss+xml" title="index" href="index.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: lambda" href="tag-lambda.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: kotlin" href="tag-kotlin.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: java" href="tag-java.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: aws" href="tag-aws.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: functional-programming" href="tag-functional-programming.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: haskell" href="tag-haskell.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: cold-starts" href="tag-cold-starts.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: spring" href="tag-spring.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: software-architecture" href="tag-software-architecture.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: jvm" href="tag-jvm.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: infrastructure" href="tag-infrastructure.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: distributed-systems" href="tag-distributed-systems.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: garbage-collector" href="tag-garbage-collector.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: microservices" href="tag-microservices.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: multithreading" href="tag-multithreading.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: concurrency" href="tag-concurrency.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: synchronization" href="tag-synchronization.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: serverless" href="tag-serverless.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: technical-debt" href="tag-technical-debt.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: exception" href="tag-exception.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: best-practices" href="tag-best-practices.rss">
+    <link rel="alternate" type="application/rss+xml" title="author: pedrohbl_" href="author-pedrohbl.rss">
+    <link rel="alternate" type="application/rss+xml" title="year: 2025" href="archive-2025.rss">
+    
+
+    
+    
+    
+</head>
+<body>
+    
+    <main class="container">
+        
+        <header class="header-content">
+            <nav class="header-nav">
+                <ul class="header-name">
+                    <li>
+                        <hgroup>
+                            <h2><a href="./" class="contrast">Pedro Lopes</a></h2>
+                             <p>Comput. Sci.</p> 
+                        </hgroup>
+                    </li>
+                </ul>
+                <button id="menu-toggle" class="hamburger">&#9776;</button>
+                
+                <ul class="header-menu" id="header-menu">
+                    
+                      
+                      
+                    <li>
+                        
+                        <a class="menu-item secondary"  href="./tags.html">Tags</a>
+                        
+                    </li>
+                    
+                      
+                      
+                    <li>
+                        
+                        <a class="menu-item secondary"  href="./archive.html">Archive</a>
+                        
+                    </li>
+                    
+                      
+                      
+                    <li>
+                        
+                        <a class="menu-item secondary"  href="./authors.html">Authors</a>
+                        
+                    </li>
+                    
+                    <li><span class="theme-toggle secondary" title="dark mode">&#9789;</span></li>
+                    
+                    <li><a href="#" id="search-toggle" class="secondary" title="Search (Ctrl + Shift + F)"> <span class="search-txt">Search</span><span class="search-magnifier"></span></a></li>
+                    
+                    <div class="underline"></div>
+                </ul>
+            </nav>
+            
+            <div class="marmite-background-overlay" id="overlay-close"></div>
+            <div class="marmite-search-bar hidden">
+                <span></span>
+                <button class="marmite-close-button" id="search-close">X</button>
+                <input placeholder="Search" id="marmite-search-input" />
+                <div class="marmite-search-bar-result">
+                    <ul id="marmite-search-bar-result"></ul>
+                </div>
+            </div>
+            
+        </header>
+        
+        <section class="main-content">
+            
+
+
+
+<article>
+
+  
+
+
+<div class="content-title" id="title">
+    <h1>AWS Lambda: Cold Starts, Infrastructure, and Enterprise Applications</h1> 
+    
+
+
+<span class="content-date">
+    <small> Apr  9, 2025 - &#10710; 10 min</small>
+</span>
+
+</div>
+
+  
+
+  <div class="content-html"><!-- Content Injected to every content markdown header -->
+<blockquote>
+<p><strong><em>NOTE:</em></strong> This post is still under construction come back later please</p>
+</blockquote>
+<h2><a href="#introduction" aria-hidden="true" class="anchor" id="introduction"></a>Introduction</h2>
+<p>When AWS introduced Lambda in 2014, it fundamentally changed how developers think about building and deploying applications. The serverless paradigm promised freedom from infrastructure management, automatic scaling, and pay-per-use pricing. But beneath this simple abstraction lies a complex, fascinating infrastructure that impacts application performance, reliability, and cost-effectiveness.</p>
+<p>In this post, I'll take you deep into the world of AWS Lambda, focusing on three critical aspects that aren't widely understood:</p>
+<ol>
+<li><strong>Cold starts and AWS's hidden warming mechanisms</strong></li>
+<li><strong>The underlying infrastructure that powers Lambda functions</strong></li>
+<li><strong>Real-world enterprise use cases and why infrastructure knowledge matters</strong></li>
+</ol>
+<p>Understanding these elements will help you make better architectural decisions, optimize performance, and build more reliable serverless applications. Let's dive in.</p>
+<hr />
+<h2><a href="#cold-starts-awss-secret-warming-mechanism" aria-hidden="true" class="anchor" id="cold-starts-awss-secret-warming-mechanism"></a>Cold Starts: AWS's Secret Warming Mechanism</h2>
+<p>Cold starts remain one of the most discussed challenges of serverless computing. When a Lambda function is invoked after being idle or for the first time, AWS must initialize an execution environment, load your code, and start the runtime. This initialization process adds latency—anywhere from 100ms to several seconds—before your function can begin processing the request.</p>
+<h3><a href="#the-traditional-cold-start-model" aria-hidden="true" class="anchor" id="the-traditional-cold-start-model"></a>The Traditional Cold Start Model</h3>
+<p>The standard understanding of Lambda cold starts looks like this:</p>
+<p><figure><img src="/media/lambda/lambda_execution_life.png" alt="Lambda Cold Start Traditional Model" /></figure></p>
+<p>This diagram from AWS documentation shows the initialization phase, which includes:</p>
+<ol>
+<li>Downloading your function code</li>
+<li>Starting the execution environment</li>
+<li>Running any initialization code outside the handler</li>
+<li>Finally executing your handler code</li>
+</ol>
+<p>According to AWS, &quot;cold starts typically occur in under 1% of invocations&quot; in production workloads. However, this seemingly small percentage can significantly impact real user experience, especially in latency-sensitive applications. Just imagine being Netflix with 220+ million subscribers - that 1% would mean +/- 2 million people experiencing delays... I'm sure your shareholders would be totally fine with that .-.</p>
+<h3><a href="#proactive-initialization-the-hidden-mechanism" aria-hidden="true" class="anchor" id="proactive-initialization-the-hidden-mechanism"></a>Proactive Initialization: The Hidden Mechanism</h3>
+<p>In 2023, AWS updated their documentation with the following statement:</p>
+<blockquote>
+<p>&quot;For functions using unreserved (on-demand) concurrency, Lambda may proactively initialize a function instance, even if there's no invocation.&quot;</p>
+</blockquote>
+<p>This statement, documented by AWS in response to research by AWS Serverless Hero AJ Stuyvenberg (<a href="https://aaronstuyvenberg.com/">Stuyvenberg website</a> I really recommend his lectures btw), revealed that Lambda performs proactive warming of functions—without developers having to implement workarounds or pay for Provisioned Concurrency. Stuyvenberg's research showed that between 50-85% of Lambda initializations can be proactive rather than true cold starts.</p>
+<p>Here's what happens during proactive initialization:</p>
+<p><figure><img src="https://i.ibb.co/K6hkvBC/proactive-init.png" alt="Proactive Initialization" /></figure></p>
+<!-- The function is initialized without a pending invocation, and remains warm and ready to process requests. When a request arrives, it's processed immediately without the cold start delay—similar to Provisioned Concurrency, but without the additional cost.
+
+### Detecting Proactive Initialization
+
+You can detect when AWS has proactively initialized your function by measuring the time between initialization and the first invocation. If this gap exceeds 10 seconds (Lambda's initialization timeout), you're experiencing a proactive initialization: -->
+<!-- ```javascript
+const coldStartSystemTime = new Date()
+let functionDidColdStart = true
+
+exports.handler = async (event, context) => {
+  if (functionDidColdStart) {
+    const handlerWrappedTime = new Date()
+    const proactiveInitialization = handlerWrappedTime - coldStartSystemTime > 10000 ? 1 : 0
+    console.log({proactiveInitialization})
+    functionDidColdStart = false
+  }
+  // Function logic here
+}
+```
+
+### Why Does This Matter?
+
+Understanding proactive initialization changes how we think about Lambda performance and cold start mitigation:
+
+1. **Cost optimization**: You might not need to pay for Provisioned Concurrency in all scenarios
+2. **Performance expectations**: Your functions might perform better than expected if AWS is proactively warming them
+3. **Architecture decisions**: Certain patterns become more viable when cold starts are less frequent
+
+Research published by Ran Isenberg in ["AWS Lambda Cold Starts Explained"](https://www.ranthebuilder.cloud/post/is-aws-lambda-cold-start-still-an-issue-in-2024) highlights the situations where cold starts truly matter:
+
+- **Critical customer-facing flows**: When performance is essential, even for 1% of customers
+- **Erratic traffic patterns**: Unpredictable traffic can lead to more cold starts than average
+- **Chained cold starts**: When microservices call each other, cold starts can compound (shown below)
+
+![Chained Cold Starts](https://static.wixstatic.com/media/9d29a8_eade38a3b5c04172bcb70e5f122d4aa1~mv2.png/v1/fill/w_740,h_496,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/9d29a8_eade38a3b5c04172bcb70e5f122d4aa1~mv2.png)
+
+This diagram from Isenberg's research shows how cold starts can cascade across services, creating a compound delay for end users. If three microservices each experience a 1-second cold start, the user might experience a 3-second delay.
+
+---
+
+## The Infrastructure Behind Lambda: Firecracker, MicroVMs, and Worker Hosts
+
+To truly understand Lambda's behavior, we need to examine its underlying infrastructure. Lambda functions don't run in isolation—they're part of a sophisticated distributed system that balances performance, security, and resource efficiency.
+
+### Firecracker MicroVMs: The Foundation
+
+At the core of Lambda is Firecracker, a virtualization technology developed by AWS and open-sourced in 2018. Written in Rust for security and performance, Firecracker creates lightweight micro virtual machines (microVMs) that:
+
+1. Start in as little as 125ms
+2. Consume only about 5 MiB of memory per microVM
+3. Provide strong security isolation through multiple protection mechanisms
+
+![Firecracker Architecture](https://d2908q01vomqb2.cloudfront.net/1b6453892473a467d07372d45eb05abc2031647a/2018/11/26/firecracker-architecture.png)
+
+Firecracker's minimalist approach is key to Lambda's performance. It implements a stripped-down device model with only essential virtualized devices: a network device, block I/O, timer, serial console, and partial keyboard—minimizing the attack surface.
+
+### Worker Hosts and Execution Environments
+
+Lambda functions run on a fleet of EC2 instances called "worker hosts"—most commonly using Spot instances for cost efficiency. Each worker host runs multiple microVMs, with each microVM hosting a single execution environment.
+
+As outlined in Joud Awad's ["AWS Lambda Architecture Deep Dive"](https://medium.com/@joudwawad/aws-lambda-architecture-deep-dive-bef856b9b2c4), the structure looks like this:
+
+![Worker and MicroVM Structure](https://miro.medium.com/v2/resize:fit:828/format:webp/1*Kz2fQAXdBUrgVw-33hB3Lg.png)
+
+Each execution environment is unique to a specific function version and can only process one invocation at a time. After processing, the environment remains "warm" for reuse, typically for hours but with a maximum lifetime of 14 hours.
+
+### The Invoke Data Plane
+
+When you trigger a Lambda function, your request goes through Lambda's Invoke Data Plane—a series of web services that:
+
+1. Select or create an execution environment for your function
+2. Route your request to that environment
+3. Enforce throttle limits to protect the service
+
+This architecture explains why Lambda has multiple throttle limits that we'll explore later.
+
+### Function Placement and Scaling
+
+Behind the scenes, Lambda uses a component called the Placement Service to determine where to run your function:
+
+![Lambda Placement Service](https://miro.medium.com/v2/resize:fit:828/format:webp/1*m2K7KWQXAVDt0XYNLvF05A.png)
+
+The Placement Service is responsible for efficiently distributing Lambda functions across worker hosts, balancing factors like:
+
+- Proximity to data sources and consumers
+- Current resource utilization
+- Function resource requirements
+- Availability zone health
+
+This service is also what enables proactive initialization—it can predict demand and pre-warm execution environments before actual invocations arrive.
+
+### Why Does This Matter?
+
+Understanding Lambda's infrastructure helps explain many of its behaviors and constraints:
+
+1. **Cold start patterns**: The microVM architecture explains the latency profile of cold starts
+2. **Concurrency and burst limits**: The worker host model explains why Lambda throttles rapid scaling
+3. **Memory/performance correlation**: Since Lambda allocates CPU proportional to memory, the underlying VM architecture explains why more memory equals better performance
+4. **Execution time limits**: The 15-minute maximum execution time relates to the efficient utilization of the worker fleet
+
+By understanding the infrastructure, we can make more informed decisions about function configuration, deployment practices, and architectural patterns.
+
+---
+
+## Real-World Enterprise Applications: Why Infrastructure Knowledge Matters
+
+Understanding Lambda's cold starts and infrastructure isn't just academic—it has direct implications for real-world applications. Let's examine several enterprise use cases and why deep infrastructure knowledge makes a difference.
+
+### Financial Services: Real-Time Decision Making
+
+**Case Study: Financial Engines**
+
+Financial Engines, the largest independent investment advisor in the US by assets under management, moved their core platform to Lambda. According to AWS case studies, they achieved:
+
+- Request rates of up to 60,000 per minute
+- Zero downtime
+- Significant cost savings
+
+**Why Infrastructure Knowledge Matters:**
+
+For financial services companies, understanding cold starts is critical for real-time decision making. When milliseconds can impact trading decisions or customer experiences, knowing how to minimize and predict cold starts becomes essential.
+
+Financial services companies can use this knowledge to:
+
+1. **Strategically deploy Provisioned Concurrency**: Only paying for it on critical customer-facing flows
+2. **Monitor proactive initialization patterns**: Using metrics to understand when AWS is warming functions
+3. **Architect for minimal cold start impact**: Placing latency-sensitive operations in separate functions
+
+### Media Streaming: High-Volume Processing
+
+**Case Study: Netflix**
+
+Netflix, one of the world's largest media streaming providers, uses Lambda extensively. According to their engineering blog, they process:
+
+- Billions of daily events
+- Tens of thousands of concurrent executions
+- Petabytes of data
+
+**Why Infrastructure Knowledge Matters:**
+
+For high-volume media processing, understanding Lambda's infrastructure helps optimize for cost and performance:
+
+1. **MicroVM architecture**: Allows Netflix to optimize memory allocation per function
+2. **Worker placement understanding**: Helps them design for multi-region resilience
+3. **Throttle limits**: Guides their implementation of backpressure mechanisms
+
+### Real-Time Gaming: Latency-Critical Operations
+
+**Case Study: Square Enix**
+
+Square Enix uses AWS Lambda for image processing in its Massively Multiplayer Online Role-Playing Games (MMORPGs). They achieved:
+
+- Handling traffic spikes of up to 30x normal levels
+- Reducing image processing time from hours to seconds
+- Lower infrastructure and operational costs
+
+**Why Infrastructure Knowledge Matters:**
+
+For gaming companies, understanding Lambda's infrastructure enables:
+
+1. **Predictable player experiences**: Minimizing cold starts for user-facing operations
+2. **Cost-effective scaling**: Handling unpredictable player counts without over-provisioning
+3. **Region-specific optimizations**: Understanding how worker placement affects global players
+
+### Telecommunications: Mission-Critical Systems
+
+**Case Study: T-Mobile**
+
+T-Mobile, serving more than 70 million customers, has a "serverless first" policy for new services. They use Lambda for mission-critical applications that serve millions of users.
+
+**Why Infrastructure Knowledge Matters:**
+
+For telecommunications companies, infrastructure knowledge directly impacts reliability:
+
+1. **Execution environment lifecycle**: Helps predict and mitigate potential service degradations
+2. **Cross-region design**: Understanding worker placement guides multi-region architectures
+3. **Throttle limit handling**: Critical for managing high-volume messaging and notification systems
+
+### E-Commerce: Handling Traffic Spikes
+
+**Case Study: MatHem**
+
+MatHem, Sweden's largest online-only grocery retailer, uses a serverless architecture that allows them to:
+
+- Bring new features to customers up to 10x faster
+- Handle seasonal shopping spikes
+- Reduce operational overhead
+
+**Why Infrastructure Knowledge Matters:**
+
+For e-commerce platforms, especially those with seasonal traffic patterns, understanding Lambda's infrastructure enables:
+
+1. **Optimized cold start handling**: Essential during flash sales or holiday shopping
+2. **Cost-effective scaling**: Understanding when to use Provisioned Concurrency vs. on-demand
+3. **Efficient resource allocation**: Matching memory allocation to workload characteristics
+
+---
+
+## Optimizing Lambda for Your Use Case
+
+Armed with understanding of cold starts, infrastructure, and real-world applications, let's explore how to optimize Lambda for specific scenarios.
+
+### For Latency-Sensitive Applications
+
+If your application requires consistent, low-latency responses (like financial services or gaming):
+
+1. **Runtime selection matters**: According to AWS research, cold start times vary significantly by runtime. Consider using Rust, Go, or the Lambda Low Latency Runtime (LLRT) for the shortest cold starts
+2. **Memory configuration**: Higher memory allocations not only provide more computing power but also reduce cold start times
+3. **Code optimization**: Minimize imports and dependencies to reduce initialization time
+4. **Strategic Provisioned Concurrency**: Use it for critical flows based on traffic patterns
+
+### For High-Throughput Systems
+
+If your system processes large volumes of data or requests (like media processing or analytics):
+
+1. **Concurrency limits**: Understand your account's limits and request increases if needed
+2. **Burst handling**: Implement client-side throttling or queuing to handle burst limits
+3. **Batch processing**: Use SQS with batching to optimize throughput and costs
+4. **Infrastructure awareness**: Design with Lambda's scaling behavior in mind
+
+### For Cost-Sensitive Workloads
+
+If cost optimization is a primary concern:
+
+1. **Right-size memory**: Use tools like AWS Lambda Power Tuning to find the optimal balance of cost and performance
+2. **Exploit proactive initialization**: Design your system to benefit from AWS's warming without paying for Provisioned Concurrency
+3. **Function consolidation**: Balance the microservices approach with function consolidation to reduce cold starts
+4. **Execution time optimization**: Reduce billable duration by optimizing code and dependencies
+
+---
+
+## Conclusion: The Future of Lambda Infrastructure
+
+Understanding Lambda's cold starts, infrastructure, and real-world applications puts you ahead of most developers. As AWS continues to evolve the service, several trends are emerging:
+
+1. **Improved cold start handling**: Mechanisms like Proactive Initialization demonstrate AWS's commitment to addressing this challenge
+2. **More efficient infrastructure**: Firecracker continues to evolve, becoming faster and more resource-efficient
+3. **Specialized runtimes**: The introduction of LLRT shows AWS's focus on latency-sensitive workloads
+4. **Enterprise-focused features**: As more critical workloads move to Lambda, expect more features addressing enterprise needs
+
+By staying informed about Lambda's inner workings, you'll be better positioned to leverage these advancements and build more efficient, reliable, and cost-effective serverless applications.
+
+## References
+
+1. Stuyvenberg, A. (2023). "Understanding AWS Lambda Proactive Initialization." Retrieved from https://aaronstuyvenberg.com/posts/understanding-proactive-initialization
+2. Isenberg, R. (2024). "AWS Lambda Cold Starts Explained: What They Are & How to Reduce Them." Retrieved from https://www.ranthebuilder.cloud/post/is-aws-lambda-cold-start-still-an-issue-in-2024
+3. AWS Documentation. (2024). "Understanding the Lambda execution environment lifecycle." Retrieved from https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html
+4. Barr, J. (2018). "Firecracker – Lightweight Virtualization for Serverless Computing." AWS News Blog. Retrieved from https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/
+5. Awad, J. W. (2024). "AWS Lambda Architecture Deep Dive." Medium. Retrieved from https://medium.com/@joudwawad/aws-lambda-architecture-deep-dive-bef856b9b2c4
+6. AWS. (2024). "AWS Lambda Customer Case Studies." Retrieved from https://aws.amazon.com/lambda/resources/customer-case-studies/
+
+What aspects of Lambda's infrastructure have you found most impactful in your applications? Have you experienced the benefits of proactive initialization? I'd love to hear about your experiences in the comments.  -->
+<!-- Content Injected to every content markdown footer -->
+</div>
+  
+  <footer class="data-tags-footer">
+
+    <div class="content-authors-flex">
+      <div class="content-authors-full">
+        
+<div class="content-authors">
+    <ul>
+        
+            
+            
+            <li>
+                <a href="author-pedrohbl_.html">
+                    <img src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" alt="Pedro Lopes" class="avatar">
+                    Pedro Lopes
+                </a>
+            </li>
+            
+        
+    </ul>
+</div>
+
+
+      </div>
+
+      <div class="date-tags-container">
+        <div class="content-date">
+          
+
+
+<span class="content-date">
+    <small> Apr  9, 2025 - &#10710; 10 min</small>
+</span>
+
+        </div>
+
+        <ul class="content-tags">
+          
+          <li><a href="./tag-aws.html">aws</a></li>
+          
+          <li><a href="./tag-lambda.html">lambda</a></li>
+          
+          <li><a href="./tag-serverless.html">serverless</a></li>
+          
+          <li><a href="./tag-infrastructure.html">infrastructure</a></li>
+          
+          <li><a href="./tag-cold-starts.html">cold-starts</a></li>
+          
+        </ul>
+      </div>
+    </div>
+  </footer>
+  
+</article>
+
+
+
+
+  
+  
+  
+  
+  <article>
+    Related aws content
+    <ul>
+      
+      
+      
+      
+      <li><a href="./lambda-throttling.html">Understanding and Mitigating AWS Lambda Throttling in High-Concurrency Workloads</a></li>
+      
+    </ul>
+  </article>
+  
+
+
+
+
+
+        </section>
+        
+        <footer class="footer-content grid">
+            <div>Powered by <a href="https://github.com/rochacbruno/marmite">Marmite</a> | <small><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY_NC-SA</a></small></div>
+            
+        </footer>
+        
+    </main>
+
+    <script src="./static/marmite.js"></script>
+    <script src="./static/custom.js"></script>
+    
+    <script type="module" src="./static/search.js"></script>
+    
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+<script>
+  hljs.highlightAll();
+</script>
+
+
+
+</body>
+</html>

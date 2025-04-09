@@ -1,0 +1,640 @@
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Pedro Lopes</title><link></link><description>Comput. Sci.</description><pubDate>Wed, 02 Apr 2025 00:00:00 GMT</pubDate><lastBuildDate>Wed, 09 Apr 2025 17:04:22 GMT</lastBuildDate><generator>marmite</generator><item><title>Common multithreading issues in Java</title><link>/java-spring-multithreading-pitfalls.html</link><author>pedrohbl_</author><category>java</category><category>spring</category><category>multithreading</category><category>concurrency</category><category>synchronization</category><category>best-practices</category><guid>/java-spring-multithreading-pitfalls.html</guid><pubDate>Wed, 02 Apr 2025 00:00:00 GMT</pubDate><source url="">tag-concurrency</source><content:encoded><![CDATA[<!-- Content Injected to every content markdown header -->
+<h2><a href="#introduction" aria-hidden="true" class="anchor" id="introduction"></a>Introduction</h2>
+<p>Multithreading in Java enables concurrent execution of multiple threads within a single application, potentially improving performance and resource utilization. However, improper thread management can cause a lot of bugs that only manifest under specific conditions.</p>
+<p>In this post, I'll walk through some of the multithreading pitfalls I've encountered, along with some solutions and usecases/anti-patterns to help you avoid the same mistakes I've mapped here, in the following order:</p>
+<ol>
+<li><strong>Race Conditions</strong></li>
+<li><strong>Memory Visibility Issues</strong></li>
+<li><strong>Deadlocks</strong></li>
+<li><strong>Thread Pool Configuration</strong></li>
+</ol>
+<blockquote>
+<p><strong><em>NOTE:</em></strong> Maybe in a future post, I'll cover Spring-specific multithreading issues like @Async limitations, transaction boundaries, and event processing.*</p>
+</blockquote>
+<h2><a href="#race-conditions" aria-hidden="true" class="anchor" id="race-conditions"></a>Race Conditions</h2>
+<h3><a href="#what-are-race-conditions" aria-hidden="true" class="anchor" id="what-are-race-conditions"></a>What Are Race Conditions?</h3>
+<p>A race condition occurs when multiple threads access and modify shared data concurrently, leading to unpredictable behavior. The outcome depends on thread execution timing, making it difficult to reproduce and debug. According to a study published in the IEEE Transactions on Software Engineering, race conditions account for approximately 29% of all concurrency bugs in production systems [1]. In my experience, they account for about 99% of my hair lost.</p>
+<h3><a href="#example" aria-hidden="true" class="anchor" id="example"></a>Example</h3>
+<p>Consider a simple counter implementation:</p>
+<pre><code class="language-java">public class Counter {
+    private int count = 0;
+    
+    public void increment() {
+        count++;
+    }
+    
+    public int getCount() {
+        return count;
+    }
+}
+</code></pre>
+<p>When multiple threads call <code>increment()</code> concurrently, the expected value might differ from actual results. This happens because <code>count++</code> is not atomic—it involves three operations:</p>
+<ol>
+<li>Read the current value of count</li>
+<li>Increment the value</li>
+<li>Write the new value back to count</li>
+</ol>
+<p>So basically if Trhead A and Thread B both read the initial value before either updates it, one increment will be lost.</p>
+<h3><a href="#detecting-race-conditions" aria-hidden="true" class="anchor" id="detecting-race-conditions"></a>Detecting Race Conditions</h3>
+<p>Race conditions can be detected using:</p>
+<ol>
+<li><strong>Java Thread Dumps</strong>: Analyze thread dumps when application behavior is inconsistent</li>
+<li><strong>Code Reviews</strong>: Look for shared mutable state accessed by multiple threads</li>
+<li><strong>Testing Tools</strong>: Tools like Java PathFinder, FindBugs, and JCStress can detect potential race conditions</li>
+</ol>
+<h3><a href="#solving-race-conditions-in-java" aria-hidden="true" class="anchor" id="solving-race-conditions-in-java"></a>Solving Race Conditions in Java</h3>
+<h4><a href="#1-using-synchronized-keyword" aria-hidden="true" class="anchor" id="1-using-synchronized-keyword"></a>1. Using Synchronized Keyword</h4>
+<pre><code class="language-java">public class Counter {
+    private int count = 0;
+    
+    public synchronized void increment() {
+        count++;
+    }
+    
+    public synchronized int getCount() {
+        return count;
+    }
+}
+</code></pre>
+<p>The <code>synchronized</code> keyword ensures that only one thread can execute the method at a time. It achieves this by acquiring an intrinsic lock (monitor) on the object instance. However, synchronization introduces overhead as threads must wait for the lock to be released (think of it as putting a bouncer at the door who only lets one person in at a time — secure, but creates a line).</p>
+<h4><a href="#2-using-atomicinteger" aria-hidden="true" class="anchor" id="2-using-atomicinteger"></a>2. Using AtomicInteger</h4>
+<p>Java's <code>java.util.concurrent.atomic</code> package provides thread-safe primitive types:</p>
+<pre><code class="language-java">import java.util.concurrent.atomic.AtomicInteger;
+
+public class Counter {
+    private AtomicInteger count = new AtomicInteger(0);
+    
+    public void increment() {
+        count.incrementAndGet();
+    }
+    
+    public int getCount() {
+        return count.get();
+    }
+}
+</code></pre>
+<p><code>AtomicInteger</code> uses Compare-And-Swap (CAS) operations, which are typically more efficient than synchronization for simple operations.</p>
+<h4><a href="#3-using-lock-interface" aria-hidden="true" class="anchor" id="3-using-lock-interface"></a>3. Using Lock Interface</h4>
+<p>For more complex scenarios, the <code>java.util.concurrent.locks</code> package offers more flexible locking mechanisms (when you need a more sophisticated bouncer):</p>
+<pre><code class="language-java">import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class Counter {
+    private int count = 0;
+    private final Lock lock = new ReentrantLock();
+    
+    public void increment() {
+        lock.lock();
+        try {
+            count++;
+        } finally {
+            lock.unlock(); 
+        }
+    }
+    
+    public int getCount() {
+        lock.lock();
+        try {
+            return count;
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+</code></pre>
+<h3><a href="#real-world-example" aria-hidden="true" class="anchor" id="real-world-example"></a>Real-World Example</h3>
+<p>Consider a payment processing gateway that handles high-volume financial transactions. In this scenario, a transaction processing system occasionally showed incorrect account balances. Analysis of production logs revealed a classic race condition where multiple threads were updating the same account simultaneously(I took this example from an interview I did couple of years ago):</p>
+<pre><code class="language-java">public void processPayment(Long accountId, BigDecimal amount) {
+    Account account = accountRepository.findById(accountId).orElseThrow();
+    BigDecimal newBalance = account.getBalance().add(amount);
+    account.setBalance(newBalance);
+    accountRepository.save(account);
+}
+</code></pre>
+<p>This implementation has a critical race condition:</p>
+<ol>
+<li>Thread A reads account balance (1000)</li>
+<li>Thread B reads the same account balance (1000)</li>
+<li>Thread A calculates new balance (1000 + 200 = 1200)</li>
+<li>Thread B calculates new balance (1000 + 500 = 1500)</li>
+<li>Thread A saves the new balance (1200)</li>
+<li>Thread B saves the new balance (1500)</li>
+</ol>
+<p>In this scenario, the 200 payment processed by Thread A is effectively lost because Thread B overwrote it with its calculation based on the original balance. The system has lost 200 units of currency - a serious financial discrepancy.</p>
+<p>The solution requires implementing proper transaction isolation. In database terms, this is precisely what the SERIALIZABLE isolation level is designed to prevent:</p>
+<pre><code class="language-java">@Transactional(isolation = Isolation.SERIALIZABLE)
+public void processPayment(Long accountId, BigDecimal amount) {
+    Account account = accountRepository.findById(accountId).orElseThrow();
+    BigDecimal newBalance = account.getBalance().add(amount);
+    account.setBalance(newBalance);
+    accountRepository.save(account);
+}
+</code></pre>
+<p>With SERIALIZABLE isolation, the database ensures that concurrent transactions behave as if they were executed sequentially. This prevents the race condition by ensuring that:</p>
+<ol>
+<li>Thread A begins transaction and reads account (1000)</li>
+<li>Thread B begins transaction and tries to read the same account</li>
+<li>Thread B is blocked (or gets a version error, depending on implementation) until Thread A completes</li>
+<li>Thread A updates balance to 1200 and commits</li>
+<li>Thread B now reads the updated account (1200)</li>
+<li>Thread B updates balance to 1700 (1200 + 500) and commits</li>
+</ol>
+<p>When implementing this solution, be aware that SERIALIZABLE has performance implications:</p>
+<ol>
+<li><strong>Concurrency reduction</strong>: It reduces the number of concurrent operations the system can perform</li>
+<li><strong>Deadlock risk</strong>: Higher isolation levels increase the risk of deadlocks</li>
+<li><strong>Performance cost</strong>: There's a tradeoff between consistency and throughput</li>
+</ol>
+<p>For some financial systems, a more scalable approach is optimistic locking with version control. Think of it like a Google Doc's version history - if two people edit the same document simultaneously, the system detects the conflict and handles it gracefully.</p>
+<h4><a href="#how-optimistic-locking-works" aria-hidden="true" class="anchor" id="how-optimistic-locking-works"></a>How Optimistic Locking Works</h4>
+<ol>
+<li><strong>Version Tracking</strong>: Each record keeps track of its version number</li>
+<li><strong>Read Phase</strong>: When reading a record, we store both its data AND version number</li>
+<li><strong>Update Phase</strong>: When saving, we check if the version is still the same</li>
+<li><strong>Conflict Detection</strong>: If someone else changed the record (version mismatch), we handle the conflict</li>
+</ol>
+<p>Here's a practical implementation using Spring:</p>
+<pre><code class="language-java">@Entity
+public class Account {
+    @Id
+    private Long id;
+    
+    private BigDecimal balance;
+    
+    @Version  // this annotation tells JPA to handle versioning
+    private Long version;  // automatically incremented on each update
+    
+    }
+
+@Service
+@Transactional(isolation = Isolation.READ_COMMITTED)
+public class PaymentService {
+    private final AccountRepository accountRepository;
+    
+    public void processPayment(Long accountId, BigDecimal amount) {
+        // the first thread reads version = 1
+        Account account = accountRepository.findById(accountId).orElseThrow();
+        BigDecimal newBalance = account.getBalance().add(amount);
+        account.setBalance(newBalance);
+        
+        try {
+            // if another thread updated the account (now version = 2),
+            // this save will fail with OptimisticLockException
+            accountRepository.save(account);
+        } catch (OptimisticLockException e) {
+            // handle the conflict(like a retry or something)
+            throw new PaymentConflictException(&quot;Payment failed - please retry&quot;);
+        }
+    }
+    
+    // retry example
+    @Retryable(maxAttempts = 3, backoff = @Backoff(delay = 100))
+    public void processPaymentWithRetry(Long accountId, BigDecimal amount) {
+        processPayment(accountId, amount);
+    }
+}
+</code></pre>
+<p>Let's see how this prevents the race condition:</p>
+<ol>
+<li>Thread A reads account (balance = 1000, version = 1)</li>
+<li>Thread B reads account (balance = 1000, version = 1)</li>
+<li>Thread A calculates new balance (1000 + 200 = 1200)</li>
+<li>Thread B calculates new balance (1000 + 500 = 1500)</li>
+<li>Thread A saves changes → success (balance = 1200, version = 2)</li>
+<li>Thread B tries to save → FAILS because version changed</li>
+<li>Thread B retries with fresh data (balance = 1200, version = 2)</li>
+<li>Thread B calculates new balance (1200 + 500 = 1700)</li>
+<li>Thread B saves changes → success (balance = 1700, version = 3)</li>
+</ol>
+<p>The key advantages of optimistic locking over SERIALIZABLE isolation:</p>
+<ol>
+<li><strong>Better Performance</strong>: No need to lock records - we only check versions when saving</li>
+<li><strong>Higher Throughput</strong>: Multiple transactions can read the same data simultaneously</li>
+<li><strong>Deadlock Prevention</strong>: No locks means no deadlocks</li>
+<li><strong>Automatic Conflict Detection</strong>: The database handles version checking automatically</li>
+</ol>
+<p>The main trade-off is that you need to handle the retry logic when conflicts occur. This is usually acceptable because conflicts are typically rare in real-world scenarios - they only happen when two users try to modify the exact same record at the exact same time.</p>
+<h2><a href="#memory-visibility-issues" aria-hidden="true" class="anchor" id="memory-visibility-issues"></a>Memory Visibility Issues</h2>
+<h3><a href="#what-are-memory-visibility-issues" aria-hidden="true" class="anchor" id="what-are-memory-visibility-issues"></a>What Are Memory Visibility Issues?</h3>
+<p>In Java's memory model, threads may cache variables locally instead of reading them from main memory. This can lead to a situation where updates made by one thread aren't visible to others. In the Java Memory Model (JMM) specification, variable updates without proper synchronization aren't guaranteed to be visible across threads.</p>
+<blockquote>
+<p><strong>Nerds alert</strong>: If you want to go for a deep dive into memory visibility, you'll need to dive into the Java Memory Model (JMM). For a comprehensive explanation, you might want to check &quot;Java Concurrency in Practice&quot; by Brian Goetz [4]. For the brave souls who want the formal specification(which I can't even explain explicitly), you'll be able to find it in Chapter 17.4 of the oracle doc(<a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-17.html#jls-17.4">link</a>).</p>
+</blockquote>
+<h3><a href="#example-of-memory-visibility-issues" aria-hidden="true" class="anchor" id="example-of-memory-visibility-issues"></a>Example of Memory Visibility Issues</h3>
+<p>Consider a flag to control thread execution:</p>
+<pre><code class="language-java">public class TaskManager {
+    private boolean stopped = false;
+    
+    public void stop() {
+        stopped = true;
+    }
+    
+    public void runTask() {
+        while (!stopped) {
+            //do sometihng
+        }
+    }
+}
+</code></pre>
+<p>Thread A could call <code>stop()</code> but Thread B might never see the update, resulting in an infinite loop. This is a classic memory visibility problem – the thread executing <code>runTask()</code> may maintain a local copy of <code>stopped</code> in its cache and never see the update made by another thread.</p>
+<h3><a href="#solving-memory-visibility-issues" aria-hidden="true" class="anchor" id="solving-memory-visibility-issues"></a>Solving Memory Visibility Issues</h3>
+<p>There are three main approaches to solving memory visibility issues, each with specific use cases:</p>
+<h4><a href="#1-using-volatile-keyword" aria-hidden="true" class="anchor" id="1-using-volatile-keyword"></a>1. Using volatile Keyword</h4>
+<p>The <code>volatile</code> keyword ensures that reads and writes go directly to main memory(like a &quot;no-cache&quot; flag):</p>
+<pre><code class="language-java">public class TaskManager {
+    private volatile boolean stopped = false;
+    
+    public void stop() {
+        stopped = true;
+    }
+    
+    public void runTask() {
+        while (!stopped) {
+            //do sometihng
+        }
+    }
+}
+</code></pre>
+<p><strong>When to use <code>volatile</code>:</strong></p>
+<ul>
+<li>For simple variables that function as flags/signals</li>
+<li>When you only need visibility guarantees (without atomicity)</li>
+<li>When performance is critical (it's the lightest solution)</li>
+<li><strong>Important:</strong> Doesn't guarantee atomicity for compound operations like <code>i++</code> (read + increment + write)</li>
+</ul>
+<h4><a href="#2-using-synchronized-access" aria-hidden="true" class="anchor" id="2-using-synchronized-access"></a>2. Using Synchronized Access</h4>
+<p><code>synchronized</code> blocks provide both visibility guarantees and mutual exclusion (only one thread can execute the code at a time):</p>
+<pre><code class="language-java">public class TaskManager {
+    private boolean stopped = false;
+    
+    public synchronized void stop() {
+        stopped = true;
+    }
+    
+    public void runTask() {
+        while (!isStopped()) {
+            //do sometihng
+        }
+    }
+    
+    private synchronized boolean isStopped() { // &lt; -- thread safe access
+        return stopped;
+    }
+}
+</code></pre>
+<p><strong>When to use <code>synchronized</code>:</strong></p>
+<ul>
+<li>When you need mutual exclusion in addition to visibility</li>
+<li>To protect compound operations that must be atomic</li>
+<li>When the same thread needs to check and update multiple related variables</li>
+<li><strong>Disadvantage:</strong> Less peformartic when compared to <code>volatile</code></li>
+</ul>
+<h4><a href="#3-using-atomic-variables" aria-hidden="true" class="anchor" id="3-using-atomic-variables"></a>3. Using Atomic Variables</h4>
+<p>Classes from the <code>java.util.concurrent.atomic</code> package combine visibility with atomic operations(the CAS):</p>
+<pre><code class="language-java">import java.util.concurrent.atomic.AtomicBoolean;
+
+public class TaskManager {
+    private AtomicBoolean stopped = new AtomicBoolean(false);
+    
+    public void stop() {
+        stopped.set(true);
+    }
+    
+    public void runTask() {
+        while (!stopped.get()) {
+            //do sometihng
+        }
+    }
+}
+</code></pre>
+<p><strong>When to use <code>Atomic</code>:</strong></p>
+<ul>
+<li>When you need atomic operations without the overhead of full locking</li>
+<li>For counters, accumulators, and flags that need atomic operations</li>
+<li>To implement high-performance lock-free algorithms</li>
+<li>When you need atomic compound operations like compareAndSet()</li>
+<li><strong>Advantage:</strong> Better scalability under high contention compared to <code>synchronized</code></li>
+</ul>
+<h3><a href="#comparison-between-the-approaches" aria-hidden="true" class="anchor" id="comparison-between-the-approaches"></a>Comparison between the approaches</h3>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Visibility</th>
+<th>Atomicity</th>
+<th>Locking</th>
+<th>Performance</th>
+<th>Use Cases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>volatile</code></td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>Excellent</td>
+<td>Simple flags, visibility only</td>
+</tr>
+<tr>
+<td><code>synchronized</code></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>Good/Medium</td>
+<td>Protecting complex shared state</td>
+</tr>
+<tr>
+<td><code>Atomic</code></td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+<td>Very good</td>
+<td>Counters, CAS operations, high concurrency</td>
+</tr>
+</tbody>
+</table>
+<h2><a href="#deadlocks" aria-hidden="true" class="anchor" id="deadlocks"></a>Deadlocks</h2>
+<h3><a href="#what-are-deadlocks" aria-hidden="true" class="anchor" id="what-are-deadlocks"></a>What Are Deadlocks?</h3>
+<p>In technical terms, a deadlock occurs when two or more threads each hold a resource that the other needs to continue execution. This creates a circular dependency where each thread is blocked indefinitely, waiting for resources that will never be released.</p>
+<p><strong>The four necessary conditions for a deadlock (all must be present):</strong></p>
+<ol>
+<li><strong>Mutual Exclusion</strong>: Resources cannot be shared simultaneously</li>
+<li><strong>Hold and Wait</strong>: Threads hold resources while waiting for others</li>
+<li><strong>No Preemption</strong>: Resources cannot be forcibly taken from threads</li>
+<li><strong>Circular Wait</strong>: A circular chain of threads, each waiting for a resource held by the next</li>
+</ol>
+<p>I think of deadlocks like an episode of Foster's Home For Imaginary Friends(which I watched as a kid), where Wilt (or Minguado in Portuguese) is that super polite imaginary friend who gets stuck at a doorway: &quot;After you!&quot; &quot;No, after you!&quot; &quot;I insist, after you!&quot; &quot;No, after you!&quot; So he remains stuck forever. In real life, social awkwardness would eventually break this standoff as someone gives in. But in your application, there's no episode ending or social pressure to resolve the situation—just an unresponsive system that needs rebooting.</p>
+<!-- ![Wilt - or Minguado for brazilians](/media/multithreading/wilt.jpg) -->
+<div style="text-align: center; margin: 20px 0;">
+  <img src="/media/multithreading/wilt.jpg" alt="Wilt from Foster's Home For Imaginary Friends" style="width: 350px; max-width: 100%;">
+  <p style="font-style: italic; font-size: 0.9em;">Wilt - or Minguado for brazilians.</p>
+</div>
+<h3><a href="#example-of-deadlock" aria-hidden="true" class="anchor" id="example-of-deadlock"></a>Example of Deadlock</h3>
+<p>Here's a classic deadlock scenario with two resources and two threads(This one I also took from an interview I did some time ago):</p>
+<pre><code class="language-java">public class BankTransferDeadlock {
+    private final Object accountALock = new Object();
+    private final Object accountBLock = new Object();
+    
+    private double accountABalance = 1000;
+    private double accountBBalance = 1000;
+    
+    // Thread 1 IS EXECUTING THIS
+    public void transferAtoB(double amount) {
+        synchronized(accountALock) { // acquire lock on account A
+            System.out.println(&quot;Thread 1: Locked account A&quot;);
+            
+            // simulate some work before trying to acquire second lock
+            try { Thread.sleep(100); } catch (InterruptedException e) {}
+            
+            accountABalance -= amount;
+            
+            synchronized(accountBLock) { // try to acquire lock on account B
+                System.out.println(&quot;Thread 1: Locked account B&quot;);
+                accountBBalance += amount;
+                System.out.println(&quot;Transfer from A to B complete&quot;);
+            }
+        }
+    }
+    
+    // Thread 2 EXECUITING THIS
+    public void transferBtoA(double amount) {
+        synchronized(accountBLock) { // acquire lock on account B
+            System.out.println(&quot;Thread 2: Locked account B&quot;);
+            
+            // simulate some work before trying to acquire second lock
+            try { Thread.sleep(100); } catch (InterruptedException e) {}
+            
+            accountBBalance -= amount;
+            
+            synchronized(accountALock) { // try to acquire lock on account A
+                System.out.println(&quot;Thread 2: Locked account A&quot;);
+                accountABalance += amount;
+                System.out.println(&quot;Transfer from B to A complete&quot;);
+            }
+        }
+    }
+}
+</code></pre>
+<p>Here's what happens when this deadlock occurs:</p>
+<ol>
+<li>Thread 1 calls <code>transferAtoB()</code> and acquires the lock on account A</li>
+<li>Thread 2 calls <code>transferBtoA()</code> and acquires the lock on account B</li>
+<li>Thread 1 tries to lock account B, but it's already locked by Thread 2 → blocks</li>
+<li>Thread 2 tries to lock account A, but it's already locked by Thread 1 → blocks</li>
+<li>Both threads are now waiting for resources held by the other.</li>
+</ol>
+<p>The application appears to freeze with no error message - one of the most frustrating bugs to troubleshoot. In production systems, this often manifests as an application that suddenly stops responding and requires a restart. Unless saying that your algorithm runs on O(∞) in the worst case is acceptable, you should avoid it.</p>
+<h3><a href="#preventing-deadlocks" aria-hidden="true" class="anchor" id="preventing-deadlocks"></a>Preventing Deadlocks</h3>
+<h4><a href="#1-lock-ordering" aria-hidden="true" class="anchor" id="1-lock-ordering"></a>1. Lock Ordering</h4>
+<p>Always acquire locks in the same order:</p>
+<pre><code class="language-java">public class ResourceManager {
+    private final Object resourceA = new Object();
+    private final Object resourceB = new Object();
+    
+    public void process1() {
+        synchronized(resourceA) {
+            synchronized(resourceB) {
+                // do something with both resources
+            }
+        }
+    }
+    
+    public void process2() {
+        synchronized(resourceA) { // now acquiring in same order as process1
+            synchronized(resourceB) {
+                // do something with both resources
+            }
+        }
+    }
+}
+</code></pre>
+<h4><a href="#2-using-trylock-with-timeout" aria-hidden="true" class="anchor" id="2-using-trylock-with-timeout"></a>2. Using tryLock with Timeout</h4>
+<p>The <code>Lock</code> interface provides <code>tryLock()</code> with timeout to avoid indefinite waiting:</p>
+<pre><code class="language-java">import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.TimeUnit;
+
+public class ResourceManager {
+    private final Lock lockA = new ReentrantLock();
+    private final Lock lockB = new ReentrantLock();
+    
+    public void process() throws InterruptedException {
+        boolean gotBothLocks = false;
+        
+        try {
+            boolean gotLockA = lockA.tryLock(1, TimeUnit.SECONDS);
+            if (gotLockA) {
+                try {
+                    boolean gotLockB = lockB.tryLock(1, TimeUnit.SECONDS);
+                    gotBothLocks = gotLockB;
+                } finally {
+                    if (!gotBothLocks) {
+                        lockA.unlock(); // release first lock if couldn't get second
+                    }
+                }
+            }
+            
+            if (gotBothLocks) {
+                // do something with both resources
+            } else {
+                log.warn(&quot;Failed to acquire locks, will retry later&quot;);
+            }
+        } finally {
+            if (gotBothLocks) {
+                lockB.unlock();
+                lockA.unlock();
+            }
+        }
+    }
+}
+</code></pre>
+<h4><a href="#3-using-javautilconcurrent-classes" aria-hidden="true" class="anchor" id="3-using-javautilconcurrent-classes"></a>3. Using java.util.concurrent Classes</h4>
+<p>Higher-level concurrency utilities often handle lock management internally (remember the inversion of control):</p>
+<pre><code class="language-java">import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class ResourceManager {
+    private final ExecutorService executor = Executors.newFixedThreadPool(10);
+    private final ConcurrentHashMap&lt;String, Resource&gt; resources = new ConcurrentHashMap&lt;&gt;();
+    
+    // no explicit locking needed for many operations
+}
+</code></pre>
+<h2><a href="#thread-pool-configuration-issues" aria-hidden="true" class="anchor" id="thread-pool-configuration-issues"></a>Thread Pool Configuration Issues</h2>
+<h3><a href="#common-thread-pool-problems" aria-hidden="true" class="anchor" id="common-thread-pool-problems"></a>Common Thread Pool Problems</h3>
+<p>Java applications often use thread pools via ExecutorService. Incorrect configuration can lead to:</p>
+<ol>
+<li><strong>Thread starvation</strong>: When all threads are busy and tasks queue up</li>
+<li><strong>Resource exhaustion</strong>: When too many threads consume too much memory</li>
+</ol>
+<h3><a href="#thread-pool-best-practices" aria-hidden="true" class="anchor" id="thread-pool-best-practices"></a>Thread Pool Best Practices</h3>
+<h4><a href="#1-size-thread-pools-appropriately" aria-hidden="true" class="anchor" id="1-size-thread-pools-appropriately"></a>1. Size Thread Pools Appropriately</h4>
+<p>For CPU-bound tasks:</p>
+<pre><code class="language-java">int cpuCores = Runtime.getRuntime().availableProcessors();
+ExecutorService executor = Executors.newFixedThreadPool(cpuCores);
+</code></pre>
+<p>For I/O-bound tasks (things that wait a lot):</p>
+<pre><code class="language-java">// I/O bound tasks can benefit from more threads
+// (because threads spend most of their time waiting)
+int threadPoolSize = Runtime.getRuntime().availableProcessors() * 2;
+ExecutorService executor = Executors.newFixedThreadPool(threadPoolSize);
+</code></pre>
+<h4><a href="#2-use-different-thread-pools-for-different-types-of-tasks" aria-hidden="true" class="anchor" id="2-use-different-thread-pools-for-different-types-of-tasks"></a>2. Use Different Thread Pools for Different Types of Tasks</h4>
+<pre><code class="language-java">// image the scenario you make your ferrari wait behind a garbage truck
+ExecutorService cpuBoundTasks = Executors.newFixedThreadPool(cpuCores);
+ExecutorService ioBoundTasks = Executors.newFixedThreadPool(cpuCores * 2);
+</code></pre>
+<h4><a href="#3-use-bounded-queues" aria-hidden="true" class="anchor" id="3-use-bounded-queues"></a>3. Use Bounded Queues</h4>
+<p>Choosing the right queue type and size is crucial for thread pool performance. The queue acts as a buffer between task submission and execution, but an unbounded queue can lead to OutOfMemoryError if tasks are submitted faster than they can be processed.</p>
+<p>There are three main queuing strategies:</p>
+<ol>
+<li>
+<p><strong>Direct handoff</strong> (SynchronousQueue): Tasks are handed directly to threads. If no thread is available, the task submission is rejected. Best for CPU-intensive tasks where queuing would just add overhead.</p>
+</li>
+<li>
+<p><strong>Bounded queue</strong> (ArrayBlockingQueue): Provides a buffer but with a limit, preventing resource exhaustion. Best for mixed workloads where some queuing helps smooth out bursts of requests.</p>
+</li>
+<li>
+<p><strong>Unbounded queue</strong> (LinkedBlockingQueue): Can grow indefinitely. Only appropriate when task submission rate is naturally limited or when you have infinite memory (spoiler: you don't).</p>
+</li>
+</ol>
+<p>Here's how to implement a bounded queue with appropriate rejection handling:</p>
+<pre><code class="language-java">int corePoolSize = 5;
+int maxPoolSize = 10;
+long keepAliveTime = 60L;
+BlockingQueue&lt;Runnable&gt; workQueue = new ArrayBlockingQueue&lt;&gt;(100);
+
+ThreadPoolExecutor executor = new ThreadPoolExecutor(
+    corePoolSize, 
+    maxPoolSize, 
+    keepAliveTime, 
+    TimeUnit.SECONDS, 
+    workQueue,
+    new ThreadPoolExecutor.CallerRunsPolicy()); // saturation policy
+</code></pre>
+<p>The rejection/saturation policy determines what happens when both the queue and the thread pool are full:</p>
+<ul>
+<li><strong>CallerRunsPolicy</strong>: Executes the task in the caller's thread (as shown above)</li>
+<li><strong>AbortPolicy</strong>: Throws RejectedExecutionException (default)</li>
+<li><strong>DiscardPolicy</strong>: Silently drops the task</li>
+<li><strong>DiscardOldestPolicy</strong>: Drops the oldest queued task to make room</li>
+</ul>
+<p>Goetz recommends the CallerRunsPolicy as it provides a form of throttling - when the system is overloaded, the submitting threads start executing tasks themselves, naturally slowing down the submission rate.</p>
+<p>A real-world sizing example:</p>
+<h5><a href="#scenario-1-order-processor-with-unbounded-queue" aria-hidden="true" class="anchor" id="scenario-1-order-processor-with-unbounded-queue"></a>Scenario 1: Order Processor with Unbounded Queue</h5>
+<pre><code class="language-java">@Service
+public class OrderProcessor {
+    private final ExecutorService executor = new ThreadPoolExecutor(
+        10, 10, 60L, TimeUnit.SECONDS,
+        new LinkedBlockingQueue&lt;&gt;() // unbounded queue - DANGER!
+    );
+    
+    public void processOrder(Order order) {
+        executor.submit(() -&gt; {
+            // process order (validate payment, reserve inventory, etc)
+            // takes ~500ms per order
+        });
+    }
+}
+</code></pre>
+<p><strong>Problem</strong>: During high-load events like Black Friday:</p>
+<ol>
+<li>Thousands of orders arrive per second</li>
+<li>All orders get accepted into memory</li>
+<li>Java heap grows indefinitely</li>
+<li>Eventually: OutOfMemoryError</li>
+</ol>
+<h5><a href="#scenario-2-order-processor-with-bounded-queue" aria-hidden="true" class="anchor" id="scenario-2-order-processor-with-bounded-queue"></a>Scenario 2: Order Processor with Bounded Queue</h5>
+<pre><code class="language-java">@Service
+public class OrderProcessor {
+    private static final int CORE_THREADS = 10;
+    private static final int MAX_THREADS = 20;
+
+    // based on available memory 
+    //(maybe in the future I can write how to calculate and monitor it based on the container you're using)
+    private static final int QUEUE_CAPACITY = 500; 
+    
+    private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
+        CORE_THREADS,
+        MAX_THREADS,
+        60L, TimeUnit.SECONDS,
+        new ArrayBlockingQueue&lt;&gt;(QUEUE_CAPACITY),
+        new ThreadPoolExecutor.CallerRunsPolicy()
+    );
+    
+    public void processOrder(Order order) {
+        executor.submit(() -&gt; {
+            // do processing, but now with backpressure
+        });
+    }
+
+}
+</code></pre>
+<p>With this configuration:</p>
+<ol>
+<li>First 500 excess tasks go to the queue</li>
+<li>When queue fills, CallerRunsPolicy makes the caller thread execute the task</li>
+<li>This naturally slows down upstream systems (API Gateway, Load Balancer)</li>
+<li>System remains stable even under extreme load</li>
+</ol>
+<h2><a href="#conclusion" aria-hidden="true" class="anchor" id="conclusion"></a>Conclusion</h2>
+<p>Of course that compared to Brian Goetz and Doug Lea (who literally wrote the concurrency library in Java), I'm just a protozoan on their shoe. What I've shared here is merely a light breath on the most important concepts. To truly master these topics, I strongly recommend reading Goetz's &quot;Java Concurrency in Practice&quot; - it's the definitive resource that helped me understand these complex concepts.</p>
+<p>But to sum everything up, when designing java multithreaded applications always favor simplicity and proven patterns over complex custom solutions. Java's concurrency utilities in the <code>java.util.concurrent</code> package, combined with a solid understanding of the principles I've covered in this post, will help you build robust, thread-safe applications.</p>
+<p>As Goetz states: <em>&quot;Write thread-safe code, but don't use more synchronization than necessary.&quot;</em> This balance between safety and performance is the key to effective concurrent programming - a lesson I'm still learning every day :)</p>
+<h2><a href="#references" aria-hidden="true" class="anchor" id="references"></a>References</h2>
+<ul>
+<li>
+<p>Lu, S., Park, S., Seo, E., &amp; Zhou, Y. &quot;Learning from mistakes: a comprehensive study on real world concurrency bug characteristics.&quot; ACM SIGARCH Computer Architecture News, 36(1), 2008. <a href="https://dl.acm.org/doi/10.1145/1346281.1346323">https://dl.acm.org/doi/10.1145/1346281.1346323</a>.</p>
+</li>
+<li>
+<p>Manson, J., Pugh, W., &amp; Adve, S. V. &quot;The Java memory model.&quot; ACM SIGPLAN Notices, 40(1), 2005. <a href="https://dl.acm.org/doi/10.1145/1040305.1040336">https://dl.acm.org/doi/10.1145/1040305.1040336</a>.</p>
+</li>
+<li>
+<p>Goetz, B., Peierls, T., Bloch, J., Bowbeer, J., Holmes, D., &amp; Lea, D. <em>Java Concurrency in Practice</em>. Addison-Wesley Professional, 2006. <a href="https://github.com/AngelSanchezT/books-1/blob/master/concurrency/Java%20Concurrency%20in%20Practice.pdf">https://github.com/AngelSanchezT/books-1/blob/master/concurrency/Java%20Concurrency%20in%20Practice.pdf</a>.</p>
+</li>
+</ul>
+<hr />
+<!-- Content Injected to every content markdown footer -->
+]]></content:encoded></item></channel></rss>

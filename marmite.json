@@ -1,10 +1,10 @@
 {
   "marmite_version": "0.2.3",
-  "posts": 4,
+  "posts": 6,
   "pages": 1,
-  "generated_at": "2025-03-07 10:26:49.378355800 -03:00",
-  "timestamp": 1741354009,
-  "elapsed_time": 0.0510656,
+  "generated_at": "2025-04-09 14:04:22.663382300 -03:00",
+  "timestamp": 1744218262,
+  "elapsed_time": 0.0908589,
   "config": {
     "name": "Pedro Lopes",
     "tagline": "Comput. Sci.",

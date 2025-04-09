@@ -66,17 +66,17 @@ If you've been programming in Kotlin or Java, you're probably used to handling e
 
     <link rel="alternate" type="application/rss+xml" title="index" href="index.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: kotlin" href="tag-kotlin.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: microservices" href="tag-microservices.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: software-architecture" href="tag-software-architecture.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: exception" href="tag-exception.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: functional-programming" href="tag-functional-programming.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: lambda" href="tag-lambda.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: distributed-systems" href="tag-distributed-systems.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: haskell" href="tag-haskell.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: garbage-collector" href="tag-garbage-collector.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: aws" href="tag-aws.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: technical-debt" href="tag-technical-debt.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: software-architecture" href="tag-software-architecture.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: functional-programming" href="tag-functional-programming.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: aws" href="tag-aws.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: lambda" href="tag-lambda.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: microservices" href="tag-microservices.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: java" href="tag-java.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: jvm" href="tag-jvm.rss">
     <link rel="alternate" type="application/rss+xml" title="author: pedrohbl_" href="author-pedrohbl.rss">
@@ -165,7 +165,7 @@ If you've been programming in Kotlin or Java, you're probably used to handling e
 
 
 <span class="content-date">
-    <small> Mar  3, 2025 - &#10710; 14 min</small>
+    <small> Mar  3, 2025 - &#10710; 15 min</small>
 </span>
 
 </div>
@@ -353,15 +353,15 @@ I'd recommend this lecture if you want to dive deeper in some o these topics or 
 </li>
 <li>
 <p><strong>Wrap logic and adapt it:</strong> When you're interfacing with legacy or external APIs that throw exceptions for conditions that aren't logic errors, wrap these calls. Create functions that transform exceptions into <code>Result</code> types, giving your API users a cleaner, more predictable interface:</p>
-<pre><code class="language-kotlin">  fun fetchUserData(userId: Int): Result&lt;UserData, NetworkError&gt; {
-      return try {
-          Result.success(api.getUserData(userId))
-      } catch (e: IOException) {
-          Result.failure(NetworkError.IOError(e.message ?: &quot;Network error&quot;))
-      } catch (e: TimeoutException) {
-          Result.failure(NetworkError.Timeout(&quot;Request timed out&quot;))
-      }
-  }
+<pre><code class="language-kotlin">  fun fetchUserData(userId: Int): Result&lt;UserData, NetworkError&gt; =
+      runCatching { api.getUserData(userId) }
+          .mapError {
+              when (it) {
+                  is IOException -&gt; NetworkError.IOError(it.message ?: &quot;Network error&quot;)
+                  is TimeoutException -&gt; NetworkError.Timeout(&quot;Request timed out&quot;)
+                  else -&gt; throw it // ou mapear para outro erro genérico, se necessário
+              }
+          }
 
   // Where NetworkError could be defined as:
   sealed class NetworkError {
@@ -545,7 +545,7 @@ I'd recommend this lecture if you want to dive deeper in some o these topics or 
 
 
 <span class="content-date">
-    <small> Mar  3, 2025 - &#10710; 14 min</small>
+    <small> Mar  3, 2025 - &#10710; 15 min</small>
 </span>
 
         </div>
