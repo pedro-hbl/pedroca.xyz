@@ -7,22 +7,21 @@
     <meta name="color-scheme" content="light dark" />
     <meta name="generator" content="Marmite" />
     
-<meta property="og:title" content="AWS Lambda: Cold Starts, Infrastructure, and Enterprise Applications">
+<meta property="og:title" content="date: 2025-04-09">
 
 <meta property="og:description" content="
+ **_NOTE:_** This post is still under construction come back later please
 
-NOTE: This post is still under construction come back later please
 
-Introduction
-When AWS introduc...">
+## Introduction
 
-<meta property="og:image" content="/media/lambda/lambda_execution_life.png">
+When A...">
 
 
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Pedro Lopes">
 
-<meta property="article:published_time" content=" 2025-04-09T00:00:00+00:00">
+<meta property="article:published_time" content=" 2025-03-20T00:00:00+00:00">
 
 
 
@@ -35,12 +34,14 @@ When AWS introduc...">
         "@id": "/understanding-lambdas.html"
     },
     "url": "/understanding-lambdas.html",
-    "headline": "AWS Lambda: Cold Starts, Infrastructure, and Enterprise Applications",
-    "description": "NOTE: This post is still under construction come back later please
+    "headline": "date: 2025-04-09",
+    "description": " **_NOTE:_** This post is still under construction come back later please
 
-Introduction
-When AWS introduced Lambda in 2014, it fundamentally change...",
-    "image": "/media/lambda/lambda_execution_life.png",
+
+## Introduction
+
+When AWS introduced Lambda in 2014, it fundamen...",
+    
     "author": {
         "@type": "Person",
         "name": "Pedro Lopes",
@@ -54,12 +55,12 @@ When AWS introduced Lambda in 2014, it fundamentally change...",
             "url": "/"
         }
     },
-    "datePublished": "2025-04-09T00:00:00+00:00"
+    "datePublished": "2025-03-20T00:00:00+00:00"
 }
 </script>
 
 
-    <title>AWS Lambda: Cold Starts, Infrastructure, and Enterprise Applications | Pedro Lopes</title>
+    <title>date: 2025-04-09 | Pedro Lopes</title>
     <link rel="stylesheet" type="text/css" href="./static/pico.min.css">
     <link rel="stylesheet" type="text/css" href="./static/marmite.css">
     
@@ -72,28 +73,33 @@ When AWS introduced Lambda in 2014, it fundamentally change...",
 
 
     <link rel="alternate" type="application/rss+xml" title="index" href="index.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: lambda" href="tag-lambda.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: kotlin" href="tag-kotlin.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: java" href="tag-java.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: aws" href="tag-aws.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: fintech" href="tag-fintech.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: immutability" href="tag-immutability.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: database" href="tag-database.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: functional-programming" href="tag-functional-programming.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: haskell" href="tag-haskell.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: cold-starts" href="tag-cold-starts.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: spring" href="tag-spring.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: software-architecture" href="tag-software-architecture.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: jvm" href="tag-jvm.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: infrastructure" href="tag-infrastructure.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: distributed-systems" href="tag-distributed-systems.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: garbage-collector" href="tag-garbage-collector.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: microservices" href="tag-microservices.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: multithreading" href="tag-multithreading.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: distributed-systems" href="tag-distributed-systems.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: best-practices" href="tag-best-practices.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: audit-trail" href="tag-audit-trail.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: versioning" href="tag-versioning.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: lambda" href="tag-lambda.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: microservices" href="tag-microservices.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: exception" href="tag-exception.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: jvm" href="tag-jvm.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: technical-debt" href="tag-technical-debt.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: spring" href="tag-spring.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: banking" href="tag-banking.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: aws" href="tag-aws.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: software-architecture" href="tag-software-architecture.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: haskell" href="tag-haskell.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: concurrency" href="tag-concurrency.rss">
     <link rel="alternate" type="application/rss+xml" title="tag: synchronization" href="tag-synchronization.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: serverless" href="tag-serverless.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: technical-debt" href="tag-technical-debt.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: exception" href="tag-exception.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: best-practices" href="tag-best-practices.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: data-integrity" href="tag-data-integrity.rss">
+    <link rel="alternate" type="application/rss+xml" title="tag: blockchain" href="tag-blockchain.rss">
     <link rel="alternate" type="application/rss+xml" title="author: pedrohbl_" href="author-pedrohbl.rss">
     <link rel="alternate" type="application/rss+xml" title="year: 2025" href="archive-2025.rss">
     
@@ -175,12 +181,12 @@ When AWS introduced Lambda in 2014, it fundamentally change...",
 
 
 <div class="content-title" id="title">
-    <h1>AWS Lambda: Cold Starts, Infrastructure, and Enterprise Applications</h1> 
+    <h1>date: 2025-04-09</h1> 
     
 
 
 <span class="content-date">
-    <small> Apr  9, 2025 - &#10710; 10 min</small>
+    <small> Mar 20, 2025 - &#10710; 10 min</small>
 </span>
 
 </div>
@@ -188,40 +194,62 @@ When AWS introduced Lambda in 2014, it fundamentally change...",
   
 
   <div class="content-html"><!-- Content Injected to every content markdown header -->
-<blockquote>
-<p><strong><em>NOTE:</em></strong> This post is still under construction come back later please</p>
-</blockquote>
-<h2><a href="#introduction" aria-hidden="true" class="anchor" id="introduction"></a>Introduction</h2>
-<p>When AWS introduced Lambda in 2014, it fundamentally changed how developers think about building and deploying applications. The serverless paradigm promised freedom from infrastructure management, automatic scaling, and pay-per-use pricing. But beneath this simple abstraction lies a complex, fascinating infrastructure that impacts application performance, reliability, and cost-effectiveness.</p>
-<p>In this post, I'll take you deep into the world of AWS Lambda, focusing on three critical aspects that aren't widely understood:</p>
-<ol>
-<li><strong>Cold starts and AWS's hidden warming mechanisms</strong></li>
-<li><strong>The underlying infrastructure that powers Lambda functions</strong></li>
-<li><strong>Real-world enterprise use cases and why infrastructure knowledge matters</strong></li>
-</ol>
-<p>Understanding these elements will help you make better architectural decisions, optimize performance, and build more reliable serverless applications. Let's dive in.</p>
-<hr />
-<h2><a href="#cold-starts-awss-secret-warming-mechanism" aria-hidden="true" class="anchor" id="cold-starts-awss-secret-warming-mechanism"></a>Cold Starts: AWS's Secret Warming Mechanism</h2>
-<p>Cold starts remain one of the most discussed challenges of serverless computing. When a Lambda function is invoked after being idle or for the first time, AWS must initialize an execution environment, load your code, and start the runtime. This initialization process adds latency—anywhere from 100ms to several seconds—before your function can begin processing the request.</p>
-<h3><a href="#the-traditional-cold-start-model" aria-hidden="true" class="anchor" id="the-traditional-cold-start-model"></a>The Traditional Cold Start Model</h3>
-<p>The standard understanding of Lambda cold starts looks like this:</p>
-<p><figure><img src="/media/lambda/lambda_execution_life.png" alt="Lambda Cold Start Traditional Model" /></figure></p>
-<p>This diagram from AWS documentation shows the initialization phase, which includes:</p>
-<ol>
-<li>Downloading your function code</li>
-<li>Starting the execution environment</li>
-<li>Running any initialization code outside the handler</li>
-<li>Finally executing your handler code</li>
-</ol>
-<p>According to AWS, &quot;cold starts typically occur in under 1% of invocations&quot; in production workloads. However, this seemingly small percentage can significantly impact real user experience, especially in latency-sensitive applications. Just imagine being Netflix with 220+ million subscribers - that 1% would mean +/- 2 million people experiencing delays... I'm sure your shareholders would be totally fine with that .-.</p>
-<h3><a href="#proactive-initialization-the-hidden-mechanism" aria-hidden="true" class="anchor" id="proactive-initialization-the-hidden-mechanism"></a>Proactive Initialization: The Hidden Mechanism</h3>
-<p>In 2023, AWS updated their documentation with the following statement:</p>
-<blockquote>
-<p>&quot;For functions using unreserved (on-demand) concurrency, Lambda may proactively initialize a function instance, even if there's no invocation.&quot;</p>
-</blockquote>
-<p>This statement, documented by AWS in response to research by AWS Serverless Hero AJ Stuyvenberg (<a href="https://aaronstuyvenberg.com/">Stuyvenberg website</a> I really recommend his lectures btw), revealed that Lambda performs proactive warming of functions—without developers having to implement workarounds or pay for Provisioned Concurrency. Stuyvenberg's research showed that between 50-85% of Lambda initializations can be proactive rather than true cold starts.</p>
-<p>Here's what happens during proactive initialization:</p>
-<p><figure><img src="https://i.ibb.co/K6hkvBC/proactive-init.png" alt="Proactive Initialization" /></figure></p>
+<!-- ---
+date: 2025-04-09
+tags: aws,lambda,serverless,infrastructure,cold-starts
+---
+
+# AWS Lambda: Cold Starts, Infrastructure, and Enterprise Applications
+
+
+> **_NOTE:_** This post is still under construction come back later please
+
+
+## Introduction
+
+When AWS introduced Lambda in 2014, it fundamentally changed how developers think about building and deploying applications. The serverless paradigm promised freedom from infrastructure management, automatic scaling, and pay-per-use pricing. But beneath this simple abstraction lies a complex, fascinating infrastructure that impacts application performance, reliability, and cost-effectiveness.
+
+In this post, I'll take you deep into the world of AWS Lambda, focusing on three critical aspects that aren't widely understood:
+
+1. **Cold starts and AWS's hidden warming mechanisms**
+2. **The underlying infrastructure that powers Lambda functions**
+3. **Real-world enterprise use cases and why infrastructure knowledge matters**
+
+Understanding these elements will help you make better architectural decisions, optimize performance, and build more reliable serverless applications. Let's dive in.
+
+---
+
+## Cold Starts: AWS's Secret Warming Mechanism
+
+Cold starts remain one of the most discussed challenges of serverless computing. When a Lambda function is invoked after being idle or for the first time, AWS must initialize an execution environment, load your code, and start the runtime. This initialization process adds latency—anywhere from 100ms to several seconds—before your function can begin processing the request.
+
+### The Traditional Cold Start Model
+
+The standard understanding of Lambda cold starts looks like this:
+
+![Lambda Cold Start Traditional Model](/media/lambda/lambda_execution_life.png)
+
+This diagram from AWS documentation shows the initialization phase, which includes:
+
+1. Downloading your function code
+2. Starting the execution environment
+3. Running any initialization code outside the handler
+4. Finally executing your handler code
+
+According to AWS, "cold starts typically occur in under 1% of invocations" in production workloads. However, this seemingly small percentage can significantly impact real user experience, especially in latency-sensitive applications. Just imagine being Netflix with 220+ million subscribers - that 1% would mean +/- 2 million people experiencing delays... I'm sure your shareholders would be totally fine with that .-.
+
+### Proactive Initialization: The Hidden Mechanism
+
+In 2023, AWS updated their documentation with the following statement:
+
+> "For functions using unreserved (on-demand) concurrency, Lambda may proactively initialize a function instance, even if there's no invocation."
+
+This statement, documented by AWS in response to research by AWS Serverless Hero AJ Stuyvenberg ([Stuyvenberg website](https://aaronstuyvenberg.com/) I really recommend his lectures btw), revealed that Lambda performs proactive warming of functions—without developers having to implement workarounds or pay for Provisioned Concurrency. Stuyvenberg's research showed that between 50-85% of Lambda initializations can be proactive rather than true cold starts.
+
+Here's what happens during proactive initialization:
+
+![Proactive Initialization](https://i.ibb.co/K6hkvBC/proactive-init.png)
+
 <!-- The function is initialized without a pending invocation, and remains warm and ready to process requests. When a request arrives, it's processed immediately without the cold start delay—similar to Provisioned Concurrency, but without the additional cost.
 
 ### Detecting Proactive Initialization
@@ -473,7 +501,7 @@ By staying informed about Lambda's inner workings, you'll be better positioned t
 5. Awad, J. W. (2024). "AWS Lambda Architecture Deep Dive." Medium. Retrieved from https://medium.com/@joudwawad/aws-lambda-architecture-deep-dive-bef856b9b2c4
 6. AWS. (2024). "AWS Lambda Customer Case Studies." Retrieved from https://aws.amazon.com/lambda/resources/customer-case-studies/
 
-What aspects of Lambda's infrastructure have you found most impactful in your applications? Have you experienced the benefits of proactive initialization? I'd love to hear about your experiences in the comments.  -->
+What aspects of Lambda's infrastructure have you found most impactful in your applications? Have you experienced the benefits of proactive initialization? I'd love to hear about your experiences in the comments.  --> -->
 <!-- Content Injected to every content markdown footer -->
 </div>
   
@@ -507,22 +535,12 @@ What aspects of Lambda's infrastructure have you found most impactful in your ap
 
 
 <span class="content-date">
-    <small> Apr  9, 2025 - &#10710; 10 min</small>
+    <small> Mar 20, 2025 - &#10710; 10 min</small>
 </span>
 
         </div>
 
         <ul class="content-tags">
-          
-          <li><a href="./tag-aws.html">aws</a></li>
-          
-          <li><a href="./tag-lambda.html">lambda</a></li>
-          
-          <li><a href="./tag-serverless.html">serverless</a></li>
-          
-          <li><a href="./tag-infrastructure.html">infrastructure</a></li>
-          
-          <li><a href="./tag-cold-starts.html">cold-starts</a></li>
           
         </ul>
       </div>
@@ -533,23 +551,6 @@ What aspects of Lambda's infrastructure have you found most impactful in your ap
 
 
 
-
-  
-  
-  
-  
-  <article>
-    Related aws content
-    <ul>
-      
-      
-      
-      
-      <li><a href="./lambda-throttling.html">Understanding and Mitigating AWS Lambda Throttling in High-Concurrency Workloads</a></li>
-      
-    </ul>
-  </article>
-  
 
 
 
