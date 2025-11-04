@@ -1,189 +1,110 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/x-icon" href="./static/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="light dark" />
-    <meta name="generator" content="Marmite" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light" />
+    <meta name="generator" content="Marmite Retro Edition" />
+
+    <title>Common multithreading issues in Java - Pedro Lopes</title>
+
     
 <meta property="og:title" content="Common multithreading issues in Java">
-
-<meta property="og:description" content="
-Introduction
-Multithreading in Java enables concurrent execution of multiple threads within a singl...">
-
-<meta property="og:image" content="/media/multithreading/wilt.jpg">
-
-
+<meta property="og:description" content=" Introduction Multithreading in Java enables concurrent execution of multiple threads within a singl...">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Pedro Lopes">
 
-<meta property="article:published_time" content=" 2025-04-02T00:00:00+00:00">
+
+<meta property="article:author" content="Pedro Lopes">
 
 
 
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "/java-spring-multithreading-pitfalls.html"
-    },
-    "url": "/java-spring-multithreading-pitfalls.html",
-    "headline": "Common multithreading issues in Java",
-    "description": "Introduction
-Multithreading in Java enables concurrent execution of multiple threads within a single application, potentially improving perf...",
-    "image": "/media/multithreading/wilt.jpg",
-    "author": {
-        "@type": "Person",
-        "name": "Pedro Lopes",
-        "url": "/author-pedrohbl_.html",
-    },
-    "publisher": {
-        "@type": "Organization",
-        "name": "Pedro Lopes",
-        "logo": {
-            "@type": "ImageObject",
-            "url": "/"
-        }
-    },
-    "datePublished": "2025-04-02T00:00:00+00:00"
-}
-</script>
+    <!-- Retro Theme Styles -->
+    <link rel="stylesheet" href="./static/css/retro-theme.css">
+    <link rel="stylesheet" href="./static/css/windows95.css">
+    <link rel="stylesheet" href="./static/css/curve-inspired.css">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./static/favicon.ico">
 
-    <title>Common multithreading issues in Java | Pedro Lopes</title>
-    <link rel="stylesheet" type="text/css" href="./static/pico.min.css">
-    <link rel="stylesheet" type="text/css" href="./static/marmite.css">
-    
-    <link rel="stylesheet" type="text/css" href="./static/colorschemes/iceberg.css">
-    
-    <link rel="stylesheet" type="text/css" href="./static/custom.css">
-    
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css" id="highlightjs-theme" />
-
-
-
-    <link rel="alternate" type="application/rss+xml" title="index" href="index.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: lambda" href="tag-lambda.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: java" href="tag-java.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: kotlin" href="tag-kotlin.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: aws" href="tag-aws.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: synchronization" href="tag-synchronization.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: distributed-systems" href="tag-distributed-systems.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: spring" href="tag-spring.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: microservices" href="tag-microservices.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: best-practices" href="tag-best-practices.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: haskell" href="tag-haskell.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: software-architecture" href="tag-software-architecture.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: functional-programming" href="tag-functional-programming.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: technical-debt" href="tag-technical-debt.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: garbage-collector" href="tag-garbage-collector.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: cold-starts" href="tag-cold-starts.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: jvm" href="tag-jvm.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: infrastructure" href="tag-infrastructure.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: concurrency" href="tag-concurrency.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: exception" href="tag-exception.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: serverless" href="tag-serverless.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: multithreading" href="tag-multithreading.rss">
-    <link rel="alternate" type="application/rss+xml" title="author: pedrohbl_" href="author-pedrohbl.rss">
-    <link rel="alternate" type="application/rss+xml" title="year: 2025" href="archive-2025.rss">
-    
-
-    
-    
     
 </head>
 <body>
-    
-    <main class="container">
-        
-        <header class="header-content">
-            <nav class="header-nav">
-                <ul class="header-name">
-                    <li>
-                        <hgroup>
-                            <h2><a href="./" class="contrast">Pedro Lopes</a></h2>
-                             <p>Comput. Sci.</p> 
-                        </hgroup>
-                    </li>
-                </ul>
-                <button id="menu-toggle" class="hamburger">&#9776;</button>
-                
-                <ul class="header-menu" id="header-menu">
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./tags.html">Tags</a>
-                        
-                    </li>
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./archive.html">Archive</a>
-                        
-                    </li>
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./authors.html">Authors</a>
-                        
-                    </li>
-                    
-                    <li><span class="theme-toggle secondary" title="dark mode">&#9789;</span></li>
-                    
-                    <li><a href="#" id="search-toggle" class="secondary" title="Search (Ctrl + Shift + F)"> <span class="search-txt">Search</span><span class="search-magnifier"></span></a></li>
-                    
-                    <div class="underline"></div>
-                </ul>
-            </nav>
-            
-            <div class="marmite-background-overlay" id="overlay-close"></div>
-            <div class="marmite-search-bar hidden">
-                <span></span>
-                <button class="marmite-close-button" id="search-close">X</button>
-                <input placeholder="Search" id="marmite-search-input" />
-                <div class="marmite-search-bar-result">
-                    <ul id="marmite-search-bar-result"></ul>
+    <!-- Desktop with Retro Background -->
+    <div class="desktop-wrapper">
+        <!-- Main Window Chrome -->
+        <div class="window-chrome">
+            <!-- Title Bar -->
+            <div class="title-bar">
+                <span class="title-text">
+                    Pedro Lopes - Common multithreading issues in Java
+                </span>
+                <div class="window-controls">
+                    <button class="btn-minimize" aria-label="Minimize">_</button>
+                    <button class="btn-maximize" aria-label="Maximize">□</button>
+                    <button class="btn-close" aria-label="Close">×</button>
                 </div>
             </div>
+
+            <!-- Menu Bar / Navigation -->
+            <nav class="menu-bar">
+                <a href="https://pedroca.xyz">Home</a>
+                
+                <a href="tags.html">Tags</a>
+                
+                <a href="archive.html">Archive</a>
+                
+                <a href="authors.html">Authors</a>
+                
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="content-area">
+                
+<article class="window-panel">
+    <!-- Post Header -->
+    <header class="post-header">
+        <h1 class="post-title">Common multithreading issues in Java</h1>
+
+        <div class="post-meta">
             
-        </header>
-        
-        <section class="main-content">
+
+            
+            <span class="post-author">
+                👤 by <a href="author-pedrohbl_.html">Pedro Lopes</a>
+            </span>
             
 
+            
+            <div class="post-tags">
+                
+                
+                <a href="tag-java.html" class="retro-badge">java</a>
+                
+                
+                <a href="tag-spring.html" class="retro-badge">spring</a>
+                
+                
+                <a href="tag-multithreading.html" class="retro-badge">multithreading</a>
+                
+                
+                <a href="tag-concurrency.html" class="retro-badge">concurrency</a>
+                
+                
+                <a href="tag-synchronization.html" class="retro-badge">synchronization</a>
+                
+                
+                <a href="tag-best-practices.html" class="retro-badge">best-practices</a>
+                
+            </div>
+            
+        </div>
+    </header>
 
-
-<article>
-
-  
-
-
-<div class="content-title" id="title">
-    <h1>Common multithreading issues in Java</h1> 
-    
-
-
-<span class="content-date">
-    <small> Apr  2, 2025 - &#10710; 25 min</small>
-</span>
-
-</div>
-
-  
-
-  <div class="content-html"><!-- Content Injected to every content markdown header -->
-<h2><a href="#introduction" aria-hidden="true" class="anchor" id="introduction"></a>Introduction</h2>
+    <!-- Post Content -->
+    <div class="post-content">
+        <p>Apr 2, 2025 - ⧖ 25 min</p>
+<h2 id="introduction">Introduction</h2>
 <p>Multithreading in Java enables concurrent execution of multiple threads within a single application, potentially improving performance and resource utilization. However, improper thread management can cause a lot of bugs that only manifest under specific conditions.</p>
 <p>In this post, I'll walk through some of the multithreading pitfalls I've encountered, along with some solutions and usecases/anti-patterns to help you avoid the same mistakes I've mapped here, in the following order:</p>
 <ol>
@@ -195,23 +116,24 @@ Multithreading in Java enables concurrent execution of multiple threads within a
 <blockquote>
 <p><strong><em>NOTE:</em></strong> Maybe in a future post, I'll cover Spring-specific multithreading issues like @Async limitations, transaction boundaries, and event processing.*</p>
 </blockquote>
-<h2><a href="#race-conditions" aria-hidden="true" class="anchor" id="race-conditions"></a>Race Conditions</h2>
-<h3><a href="#what-are-race-conditions" aria-hidden="true" class="anchor" id="what-are-race-conditions"></a>What Are Race Conditions?</h3>
+<h2 id="race-conditions">Race Conditions</h2>
+<h3 id="what-are-race-conditions">What Are Race Conditions?</h3>
 <p>A race condition occurs when multiple threads access and modify shared data concurrently, leading to unpredictable behavior. The outcome depends on thread execution timing, making it difficult to reproduce and debug. According to a study published in the IEEE Transactions on Software Engineering, race conditions account for approximately 29% of all concurrency bugs in production systems [1]. In my experience, they account for about 99% of my hair lost.</p>
-<h3><a href="#example" aria-hidden="true" class="anchor" id="example"></a>Example</h3>
+<h3 id="example">Example</h3>
 <p>Consider a simple counter implementation:</p>
-<pre><code class="language-java">public class Counter {
-    private int count = 0;
-    
-    public void increment() {
-        count++;
-    }
-    
-    public int getCount() {
-        return count;
-    }
+<div class="codehilite"><pre><span></span><code><span class="nv">public</span><span class="w"> </span><span class="nv">class</span><span class="w"> </span><span class="nv">Counter</span><span class="w"> </span>{
+<span class="w">    </span><span class="nv">private</span><span class="w"> </span><span class="nv">int</span><span class="w"> </span><span class="nv">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="c1">;</span>
+
+<span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="nv">void</span><span class="w"> </span><span class="nv">increment</span><span class="ss">()</span><span class="w"> </span>{
+<span class="w">        </span><span class="nv">count</span><span class="o">++</span><span class="c1">;</span>
+<span class="w">    </span>}
+
+<span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="nv">int</span><span class="w"> </span><span class="nv">getCount</span><span class="ss">()</span><span class="w"> </span>{
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nv">count</span><span class="c1">;</span>
+<span class="w">    </span>}
 }
-</code></pre>
+</code></pre></div>
+
 <p>When multiple threads call <code>increment()</code> concurrently, the expected value might differ from actual results. This happens because <code>count++</code> is not atomic—it involves three operations:</p>
 <ol>
 <li>Read the current value of count</li>
@@ -219,82 +141,86 @@ Multithreading in Java enables concurrent execution of multiple threads within a
 <li>Write the new value back to count</li>
 </ol>
 <p>So basically if Trhead A and Thread B both read the initial value before either updates it, one increment will be lost.</p>
-<h3><a href="#detecting-race-conditions" aria-hidden="true" class="anchor" id="detecting-race-conditions"></a>Detecting Race Conditions</h3>
+<h3 id="detecting-race-conditions">Detecting Race Conditions</h3>
 <p>Race conditions can be detected using:</p>
 <ol>
 <li><strong>Java Thread Dumps</strong>: Analyze thread dumps when application behavior is inconsistent</li>
 <li><strong>Code Reviews</strong>: Look for shared mutable state accessed by multiple threads</li>
 <li><strong>Testing Tools</strong>: Tools like Java PathFinder, FindBugs, and JCStress can detect potential race conditions</li>
 </ol>
-<h3><a href="#solving-race-conditions-in-java" aria-hidden="true" class="anchor" id="solving-race-conditions-in-java"></a>Solving Race Conditions in Java</h3>
-<h4><a href="#1-using-synchronized-keyword" aria-hidden="true" class="anchor" id="1-using-synchronized-keyword"></a>1. Using Synchronized Keyword</h4>
-<pre><code class="language-java">public class Counter {
-    private int count = 0;
-    
-    public synchronized void increment() {
-        count++;
-    }
-    
-    public synchronized int getCount() {
-        return count;
-    }
+<h3 id="solving-race-conditions-in-java">Solving Race Conditions in Java</h3>
+<h4 id="1-using-synchronized-keyword">1. Using Synchronized Keyword</h4>
+<div class="codehilite"><pre><span></span><code><span class="nv">public</span><span class="w"> </span><span class="nv">class</span><span class="w"> </span><span class="nv">Counter</span><span class="w"> </span>{
+<span class="w">    </span><span class="nv">private</span><span class="w"> </span><span class="nv">int</span><span class="w"> </span><span class="nv">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="c1">;</span>
+
+<span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="nv">synchronized</span><span class="w"> </span><span class="nv">void</span><span class="w"> </span><span class="nv">increment</span><span class="ss">()</span><span class="w"> </span>{
+<span class="w">        </span><span class="nv">count</span><span class="o">++</span><span class="c1">;</span>
+<span class="w">    </span>}
+
+<span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="nv">synchronized</span><span class="w"> </span><span class="nv">int</span><span class="w"> </span><span class="nv">getCount</span><span class="ss">()</span><span class="w"> </span>{
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nv">count</span><span class="c1">;</span>
+<span class="w">    </span>}
 }
-</code></pre>
+</code></pre></div>
+
 <p>The <code>synchronized</code> keyword ensures that only one thread can execute the method at a time. It achieves this by acquiring an intrinsic lock (monitor) on the object instance. However, synchronization introduces overhead as threads must wait for the lock to be released (think of it as putting a bouncer at the door who only lets one person in at a time — secure, but creates a line).</p>
-<h4><a href="#2-using-atomicinteger" aria-hidden="true" class="anchor" id="2-using-atomicinteger"></a>2. Using AtomicInteger</h4>
+<h4 id="2-using-atomicinteger">2. Using AtomicInteger</h4>
 <p>Java's <code>java.util.concurrent.atomic</code> package provides thread-safe primitive types:</p>
-<pre><code class="language-java">import java.util.concurrent.atomic.AtomicInteger;
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.atomic.AtomicInteger</span><span class="p">;</span>
 
-public class Counter {
-    private AtomicInteger count = new AtomicInteger(0);
-    
-    public void increment() {
-        count.incrementAndGet();
-    }
-    
-    public int getCount() {
-        return count.get();
-    }
-}
-</code></pre>
+<span class="n">public</span> <span class="k">class</span><span class="w"> </span><span class="nc">Counter</span> <span class="p">{</span>
+    <span class="n">private</span> <span class="n">AtomicInteger</span> <span class="n">count</span> <span class="o">=</span> <span class="n">new</span> <span class="n">AtomicInteger</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+    <span class="n">public</span> <span class="n">void</span> <span class="n">increment</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">count</span><span class="o">.</span><span class="n">incrementAndGet</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="nb">int</span> <span class="n">getCount</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">count</span><span class="o">.</span><span class="n">get</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
 <p><code>AtomicInteger</code> uses Compare-And-Swap (CAS) operations, which are typically more efficient than synchronization for simple operations.</p>
-<h4><a href="#3-using-lock-interface" aria-hidden="true" class="anchor" id="3-using-lock-interface"></a>3. Using Lock Interface</h4>
+<h4 id="3-using-lock-interface">3. Using Lock Interface</h4>
 <p>For more complex scenarios, the <code>java.util.concurrent.locks</code> package offers more flexible locking mechanisms (when you need a more sophisticated bouncer):</p>
-<pre><code class="language-java">import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.locks.Lock</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.locks.ReentrantLock</span><span class="p">;</span>
 
-public class Counter {
-    private int count = 0;
-    private final Lock lock = new ReentrantLock();
-    
-    public void increment() {
-        lock.lock();
-        try {
-            count++;
-        } finally {
-            lock.unlock(); 
-        }
-    }
-    
-    public int getCount() {
-        lock.lock();
-        try {
-            return count;
-        } finally {
-            lock.unlock();
-        }
-    }
-}
-</code></pre>
-<h3><a href="#real-world-example" aria-hidden="true" class="anchor" id="real-world-example"></a>Real-World Example</h3>
+<span class="n">public</span> <span class="k">class</span><span class="w"> </span><span class="nc">Counter</span> <span class="p">{</span>
+    <span class="n">private</span> <span class="nb">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">private</span> <span class="n">final</span> <span class="n">Lock</span> <span class="n">lock</span> <span class="o">=</span> <span class="n">new</span> <span class="n">ReentrantLock</span><span class="p">();</span>
+
+    <span class="n">public</span> <span class="n">void</span> <span class="n">increment</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">lock</span><span class="o">.</span><span class="n">lock</span><span class="p">();</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="n">count</span><span class="o">++</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+            <span class="n">lock</span><span class="o">.</span><span class="n">unlock</span><span class="p">();</span> 
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="nb">int</span> <span class="n">getCount</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">lock</span><span class="o">.</span><span class="n">lock</span><span class="p">();</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">count</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+            <span class="n">lock</span><span class="o">.</span><span class="n">unlock</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="real-world-example">Real-World Example</h3>
 <p>Consider a payment processing gateway that handles high-volume financial transactions. In this scenario, a transaction processing system occasionally showed incorrect account balances. Analysis of production logs revealed a classic race condition where multiple threads were updating the same account simultaneously(I took this example from an interview I did couple of years ago):</p>
-<pre><code class="language-java">public void processPayment(Long accountId, BigDecimal amount) {
+<div class="codehilite"><pre><span></span><code>public void processPayment(Long accountId, BigDecimal amount) {
     Account account = accountRepository.findById(accountId).orElseThrow();
     BigDecimal newBalance = account.getBalance().add(amount);
     account.setBalance(newBalance);
     accountRepository.save(account);
 }
-</code></pre>
+</code></pre></div>
+
 <p>This implementation has a critical race condition:</p>
 <ol>
 <li>Thread A reads account balance (1000)</li>
@@ -306,14 +232,15 @@ public class Counter {
 </ol>
 <p>In this scenario, the 200 payment processed by Thread A is effectively lost because Thread B overwrote it with its calculation based on the original balance. The system has lost 200 units of currency - a serious financial discrepancy.</p>
 <p>The solution requires implementing proper transaction isolation. In database terms, this is precisely what the SERIALIZABLE isolation level is designed to prevent:</p>
-<pre><code class="language-java">@Transactional(isolation = Isolation.SERIALIZABLE)
-public void processPayment(Long accountId, BigDecimal amount) {
-    Account account = accountRepository.findById(accountId).orElseThrow();
-    BigDecimal newBalance = account.getBalance().add(amount);
-    account.setBalance(newBalance);
-    accountRepository.save(account);
-}
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nv">@Transactional</span><span class="p">(</span><span class="k">isolation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">Isolation</span><span class="p">.</span><span class="n">SERIALIZABLE</span><span class="p">)</span>
+<span class="k">public</span><span class="w"> </span><span class="n">void</span><span class="w"> </span><span class="n">processPayment</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">accountId</span><span class="p">,</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
+<span class="w">    </span><span class="n">Account</span><span class="w"> </span><span class="n">account</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">accountRepository</span><span class="p">.</span><span class="n">findById</span><span class="p">(</span><span class="n">accountId</span><span class="p">).</span><span class="n">orElseThrow</span><span class="p">();</span>
+<span class="w">    </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">newBalance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">account</span><span class="p">.</span><span class="n">getBalance</span><span class="p">().</span><span class="k">add</span><span class="p">(</span><span class="n">amount</span><span class="p">);</span>
+<span class="w">    </span><span class="n">account</span><span class="p">.</span><span class="n">setBalance</span><span class="p">(</span><span class="n">newBalance</span><span class="p">);</span>
+<span class="w">    </span><span class="n">accountRepository</span><span class="p">.</span><span class="k">save</span><span class="p">(</span><span class="n">account</span><span class="p">);</span>
+<span class="err">}</span>
+</code></pre></div>
+
 <p>With SERIALIZABLE isolation, the database ensures that concurrent transactions behave as if they were executed sequentially. This prevents the race condition by ensuring that:</p>
 <ol>
 <li>Thread A begins transaction and reads account (1000)</li>
@@ -330,7 +257,7 @@ public void processPayment(Long accountId, BigDecimal amount) {
 <li><strong>Performance cost</strong>: There's a tradeoff between consistency and throughput</li>
 </ol>
 <p>For some financial systems, a more scalable approach is optimistic locking with version control. Think of it like a Google Doc's version history - if two people edit the same document simultaneously, the system detects the conflict and handles it gracefully.</p>
-<h4><a href="#how-optimistic-locking-works" aria-hidden="true" class="anchor" id="how-optimistic-locking-works"></a>How Optimistic Locking Works</h4>
+<h4 id="how-optimistic-locking-works">How Optimistic Locking Works</h4>
 <ol>
 <li><strong>Version Tracking</strong>: Each record keeps track of its version number</li>
 <li><strong>Read Phase</strong>: When reading a record, we store both its data AND version number</li>
@@ -338,46 +265,47 @@ public void processPayment(Long accountId, BigDecimal amount) {
 <li><strong>Conflict Detection</strong>: If someone else changed the record (version mismatch), we handle the conflict</li>
 </ol>
 <p>Here's a practical implementation using Spring:</p>
-<pre><code class="language-java">@Entity
-public class Account {
-    @Id
-    private Long id;
-    
-    private BigDecimal balance;
-    
-    @Version  // this annotation tells JPA to handle versioning
-    private Long version;  // automatically incremented on each update
-    
-    }
+<div class="codehilite"><pre><span></span><code><span class="nv">@Entity</span>
+<span class="k">public</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="n">Account</span><span class="w"> </span><span class="err">{</span>
+<span class="w">    </span><span class="nv">@Id</span>
+<span class="w">    </span><span class="n">private</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
 
-@Service
-@Transactional(isolation = Isolation.READ_COMMITTED)
-public class PaymentService {
-    private final AccountRepository accountRepository;
-    
-    public void processPayment(Long accountId, BigDecimal amount) {
-        // the first thread reads version = 1
-        Account account = accountRepository.findById(accountId).orElseThrow();
-        BigDecimal newBalance = account.getBalance().add(amount);
-        account.setBalance(newBalance);
-        
-        try {
-            // if another thread updated the account (now version = 2),
-            // this save will fail with OptimisticLockException
-            accountRepository.save(account);
-        } catch (OptimisticLockException e) {
-            // handle the conflict(like a retry or something)
-            throw new PaymentConflictException(&quot;Payment failed - please retry&quot;);
-        }
-    }
-    
-    // retry example
-    @Retryable(maxAttempts = 3, backoff = @Backoff(delay = 100))
-    public void processPaymentWithRetry(Long accountId, BigDecimal amount) {
-        processPayment(accountId, amount);
-    }
-}
-</code></pre>
+<span class="w">    </span><span class="n">private</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">balance</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nv">@Version</span><span class="w">  </span><span class="o">//</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">annotation</span><span class="w"> </span><span class="n">tells</span><span class="w"> </span><span class="n">JPA</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">handle</span><span class="w"> </span><span class="n">versioning</span>
+<span class="w">    </span><span class="n">private</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">version</span><span class="p">;</span><span class="w">  </span><span class="o">//</span><span class="w"> </span><span class="n">automatically</span><span class="w"> </span><span class="n">incremented</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">each</span><span class="w"> </span><span class="k">update</span>
+
+<span class="w">    </span><span class="err">}</span>
+
+<span class="nv">@Service</span>
+<span class="nv">@Transactional</span><span class="p">(</span><span class="k">isolation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">Isolation</span><span class="p">.</span><span class="n">READ_COMMITTED</span><span class="p">)</span>
+<span class="k">public</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="n">PaymentService</span><span class="w"> </span><span class="err">{</span>
+<span class="w">    </span><span class="n">private</span><span class="w"> </span><span class="n">final</span><span class="w"> </span><span class="n">AccountRepository</span><span class="w"> </span><span class="n">accountRepository</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">void</span><span class="w"> </span><span class="n">processPayment</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">accountId</span><span class="p">,</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
+<span class="w">        </span><span class="o">//</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">first</span><span class="w"> </span><span class="n">thread</span><span class="w"> </span><span class="k">reads</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">        </span><span class="n">Account</span><span class="w"> </span><span class="n">account</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">accountRepository</span><span class="p">.</span><span class="n">findById</span><span class="p">(</span><span class="n">accountId</span><span class="p">).</span><span class="n">orElseThrow</span><span class="p">();</span>
+<span class="w">        </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">newBalance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">account</span><span class="p">.</span><span class="n">getBalance</span><span class="p">().</span><span class="k">add</span><span class="p">(</span><span class="n">amount</span><span class="p">);</span>
+<span class="w">        </span><span class="n">account</span><span class="p">.</span><span class="n">setBalance</span><span class="p">(</span><span class="n">newBalance</span><span class="p">);</span>
+
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="err">{</span>
+<span class="w">            </span><span class="o">//</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">another</span><span class="w"> </span><span class="n">thread</span><span class="w"> </span><span class="n">updated</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">account</span><span class="w"> </span><span class="p">(</span><span class="n">now</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span>
+<span class="w">            </span><span class="o">//</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="k">save</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">fail</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">OptimisticLockException</span>
+<span class="w">            </span><span class="n">accountRepository</span><span class="p">.</span><span class="k">save</span><span class="p">(</span><span class="n">account</span><span class="p">);</span>
+<span class="w">        </span><span class="err">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">OptimisticLockException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
+<span class="w">            </span><span class="o">//</span><span class="w"> </span><span class="n">handle</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">conflict</span><span class="p">(</span><span class="ow">like</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">retry</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">something</span><span class="p">)</span>
+<span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PaymentConflictException</span><span class="p">(</span><span class="ss">&quot;Payment failed - please retry&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="err">}</span>
+<span class="w">    </span><span class="err">}</span>
+
+<span class="w">    </span><span class="o">//</span><span class="w"> </span><span class="n">retry</span><span class="w"> </span><span class="n">example</span>
+<span class="w">    </span><span class="nv">@Retryable</span><span class="p">(</span><span class="n">maxAttempts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">backoff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">@Backoff</span><span class="p">(</span><span class="n">delay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">))</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">void</span><span class="w"> </span><span class="n">processPaymentWithRetry</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">accountId</span><span class="p">,</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
+<span class="w">        </span><span class="n">processPayment</span><span class="p">(</span><span class="n">accountId</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span><span class="p">);</span>
+<span class="w">    </span><span class="err">}</span>
+<span class="err">}</span>
+</code></pre></div>
+
 <p>Let's see how this prevents the race condition:</p>
 <ol>
 <li>Thread A reads account (balance = 1000, version = 1)</li>
@@ -398,47 +326,49 @@ public class PaymentService {
 <li><strong>Automatic Conflict Detection</strong>: The database handles version checking automatically</li>
 </ol>
 <p>The main trade-off is that you need to handle the retry logic when conflicts occur. This is usually acceptable because conflicts are typically rare in real-world scenarios - they only happen when two users try to modify the exact same record at the exact same time.</p>
-<h2><a href="#memory-visibility-issues" aria-hidden="true" class="anchor" id="memory-visibility-issues"></a>Memory Visibility Issues</h2>
-<h3><a href="#what-are-memory-visibility-issues" aria-hidden="true" class="anchor" id="what-are-memory-visibility-issues"></a>What Are Memory Visibility Issues?</h3>
+<h2 id="memory-visibility-issues">Memory Visibility Issues</h2>
+<h3 id="what-are-memory-visibility-issues">What Are Memory Visibility Issues?</h3>
 <p>In Java's memory model, threads may cache variables locally instead of reading them from main memory. This can lead to a situation where updates made by one thread aren't visible to others. In the Java Memory Model (JMM) specification, variable updates without proper synchronization aren't guaranteed to be visible across threads.</p>
 <blockquote>
-<p><strong>Nerds alert</strong>: If you want to go for a deep dive into memory visibility, you'll need to dive into the Java Memory Model (JMM). For a comprehensive explanation, you might want to check &quot;Java Concurrency in Practice&quot; by Brian Goetz [4]. For the brave souls who want the formal specification(which I can't even explain explicitly), you'll be able to find it in Chapter 17.4 of the oracle doc(<a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-17.html#jls-17.4">link</a>).</p>
+<p><strong>Nerds alert</strong>: If you want to go for a deep dive into memory visibility, you'll need to dive into the Java Memory Model (JMM). For a comprehensive explanation, you might want to check "Java Concurrency in Practice" by Brian Goetz [4]. For the brave souls who want the formal specification(which I can't even explain explicitly), you'll be able to find it in Chapter 17.4 of the oracle doc(<a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-17.html#jls-17.4">link</a>).</p>
 </blockquote>
-<h3><a href="#example-of-memory-visibility-issues" aria-hidden="true" class="anchor" id="example-of-memory-visibility-issues"></a>Example of Memory Visibility Issues</h3>
+<h3 id="example-of-memory-visibility-issues">Example of Memory Visibility Issues</h3>
 <p>Consider a flag to control thread execution:</p>
-<pre><code class="language-java">public class TaskManager {
-    private boolean stopped = false;
-    
-    public void stop() {
-        stopped = true;
-    }
-    
-    public void runTask() {
-        while (!stopped) {
-            //do sometihng
-        }
-    }
+<div class="codehilite"><pre><span></span><code><span class="nv">public</span><span class="w"> </span><span class="nv">class</span><span class="w"> </span><span class="nv">TaskManager</span><span class="w"> </span>{
+<span class="w">    </span><span class="nv">private</span><span class="w"> </span><span class="nv">boolean</span><span class="w"> </span><span class="nv">stopped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">false</span><span class="c1">;</span>
+
+<span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="nv">void</span><span class="w"> </span><span class="nv">stop</span><span class="ss">()</span><span class="w"> </span>{
+<span class="w">        </span><span class="nv">stopped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">true</span><span class="c1">;</span>
+<span class="w">    </span>}
+
+<span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="nv">void</span><span class="w"> </span><span class="nv">runTask</span><span class="ss">()</span><span class="w"> </span>{
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="ss">(</span><span class="o">!</span><span class="nv">stopped</span><span class="ss">)</span><span class="w"> </span>{
+<span class="w">            </span><span class="o">//</span><span class="k">do</span><span class="w"> </span><span class="nv">sometihng</span>
+<span class="w">        </span>}
+<span class="w">    </span>}
 }
-</code></pre>
+</code></pre></div>
+
 <p>Thread A could call <code>stop()</code> but Thread B might never see the update, resulting in an infinite loop. This is a classic memory visibility problem – the thread executing <code>runTask()</code> may maintain a local copy of <code>stopped</code> in its cache and never see the update made by another thread.</p>
-<h3><a href="#solving-memory-visibility-issues" aria-hidden="true" class="anchor" id="solving-memory-visibility-issues"></a>Solving Memory Visibility Issues</h3>
+<h3 id="solving-memory-visibility-issues">Solving Memory Visibility Issues</h3>
 <p>There are three main approaches to solving memory visibility issues, each with specific use cases:</p>
-<h4><a href="#1-using-volatile-keyword" aria-hidden="true" class="anchor" id="1-using-volatile-keyword"></a>1. Using volatile Keyword</h4>
-<p>The <code>volatile</code> keyword ensures that reads and writes go directly to main memory(like a &quot;no-cache&quot; flag):</p>
-<pre><code class="language-java">public class TaskManager {
-    private volatile boolean stopped = false;
-    
-    public void stop() {
-        stopped = true;
-    }
-    
-    public void runTask() {
-        while (!stopped) {
-            //do sometihng
-        }
-    }
+<h4 id="1-using-volatile-keyword">1. Using volatile Keyword</h4>
+<p>The <code>volatile</code> keyword ensures that reads and writes go directly to main memory(like a "no-cache" flag):</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">public</span><span class="w"> </span><span class="nv">class</span><span class="w"> </span><span class="nv">TaskManager</span><span class="w"> </span>{
+<span class="w">    </span><span class="nv">private</span><span class="w"> </span><span class="nv">volatile</span><span class="w"> </span><span class="nv">boolean</span><span class="w"> </span><span class="nv">stopped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">false</span><span class="c1">;</span>
+
+<span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="nv">void</span><span class="w"> </span><span class="nv">stop</span><span class="ss">()</span><span class="w"> </span>{
+<span class="w">        </span><span class="nv">stopped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">true</span><span class="c1">;</span>
+<span class="w">    </span>}
+
+<span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="nv">void</span><span class="w"> </span><span class="nv">runTask</span><span class="ss">()</span><span class="w"> </span>{
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="ss">(</span><span class="o">!</span><span class="nv">stopped</span><span class="ss">)</span><span class="w"> </span>{
+<span class="w">            </span><span class="o">//</span><span class="k">do</span><span class="w"> </span><span class="nv">sometihng</span>
+<span class="w">        </span>}
+<span class="w">    </span>}
 }
-</code></pre>
+</code></pre></div>
+
 <p><strong>When to use <code>volatile</code>:</strong></p>
 <ul>
 <li>For simple variables that function as flags/signals</li>
@@ -446,26 +376,27 @@ public class PaymentService {
 <li>When performance is critical (it's the lightest solution)</li>
 <li><strong>Important:</strong> Doesn't guarantee atomicity for compound operations like <code>i++</code> (read + increment + write)</li>
 </ul>
-<h4><a href="#2-using-synchronized-access" aria-hidden="true" class="anchor" id="2-using-synchronized-access"></a>2. Using Synchronized Access</h4>
+<h4 id="2-using-synchronized-access">2. Using Synchronized Access</h4>
 <p><code>synchronized</code> blocks provide both visibility guarantees and mutual exclusion (only one thread can execute the code at a time):</p>
-<pre><code class="language-java">public class TaskManager {
-    private boolean stopped = false;
-    
-    public synchronized void stop() {
-        stopped = true;
-    }
-    
-    public void runTask() {
-        while (!isStopped()) {
-            //do sometihng
-        }
-    }
-    
-    private synchronized boolean isStopped() { // &lt; -- thread safe access
-        return stopped;
-    }
+<div class="codehilite"><pre><span></span><code><span class="nv">public</span><span class="w"> </span><span class="nv">class</span><span class="w"> </span><span class="nv">TaskManager</span><span class="w"> </span>{
+<span class="w">    </span><span class="nv">private</span><span class="w"> </span><span class="nv">boolean</span><span class="w"> </span><span class="nv">stopped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">false</span><span class="c1">;</span>
+
+<span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="nv">synchronized</span><span class="w"> </span><span class="nv">void</span><span class="w"> </span><span class="nv">stop</span><span class="ss">()</span><span class="w"> </span>{
+<span class="w">        </span><span class="nv">stopped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">true</span><span class="c1">;</span>
+<span class="w">    </span>}
+
+<span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="nv">void</span><span class="w"> </span><span class="nv">runTask</span><span class="ss">()</span><span class="w"> </span>{
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="ss">(</span><span class="o">!</span><span class="nv">isStopped</span><span class="ss">())</span><span class="w"> </span>{
+<span class="w">            </span><span class="o">//</span><span class="k">do</span><span class="w"> </span><span class="nv">sometihng</span>
+<span class="w">        </span>}
+<span class="w">    </span>}
+
+<span class="w">    </span><span class="nv">private</span><span class="w"> </span><span class="nv">synchronized</span><span class="w"> </span><span class="nv">boolean</span><span class="w"> </span><span class="nv">isStopped</span><span class="ss">()</span><span class="w"> </span>{<span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="nv">thread</span><span class="w"> </span><span class="nv">safe</span><span class="w"> </span><span class="nv">access</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nv">stopped</span><span class="c1">;</span>
+<span class="w">    </span>}
 }
-</code></pre>
+</code></pre></div>
+
 <p><strong>When to use <code>synchronized</code>:</strong></p>
 <ul>
 <li>When you need mutual exclusion in addition to visibility</li>
@@ -473,24 +404,25 @@ public class PaymentService {
 <li>When the same thread needs to check and update multiple related variables</li>
 <li><strong>Disadvantage:</strong> Less peformartic when compared to <code>volatile</code></li>
 </ul>
-<h4><a href="#3-using-atomic-variables" aria-hidden="true" class="anchor" id="3-using-atomic-variables"></a>3. Using Atomic Variables</h4>
+<h4 id="3-using-atomic-variables">3. Using Atomic Variables</h4>
 <p>Classes from the <code>java.util.concurrent.atomic</code> package combine visibility with atomic operations(the CAS):</p>
-<pre><code class="language-java">import java.util.concurrent.atomic.AtomicBoolean;
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.atomic.AtomicBoolean</span><span class="p">;</span>
 
-public class TaskManager {
-    private AtomicBoolean stopped = new AtomicBoolean(false);
-    
-    public void stop() {
-        stopped.set(true);
-    }
-    
-    public void runTask() {
-        while (!stopped.get()) {
-            //do sometihng
-        }
-    }
-}
-</code></pre>
+<span class="n">public</span> <span class="k">class</span><span class="w"> </span><span class="nc">TaskManager</span> <span class="p">{</span>
+    <span class="n">private</span> <span class="n">AtomicBoolean</span> <span class="n">stopped</span> <span class="o">=</span> <span class="n">new</span> <span class="n">AtomicBoolean</span><span class="p">(</span><span class="n">false</span><span class="p">);</span>
+
+    <span class="n">public</span> <span class="n">void</span> <span class="n">stop</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">stopped</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">true</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="n">void</span> <span class="n">runTask</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">while</span> <span class="p">(</span><span class="err">!</span><span class="n">stopped</span><span class="o">.</span><span class="n">get</span><span class="p">())</span> <span class="p">{</span>
+            <span class="o">//</span><span class="n">do</span> <span class="n">sometihng</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
 <p><strong>When to use <code>Atomic</code>:</strong></p>
 <ul>
 <li>When you need atomic operations without the overhead of full locking</li>
@@ -499,7 +431,7 @@ public class TaskManager {
 <li>When you need atomic compound operations like compareAndSet()</li>
 <li><strong>Advantage:</strong> Better scalability under high contention compared to <code>synchronized</code></li>
 </ul>
-<h3><a href="#comparison-between-the-approaches" aria-hidden="true" class="anchor" id="comparison-between-the-approaches"></a>Comparison between the approaches</h3>
+<h3 id="comparison-between-the-approaches">Comparison between the approaches</h3>
 <table>
 <thead>
 <tr>
@@ -538,8 +470,8 @@ public class TaskManager {
 </tr>
 </tbody>
 </table>
-<h2><a href="#deadlocks" aria-hidden="true" class="anchor" id="deadlocks"></a>Deadlocks</h2>
-<h3><a href="#what-are-deadlocks" aria-hidden="true" class="anchor" id="what-are-deadlocks"></a>What Are Deadlocks?</h3>
+<h2 id="deadlocks">Deadlocks</h2>
+<h3 id="what-are-deadlocks">What Are Deadlocks?</h3>
 <p>In technical terms, a deadlock occurs when two or more threads each hold a resource that the other needs to continue execution. This creates a circular dependency where each thread is blocked indefinitely, waiting for resources that will never be released.</p>
 <p><strong>The four necessary conditions for a deadlock (all must be present):</strong></p>
 <ol>
@@ -548,58 +480,56 @@ public class TaskManager {
 <li><strong>No Preemption</strong>: Resources cannot be forcibly taken from threads</li>
 <li><strong>Circular Wait</strong>: A circular chain of threads, each waiting for a resource held by the next</li>
 </ol>
-<p>I think of deadlocks like an episode of Foster's Home For Imaginary Friends(which I watched as a kid), where Wilt (or Minguado in Portuguese) is that super polite imaginary friend who gets stuck at a doorway: &quot;After you!&quot; &quot;No, after you!&quot; &quot;I insist, after you!&quot; &quot;No, after you!&quot; So he remains stuck forever. In real life, social awkwardness would eventually break this standoff as someone gives in. But in your application, there's no episode ending or social pressure to resolve the situation—just an unresponsive system that needs rebooting.</p>
-<!-- ![Wilt - or Minguado for brazilians](/media/multithreading/wilt.jpg) -->
-<div style="text-align: center; margin: 20px 0;">
-  <img src="/media/multithreading/wilt.jpg" alt="Wilt from Foster's Home For Imaginary Friends" style="width: 350px; max-width: 100%;">
-  <p style="font-style: italic; font-size: 0.9em;">Wilt - or Minguado for brazilians.</p>
-</div>
-<h3><a href="#example-of-deadlock" aria-hidden="true" class="anchor" id="example-of-deadlock"></a>Example of Deadlock</h3>
+<p>I think of deadlocks like an episode of Foster's Home For Imaginary Friends(which I watched as a kid), where Wilt (or Minguado in Portuguese) is that super polite imaginary friend who gets stuck at a doorway: "After you!" "No, after you!" "I insist, after you!" "No, after you!" So he remains stuck forever. In real life, social awkwardness would eventually break this standoff as someone gives in. But in your application, there's no episode ending or social pressure to resolve the situation—just an unresponsive system that needs rebooting.</p>
+<p><img alt="Wilt from Foster's Home For Imaginary Friends" src="/media/multithreading/wilt.jpg" /></p>
+<p>Wilt - or Minguado for brazilians.</p>
+<h3 id="example-of-deadlock">Example of Deadlock</h3>
 <p>Here's a classic deadlock scenario with two resources and two threads(This one I also took from an interview I did some time ago):</p>
-<pre><code class="language-java">public class BankTransferDeadlock {
-    private final Object accountALock = new Object();
-    private final Object accountBLock = new Object();
-    
-    private double accountABalance = 1000;
-    private double accountBBalance = 1000;
-    
-    // Thread 1 IS EXECUTING THIS
-    public void transferAtoB(double amount) {
-        synchronized(accountALock) { // acquire lock on account A
-            System.out.println(&quot;Thread 1: Locked account A&quot;);
-            
-            // simulate some work before trying to acquire second lock
-            try { Thread.sleep(100); } catch (InterruptedException e) {}
-            
-            accountABalance -= amount;
-            
-            synchronized(accountBLock) { // try to acquire lock on account B
-                System.out.println(&quot;Thread 1: Locked account B&quot;);
-                accountBBalance += amount;
-                System.out.println(&quot;Transfer from A to B complete&quot;);
-            }
-        }
-    }
-    
-    // Thread 2 EXECUITING THIS
-    public void transferBtoA(double amount) {
-        synchronized(accountBLock) { // acquire lock on account B
-            System.out.println(&quot;Thread 2: Locked account B&quot;);
-            
-            // simulate some work before trying to acquire second lock
-            try { Thread.sleep(100); } catch (InterruptedException e) {}
-            
-            accountBBalance -= amount;
-            
-            synchronized(accountALock) { // try to acquire lock on account A
-                System.out.println(&quot;Thread 2: Locked account A&quot;);
-                accountABalance += amount;
-                System.out.println(&quot;Transfer from B to A complete&quot;);
-            }
-        }
-    }
-}
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nt">public</span><span class="w"> </span><span class="nt">class</span><span class="w"> </span><span class="nt">BankTransferDeadlock</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="err">private</span><span class="w"> </span><span class="err">final</span><span class="w"> </span><span class="err">Object</span><span class="w"> </span><span class="err">accountALock</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="err">new</span><span class="w"> </span><span class="err">Object()</span><span class="p">;</span>
+<span class="w">    </span><span class="err">private</span><span class="w"> </span><span class="err">final</span><span class="w"> </span><span class="err">Object</span><span class="w"> </span><span class="err">accountBLock</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="err">new</span><span class="w"> </span><span class="err">Object()</span><span class="p">;</span>
+
+<span class="w">    </span><span class="err">private</span><span class="w"> </span><span class="err">double</span><span class="w"> </span><span class="err">accountABalance</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="err">1000</span><span class="p">;</span>
+<span class="w">    </span><span class="err">private</span><span class="w"> </span><span class="err">double</span><span class="w"> </span><span class="err">accountBBalance</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="err">1000</span><span class="p">;</span>
+
+<span class="w">    </span><span class="err">//</span><span class="w"> </span><span class="err">Thread</span><span class="w"> </span><span class="err">1</span><span class="w"> </span><span class="err">IS</span><span class="w"> </span><span class="err">EXECUTING</span><span class="w"> </span><span class="err">THIS</span>
+<span class="w">    </span><span class="err">public</span><span class="w"> </span><span class="err">void</span><span class="w"> </span><span class="err">transferAtoB(double</span><span class="w"> </span><span class="err">amount)</span><span class="w"> </span><span class="err">{</span>
+<span class="w">        </span><span class="err">synchronized(accountALock)</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="err">acquire</span><span class="w"> </span><span class="err">lock</span><span class="w"> </span><span class="err">on</span><span class="w"> </span><span class="err">account</span><span class="w"> </span><span class="err">A</span>
+<span class="w">            </span><span class="err">System.out.println(&quot;Thread</span><span class="w"> </span><span class="err">1:</span><span class="w"> </span><span class="err">Locked</span><span class="w"> </span><span class="err">account</span><span class="w"> </span><span class="err">A&quot;)</span><span class="p">;</span>
+
+<span class="w">            </span><span class="err">//</span><span class="w"> </span><span class="err">simulate</span><span class="w"> </span><span class="err">some</span><span class="w"> </span><span class="err">work</span><span class="w"> </span><span class="err">before</span><span class="w"> </span><span class="err">trying</span><span class="w"> </span><span class="err">to</span><span class="w"> </span><span class="err">acquire</span><span class="w"> </span><span class="err">second</span><span class="w"> </span><span class="err">lock</span>
+<span class="w">            </span><span class="err">try</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="err">Thread.sleep(100)</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="nt">catch</span><span class="w"> </span><span class="o">(</span><span class="nt">InterruptedException</span><span class="w"> </span><span class="nt">e</span><span class="o">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">            </span><span class="nt">accountABalance</span><span class="w"> </span><span class="nt">-</span><span class="o">=</span><span class="w"> </span><span class="nt">amount</span><span class="o">;</span>
+
+<span class="w">            </span><span class="nt">synchronized</span><span class="o">(</span><span class="nt">accountBLock</span><span class="o">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="err">try</span><span class="w"> </span><span class="err">to</span><span class="w"> </span><span class="err">acquire</span><span class="w"> </span><span class="err">lock</span><span class="w"> </span><span class="err">on</span><span class="w"> </span><span class="err">account</span><span class="w"> </span><span class="err">B</span>
+<span class="w">                </span><span class="err">System.out.println(&quot;Thread</span><span class="w"> </span><span class="err">1:</span><span class="w"> </span><span class="err">Locked</span><span class="w"> </span><span class="err">account</span><span class="w"> </span><span class="err">B&quot;)</span><span class="p">;</span>
+<span class="w">                </span><span class="err">accountBBalance</span><span class="w"> </span><span class="err">+=</span><span class="w"> </span><span class="err">amount</span><span class="p">;</span>
+<span class="w">                </span><span class="err">System.out.println(&quot;Transfer</span><span class="w"> </span><span class="err">from</span><span class="w"> </span><span class="err">A</span><span class="w"> </span><span class="err">to</span><span class="w"> </span><span class="err">B</span><span class="w"> </span><span class="err">complete&quot;)</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="err">}</span>
+<span class="w">    </span><span class="err">}</span>
+
+<span class="w">    </span><span class="o">//</span><span class="w"> </span><span class="nt">Thread</span><span class="w"> </span><span class="nt">2</span><span class="w"> </span><span class="nt">EXECUITING</span><span class="w"> </span><span class="nt">THIS</span>
+<span class="w">    </span><span class="nt">public</span><span class="w"> </span><span class="nt">void</span><span class="w"> </span><span class="nt">transferBtoA</span><span class="o">(</span><span class="nt">double</span><span class="w"> </span><span class="nt">amount</span><span class="o">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="err">synchronized(accountBLock)</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="err">acquire</span><span class="w"> </span><span class="err">lock</span><span class="w"> </span><span class="err">on</span><span class="w"> </span><span class="err">account</span><span class="w"> </span><span class="err">B</span>
+<span class="w">            </span><span class="err">System.out.println(&quot;Thread</span><span class="w"> </span><span class="err">2:</span><span class="w"> </span><span class="err">Locked</span><span class="w"> </span><span class="err">account</span><span class="w"> </span><span class="err">B&quot;)</span><span class="p">;</span>
+
+<span class="w">            </span><span class="err">//</span><span class="w"> </span><span class="err">simulate</span><span class="w"> </span><span class="err">some</span><span class="w"> </span><span class="err">work</span><span class="w"> </span><span class="err">before</span><span class="w"> </span><span class="err">trying</span><span class="w"> </span><span class="err">to</span><span class="w"> </span><span class="err">acquire</span><span class="w"> </span><span class="err">second</span><span class="w"> </span><span class="err">lock</span>
+<span class="w">            </span><span class="err">try</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="err">Thread.sleep(100)</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="nt">catch</span><span class="w"> </span><span class="o">(</span><span class="nt">InterruptedException</span><span class="w"> </span><span class="nt">e</span><span class="o">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">            </span><span class="nt">accountBBalance</span><span class="w"> </span><span class="nt">-</span><span class="o">=</span><span class="w"> </span><span class="nt">amount</span><span class="o">;</span>
+
+<span class="w">            </span><span class="nt">synchronized</span><span class="o">(</span><span class="nt">accountALock</span><span class="o">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="err">try</span><span class="w"> </span><span class="err">to</span><span class="w"> </span><span class="err">acquire</span><span class="w"> </span><span class="err">lock</span><span class="w"> </span><span class="err">on</span><span class="w"> </span><span class="err">account</span><span class="w"> </span><span class="err">A</span>
+<span class="w">                </span><span class="err">System.out.println(&quot;Thread</span><span class="w"> </span><span class="err">2:</span><span class="w"> </span><span class="err">Locked</span><span class="w"> </span><span class="err">account</span><span class="w"> </span><span class="err">A&quot;)</span><span class="p">;</span>
+<span class="w">                </span><span class="err">accountABalance</span><span class="w"> </span><span class="err">+=</span><span class="w"> </span><span class="err">amount</span><span class="p">;</span>
+<span class="w">                </span><span class="err">System.out.println(&quot;Transfer</span><span class="w"> </span><span class="err">from</span><span class="w"> </span><span class="err">B</span><span class="w"> </span><span class="err">to</span><span class="w"> </span><span class="err">A</span><span class="w"> </span><span class="err">complete&quot;)</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="err">}</span>
+<span class="w">    </span><span class="err">}</span>
+<span class="err">}</span>
+</code></pre></div>
+
 <p>Here's what happens when this deadlock occurs:</p>
 <ol>
 <li>Thread 1 calls <code>transferAtoB()</code> and acquires the lock on account A</li>
@@ -609,123 +539,123 @@ public class TaskManager {
 <li>Both threads are now waiting for resources held by the other.</li>
 </ol>
 <p>The application appears to freeze with no error message - one of the most frustrating bugs to troubleshoot. In production systems, this often manifests as an application that suddenly stops responding and requires a restart. Unless saying that your algorithm runs on O(∞) in the worst case is acceptable, you should avoid it.</p>
-<h3><a href="#preventing-deadlocks" aria-hidden="true" class="anchor" id="preventing-deadlocks"></a>Preventing Deadlocks</h3>
-<h4><a href="#1-lock-ordering" aria-hidden="true" class="anchor" id="1-lock-ordering"></a>1. Lock Ordering</h4>
+<h3 id="preventing-deadlocks">Preventing Deadlocks</h3>
+<h4 id="1-lock-ordering">1. Lock Ordering</h4>
 <p>Always acquire locks in the same order:</p>
-<pre><code class="language-java">public class ResourceManager {
-    private final Object resourceA = new Object();
-    private final Object resourceB = new Object();
-    
-    public void process1() {
-        synchronized(resourceA) {
-            synchronized(resourceB) {
-                // do something with both resources
-            }
-        }
-    }
-    
-    public void process2() {
-        synchronized(resourceA) { // now acquiring in same order as process1
-            synchronized(resourceB) {
-                // do something with both resources
-            }
-        }
-    }
+<div class="codehilite"><pre><span></span><code><span class="nv">public</span><span class="w"> </span><span class="nv">class</span><span class="w"> </span><span class="nv">ResourceManager</span><span class="w"> </span>{
+<span class="w">    </span><span class="nv">private</span><span class="w"> </span><span class="nv">final</span><span class="w"> </span><span class="nv">Object</span><span class="w"> </span><span class="nv">resourceA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">new</span><span class="w"> </span><span class="nv">Object</span><span class="ss">()</span><span class="c1">;</span>
+<span class="w">    </span><span class="nv">private</span><span class="w"> </span><span class="nv">final</span><span class="w"> </span><span class="nv">Object</span><span class="w"> </span><span class="nv">resourceB</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">new</span><span class="w"> </span><span class="nv">Object</span><span class="ss">()</span><span class="c1">;</span>
+
+<span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="nv">void</span><span class="w"> </span><span class="nv">process1</span><span class="ss">()</span><span class="w"> </span>{
+<span class="w">        </span><span class="nv">synchronized</span><span class="ss">(</span><span class="nv">resourceA</span><span class="ss">)</span><span class="w"> </span>{
+<span class="w">            </span><span class="nv">synchronized</span><span class="ss">(</span><span class="nv">resourceB</span><span class="ss">)</span><span class="w"> </span>{
+<span class="w">                </span><span class="o">//</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nv">something</span><span class="w"> </span><span class="nv">with</span><span class="w"> </span><span class="nv">both</span><span class="w"> </span><span class="nv">resources</span>
+<span class="w">            </span>}
+<span class="w">        </span>}
+<span class="w">    </span>}
+
+<span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="nv">void</span><span class="w"> </span><span class="nv">process2</span><span class="ss">()</span><span class="w"> </span>{
+<span class="w">        </span><span class="nv">synchronized</span><span class="ss">(</span><span class="nv">resourceA</span><span class="ss">)</span><span class="w"> </span>{<span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="nv">now</span><span class="w"> </span><span class="nv">acquiring</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="nv">same</span><span class="w"> </span><span class="nv">order</span><span class="w"> </span><span class="nv">as</span><span class="w"> </span><span class="nv">process1</span>
+<span class="w">            </span><span class="nv">synchronized</span><span class="ss">(</span><span class="nv">resourceB</span><span class="ss">)</span><span class="w"> </span>{
+<span class="w">                </span><span class="o">//</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nv">something</span><span class="w"> </span><span class="nv">with</span><span class="w"> </span><span class="nv">both</span><span class="w"> </span><span class="nv">resources</span>
+<span class="w">            </span>}
+<span class="w">        </span>}
+<span class="w">    </span>}
 }
-</code></pre>
-<h4><a href="#2-using-trylock-with-timeout" aria-hidden="true" class="anchor" id="2-using-trylock-with-timeout"></a>2. Using tryLock with Timeout</h4>
+</code></pre></div>
+
+<h4 id="2-using-trylock-with-timeout">2. Using tryLock with Timeout</h4>
 <p>The <code>Lock</code> interface provides <code>tryLock()</code> with timeout to avoid indefinite waiting:</p>
-<pre><code class="language-java">import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.TimeUnit;
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.locks.Lock</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.locks.ReentrantLock</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.TimeUnit</span><span class="p">;</span>
 
-public class ResourceManager {
-    private final Lock lockA = new ReentrantLock();
-    private final Lock lockB = new ReentrantLock();
-    
-    public void process() throws InterruptedException {
-        boolean gotBothLocks = false;
-        
-        try {
-            boolean gotLockA = lockA.tryLock(1, TimeUnit.SECONDS);
-            if (gotLockA) {
-                try {
-                    boolean gotLockB = lockB.tryLock(1, TimeUnit.SECONDS);
-                    gotBothLocks = gotLockB;
-                } finally {
-                    if (!gotBothLocks) {
-                        lockA.unlock(); // release first lock if couldn't get second
-                    }
-                }
-            }
-            
-            if (gotBothLocks) {
-                // do something with both resources
-            } else {
-                log.warn(&quot;Failed to acquire locks, will retry later&quot;);
-            }
-        } finally {
-            if (gotBothLocks) {
-                lockB.unlock();
-                lockA.unlock();
-            }
-        }
-    }
-}
-</code></pre>
-<h4><a href="#3-using-javautilconcurrent-classes" aria-hidden="true" class="anchor" id="3-using-javautilconcurrent-classes"></a>3. Using java.util.concurrent Classes</h4>
+<span class="n">public</span> <span class="k">class</span><span class="w"> </span><span class="nc">ResourceManager</span> <span class="p">{</span>
+    <span class="n">private</span> <span class="n">final</span> <span class="n">Lock</span> <span class="n">lockA</span> <span class="o">=</span> <span class="n">new</span> <span class="n">ReentrantLock</span><span class="p">();</span>
+    <span class="n">private</span> <span class="n">final</span> <span class="n">Lock</span> <span class="n">lockB</span> <span class="o">=</span> <span class="n">new</span> <span class="n">ReentrantLock</span><span class="p">();</span>
+
+    <span class="n">public</span> <span class="n">void</span> <span class="n">process</span><span class="p">()</span> <span class="n">throws</span> <span class="n">InterruptedException</span> <span class="p">{</span>
+        <span class="n">boolean</span> <span class="n">gotBothLocks</span> <span class="o">=</span> <span class="n">false</span><span class="p">;</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="n">boolean</span> <span class="n">gotLockA</span> <span class="o">=</span> <span class="n">lockA</span><span class="o">.</span><span class="n">tryLock</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="n">SECONDS</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">gotLockA</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">try</span> <span class="p">{</span>
+                    <span class="n">boolean</span> <span class="n">gotLockB</span> <span class="o">=</span> <span class="n">lockB</span><span class="o">.</span><span class="n">tryLock</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="n">SECONDS</span><span class="p">);</span>
+                    <span class="n">gotBothLocks</span> <span class="o">=</span> <span class="n">gotLockB</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="err">!</span><span class="n">gotBothLocks</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">lockA</span><span class="o">.</span><span class="n">unlock</span><span class="p">();</span> <span class="o">//</span> <span class="n">release</span> <span class="n">first</span> <span class="n">lock</span> <span class="k">if</span> <span class="n">couldn</span><span class="s1">&#39;t get second</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">gotBothLocks</span><span class="p">)</span> <span class="p">{</span>
+                <span class="o">//</span> <span class="n">do</span> <span class="n">something</span> <span class="k">with</span> <span class="n">both</span> <span class="n">resources</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Failed to acquire locks, will retry later&quot;</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">gotBothLocks</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">lockB</span><span class="o">.</span><span class="n">unlock</span><span class="p">();</span>
+                <span class="n">lockA</span><span class="o">.</span><span class="n">unlock</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h4 id="3-using-javautilconcurrent-classes">3. Using java.util.concurrent Classes</h4>
 <p>Higher-level concurrency utilities often handle lock management internally (remember the inversion of control):</p>
-<pre><code class="language-java">import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ConcurrentHashMap;
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.ExecutorService</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.Executors</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.concurrent.ConcurrentHashMap</span><span class="p">;</span>
 
-public class ResourceManager {
-    private final ExecutorService executor = Executors.newFixedThreadPool(10);
-    private final ConcurrentHashMap&lt;String, Resource&gt; resources = new ConcurrentHashMap&lt;&gt;();
-    
-    // no explicit locking needed for many operations
-}
-</code></pre>
-<h2><a href="#thread-pool-configuration-issues" aria-hidden="true" class="anchor" id="thread-pool-configuration-issues"></a>Thread Pool Configuration Issues</h2>
-<h3><a href="#common-thread-pool-problems" aria-hidden="true" class="anchor" id="common-thread-pool-problems"></a>Common Thread Pool Problems</h3>
+<span class="n">public</span> <span class="k">class</span><span class="w"> </span><span class="nc">ResourceManager</span> <span class="p">{</span>
+    <span class="n">private</span> <span class="n">final</span> <span class="n">ExecutorService</span> <span class="n">executor</span> <span class="o">=</span> <span class="n">Executors</span><span class="o">.</span><span class="n">newFixedThreadPool</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+    <span class="n">private</span> <span class="n">final</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span> <span class="n">Resource</span><span class="o">&gt;</span> <span class="n">resources</span> <span class="o">=</span> <span class="n">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+
+    <span class="o">//</span> <span class="n">no</span> <span class="n">explicit</span> <span class="n">locking</span> <span class="n">needed</span> <span class="k">for</span> <span class="n">many</span> <span class="n">operations</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h2 id="thread-pool-configuration-issues">Thread Pool Configuration Issues</h2>
+<h3 id="common-thread-pool-problems">Common Thread Pool Problems</h3>
 <p>Java applications often use thread pools via ExecutorService. Incorrect configuration can lead to:</p>
 <ol>
 <li><strong>Thread starvation</strong>: When all threads are busy and tasks queue up</li>
 <li><strong>Resource exhaustion</strong>: When too many threads consume too much memory</li>
 </ol>
-<h3><a href="#thread-pool-best-practices" aria-hidden="true" class="anchor" id="thread-pool-best-practices"></a>Thread Pool Best Practices</h3>
-<h4><a href="#1-size-thread-pools-appropriately" aria-hidden="true" class="anchor" id="1-size-thread-pools-appropriately"></a>1. Size Thread Pools Appropriately</h4>
+<h3 id="thread-pool-best-practices">Thread Pool Best Practices</h3>
+<h4 id="1-size-thread-pools-appropriately">1. Size Thread Pools Appropriately</h4>
 <p>For CPU-bound tasks:</p>
-<pre><code class="language-java">int cpuCores = Runtime.getRuntime().availableProcessors();
+<div class="codehilite"><pre><span></span><code>int cpuCores = Runtime.getRuntime().availableProcessors();
 ExecutorService executor = Executors.newFixedThreadPool(cpuCores);
-</code></pre>
+</code></pre></div>
+
 <p>For I/O-bound tasks (things that wait a lot):</p>
-<pre><code class="language-java">// I/O bound tasks can benefit from more threads
-// (because threads spend most of their time waiting)
-int threadPoolSize = Runtime.getRuntime().availableProcessors() * 2;
-ExecutorService executor = Executors.newFixedThreadPool(threadPoolSize);
-</code></pre>
-<h4><a href="#2-use-different-thread-pools-for-different-types-of-tasks" aria-hidden="true" class="anchor" id="2-use-different-thread-pools-for-different-types-of-tasks"></a>2. Use Different Thread Pools for Different Types of Tasks</h4>
-<pre><code class="language-java">// image the scenario you make your ferrari wait behind a garbage truck
-ExecutorService cpuBoundTasks = Executors.newFixedThreadPool(cpuCores);
-ExecutorService ioBoundTasks = Executors.newFixedThreadPool(cpuCores * 2);
-</code></pre>
-<h4><a href="#3-use-bounded-queues" aria-hidden="true" class="anchor" id="3-use-bounded-queues"></a>3. Use Bounded Queues</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1">// I/O bound tasks can benefit from more threads</span>
+<span class="c1">// (because threads spend most of their time waiting)</span>
+<span class="nb">int</span><span class="w"> </span><span class="n">threadPoolSize</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Runtime</span><span class="p">.</span><span class="n">getRuntime</span><span class="p">().</span><span class="n">availableProcessors</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="n">ExecutorService</span><span class="w"> </span><span class="n">executor</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Executors</span><span class="p">.</span><span class="n">newFixedThreadPool</span><span class="p">(</span><span class="n">threadPoolSize</span><span class="p">);</span>
+</code></pre></div>
+
+<h4 id="2-use-different-thread-pools-for-different-types-of-tasks">2. Use Different Thread Pools for Different Types of Tasks</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1">// image the scenario you make your ferrari wait behind a garbage truck</span>
+<span class="n">ExecutorService</span><span class="w"> </span><span class="n">cpuBoundTasks</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Executors</span><span class="p">.</span><span class="n">newFixedThreadPool</span><span class="p">(</span><span class="n">cpuCores</span><span class="p">);</span>
+<span class="n">ExecutorService</span><span class="w"> </span><span class="n">ioBoundTasks</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Executors</span><span class="p">.</span><span class="n">newFixedThreadPool</span><span class="p">(</span><span class="n">cpuCores</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+</code></pre></div>
+
+<h4 id="3-use-bounded-queues">3. Use Bounded Queues</h4>
 <p>Choosing the right queue type and size is crucial for thread pool performance. The queue acts as a buffer between task submission and execution, but an unbounded queue can lead to OutOfMemoryError if tasks are submitted faster than they can be processed.</p>
 <p>There are three main queuing strategies:</p>
 <ol>
-<li>
-<p><strong>Direct handoff</strong> (SynchronousQueue): Tasks are handed directly to threads. If no thread is available, the task submission is rejected. Best for CPU-intensive tasks where queuing would just add overhead.</p>
-</li>
-<li>
-<p><strong>Bounded queue</strong> (ArrayBlockingQueue): Provides a buffer but with a limit, preventing resource exhaustion. Best for mixed workloads where some queuing helps smooth out bursts of requests.</p>
-</li>
-<li>
-<p><strong>Unbounded queue</strong> (LinkedBlockingQueue): Can grow indefinitely. Only appropriate when task submission rate is naturally limited or when you have infinite memory (spoiler: you don't).</p>
-</li>
+<li><strong>Direct handoff</strong> (SynchronousQueue): Tasks are handed directly to threads. If no thread is available, the task submission is rejected. Best for CPU-intensive tasks where queuing would just add overhead.</li>
+<li><strong>Bounded queue</strong> (ArrayBlockingQueue): Provides a buffer but with a limit, preventing resource exhaustion. Best for mixed workloads where some queuing helps smooth out bursts of requests.</li>
+<li><strong>Unbounded queue</strong> (LinkedBlockingQueue): Can grow indefinitely. Only appropriate when task submission rate is naturally limited or when you have infinite memory (spoiler: you don't).</li>
 </ol>
 <p>Here's how to implement a bounded queue with appropriate rejection handling:</p>
-<pre><code class="language-java">int corePoolSize = 5;
+<div class="codehilite"><pre><span></span><code>int corePoolSize = 5;
 int maxPoolSize = 10;
 long keepAliveTime = 60L;
 BlockingQueue&lt;Runnable&gt; workQueue = new ArrayBlockingQueue&lt;&gt;(100);
@@ -737,7 +667,8 @@ ThreadPoolExecutor executor = new ThreadPoolExecutor(
     TimeUnit.SECONDS, 
     workQueue,
     new ThreadPoolExecutor.CallerRunsPolicy()); // saturation policy
-</code></pre>
+</code></pre></div>
+
 <p>The rejection/saturation policy determines what happens when both the queue and the thread pool are full:</p>
 <ul>
 <li><strong>CallerRunsPolicy</strong>: Executes the task in the caller's thread (as shown above)</li>
@@ -747,22 +678,23 @@ ThreadPoolExecutor executor = new ThreadPoolExecutor(
 </ul>
 <p>Goetz recommends the CallerRunsPolicy as it provides a form of throttling - when the system is overloaded, the submitting threads start executing tasks themselves, naturally slowing down the submission rate.</p>
 <p>A real-world sizing example:</p>
-<h5><a href="#scenario-1-order-processor-with-unbounded-queue" aria-hidden="true" class="anchor" id="scenario-1-order-processor-with-unbounded-queue"></a>Scenario 1: Order Processor with Unbounded Queue</h5>
-<pre><code class="language-java">@Service
-public class OrderProcessor {
-    private final ExecutorService executor = new ThreadPoolExecutor(
-        10, 10, 60L, TimeUnit.SECONDS,
-        new LinkedBlockingQueue&lt;&gt;() // unbounded queue - DANGER!
-    );
-    
-    public void processOrder(Order order) {
-        executor.submit(() -&gt; {
-            // process order (validate payment, reserve inventory, etc)
-            // takes ~500ms per order
-        });
-    }
-}
-</code></pre>
+<h5 id="scenario-1-order-processor-with-unbounded-queue">Scenario 1: Order Processor with Unbounded Queue</h5>
+<div class="codehilite"><pre><span></span><code><span class="nv">@Service</span>
+<span class="k">public</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="n">OrderProcessor</span><span class="w"> </span><span class="err">{</span>
+<span class="w">    </span><span class="n">private</span><span class="w"> </span><span class="n">final</span><span class="w"> </span><span class="n">ExecutorService</span><span class="w"> </span><span class="n">executor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ThreadPoolExecutor</span><span class="p">(</span>
+<span class="w">        </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">60</span><span class="n">L</span><span class="p">,</span><span class="w"> </span><span class="n">TimeUnit</span><span class="p">.</span><span class="n">SECONDS</span><span class="p">,</span>
+<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">LinkedBlockingQueue</span><span class="o">&lt;&gt;</span><span class="p">()</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">unbounded</span><span class="w"> </span><span class="n">queue</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">DANGER</span><span class="err">!</span>
+<span class="w">    </span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">void</span><span class="w"> </span><span class="n">processOrder</span><span class="p">(</span><span class="k">Order</span><span class="w"> </span><span class="k">order</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
+<span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="n">submit</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">{</span>
+<span class="w">            </span><span class="o">//</span><span class="w"> </span><span class="n">process</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="p">(</span><span class="n">validate</span><span class="w"> </span><span class="n">payment</span><span class="p">,</span><span class="w"> </span><span class="n">reserve</span><span class="w"> </span><span class="n">inventory</span><span class="p">,</span><span class="w"> </span><span class="n">etc</span><span class="p">)</span>
+<span class="w">            </span><span class="o">//</span><span class="w"> </span><span class="n">takes</span><span class="w"> </span><span class="o">~</span><span class="mi">500</span><span class="n">ms</span><span class="w"> </span><span class="n">per</span><span class="w"> </span><span class="k">order</span>
+<span class="w">        </span><span class="err">}</span><span class="p">);</span>
+<span class="w">    </span><span class="err">}</span>
+<span class="err">}</span>
+</code></pre></div>
+
 <p><strong>Problem</strong>: During high-load events like Black Friday:</p>
 <ol>
 <li>Thousands of orders arrive per second</li>
@@ -770,32 +702,33 @@ public class OrderProcessor {
 <li>Java heap grows indefinitely</li>
 <li>Eventually: OutOfMemoryError</li>
 </ol>
-<h5><a href="#scenario-2-order-processor-with-bounded-queue" aria-hidden="true" class="anchor" id="scenario-2-order-processor-with-bounded-queue"></a>Scenario 2: Order Processor with Bounded Queue</h5>
-<pre><code class="language-java">@Service
-public class OrderProcessor {
-    private static final int CORE_THREADS = 10;
-    private static final int MAX_THREADS = 20;
+<h5 id="scenario-2-order-processor-with-bounded-queue">Scenario 2: Order Processor with Bounded Queue</h5>
+<div class="codehilite"><pre><span></span><code><span class="nv">@Service</span>
+<span class="k">public</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="n">OrderProcessor</span><span class="w"> </span><span class="err">{</span>
+<span class="w">    </span><span class="n">private</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">final</span><span class="w"> </span><span class="nc">int</span><span class="w"> </span><span class="n">CORE_THREADS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<span class="w">    </span><span class="n">private</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">final</span><span class="w"> </span><span class="nc">int</span><span class="w"> </span><span class="n">MAX_THREADS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span>
 
-    // based on available memory 
-    //(maybe in the future I can write how to calculate and monitor it based on the container you're using)
-    private static final int QUEUE_CAPACITY = 500; 
-    
-    private final ThreadPoolExecutor executor = new ThreadPoolExecutor(
-        CORE_THREADS,
-        MAX_THREADS,
-        60L, TimeUnit.SECONDS,
-        new ArrayBlockingQueue&lt;&gt;(QUEUE_CAPACITY),
-        new ThreadPoolExecutor.CallerRunsPolicy()
-    );
-    
-    public void processOrder(Order order) {
-        executor.submit(() -&gt; {
-            // do processing, but now with backpressure
-        });
-    }
+<span class="w">    </span><span class="o">//</span><span class="w"> </span><span class="n">based</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">available</span><span class="w"> </span><span class="n">memory</span><span class="w"> </span>
+<span class="w">    </span><span class="o">//</span><span class="p">(</span><span class="n">maybe</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">future</span><span class="w"> </span><span class="n">I</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="k">write</span><span class="w"> </span><span class="n">how</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">calculate</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">monitor</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">based</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">container</span><span class="w"> </span><span class="n">you</span><span class="err">&#39;</span><span class="n">re</span><span class="w"> </span><span class="k">using</span><span class="p">)</span>
+<span class="w">    </span><span class="n">private</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">final</span><span class="w"> </span><span class="nc">int</span><span class="w"> </span><span class="n">QUEUE_CAPACITY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">500</span><span class="p">;</span><span class="w"> </span>
 
-}
-</code></pre>
+<span class="w">    </span><span class="n">private</span><span class="w"> </span><span class="n">final</span><span class="w"> </span><span class="n">ThreadPoolExecutor</span><span class="w"> </span><span class="n">executor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ThreadPoolExecutor</span><span class="p">(</span>
+<span class="w">        </span><span class="n">CORE_THREADS</span><span class="p">,</span>
+<span class="w">        </span><span class="n">MAX_THREADS</span><span class="p">,</span>
+<span class="w">        </span><span class="mi">60</span><span class="n">L</span><span class="p">,</span><span class="w"> </span><span class="n">TimeUnit</span><span class="p">.</span><span class="n">SECONDS</span><span class="p">,</span>
+<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayBlockingQueue</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">QUEUE_CAPACITY</span><span class="p">),</span>
+<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">ThreadPoolExecutor</span><span class="p">.</span><span class="n">CallerRunsPolicy</span><span class="p">()</span>
+<span class="w">    </span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="n">void</span><span class="w"> </span><span class="n">processOrder</span><span class="p">(</span><span class="k">Order</span><span class="w"> </span><span class="k">order</span><span class="p">)</span><span class="w"> </span><span class="err">{</span>
+<span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="n">submit</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">{</span>
+<span class="w">            </span><span class="o">//</span><span class="w"> </span><span class="n">do</span><span class="w"> </span><span class="n">processing</span><span class="p">,</span><span class="w"> </span><span class="n">but</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">backpressure</span>
+<span class="w">        </span><span class="err">}</span><span class="p">);</span>
+<span class="w">    </span><span class="err">}</span>
+
+<span class="err">}</span>
+</code></pre></div>
+
 <p>With this configuration:</p>
 <ol>
 <li>First 500 excess tasks go to the queue</li>
@@ -803,128 +736,91 @@ public class OrderProcessor {
 <li>This naturally slows down upstream systems (API Gateway, Load Balancer)</li>
 <li>System remains stable even under extreme load</li>
 </ol>
-<h2><a href="#conclusion" aria-hidden="true" class="anchor" id="conclusion"></a>Conclusion</h2>
-<p>Of course that compared to Brian Goetz and Doug Lea (who literally wrote the concurrency library in Java), I'm just a protozoan on their shoe. What I've shared here is merely a light breath on the most important concepts. To truly master these topics, I strongly recommend reading Goetz's &quot;Java Concurrency in Practice&quot; - it's the definitive resource that helped me understand these complex concepts.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Of course that compared to Brian Goetz and Doug Lea (who literally wrote the concurrency library in Java), I'm just a protozoan on their shoe. What I've shared here is merely a light breath on the most important concepts. To truly master these topics, I strongly recommend reading Goetz's "Java Concurrency in Practice" - it's the definitive resource that helped me understand these complex concepts.</p>
 <p>But to sum everything up, when designing java multithreaded applications always favor simplicity and proven patterns over complex custom solutions. Java's concurrency utilities in the <code>java.util.concurrent</code> package, combined with a solid understanding of the principles I've covered in this post, will help you build robust, thread-safe applications.</p>
-<p>As Goetz states: <em>&quot;Write thread-safe code, but don't use more synchronization than necessary.&quot;</em> This balance between safety and performance is the key to effective concurrent programming - a lesson I'm still learning every day :)</p>
-<h2><a href="#references" aria-hidden="true" class="anchor" id="references"></a>References</h2>
+<p>As Goetz states: <em>"Write thread-safe code, but don't use more synchronization than necessary."</em> This balance between safety and performance is the key to effective concurrent programming - a lesson I'm still learning every day :)</p>
+<h2 id="references">References</h2>
 <ul>
-<li>
-<p>Lu, S., Park, S., Seo, E., &amp; Zhou, Y. &quot;Learning from mistakes: a comprehensive study on real world concurrency bug characteristics.&quot; ACM SIGARCH Computer Architecture News, 36(1), 2008. <a href="https://dl.acm.org/doi/10.1145/1346281.1346323">https://dl.acm.org/doi/10.1145/1346281.1346323</a>.</p>
-</li>
-<li>
-<p>Manson, J., Pugh, W., &amp; Adve, S. V. &quot;The Java memory model.&quot; ACM SIGPLAN Notices, 40(1), 2005. <a href="https://dl.acm.org/doi/10.1145/1040305.1040336">https://dl.acm.org/doi/10.1145/1040305.1040336</a>.</p>
-</li>
-<li>
-<p>Goetz, B., Peierls, T., Bloch, J., Bowbeer, J., Holmes, D., &amp; Lea, D. <em>Java Concurrency in Practice</em>. Addison-Wesley Professional, 2006. <a href="https://github.com/AngelSanchezT/books-1/blob/master/concurrency/Java%20Concurrency%20in%20Practice.pdf">https://github.com/AngelSanchezT/books-1/blob/master/concurrency/Java%20Concurrency%20in%20Practice.pdf</a>.</p>
-</li>
+<li>Lu, S., Park, S., Seo, E., &amp; Zhou, Y. "Learning from mistakes: a comprehensive study on real world concurrency bug characteristics." ACM SIGARCH Computer Architecture News, 36(1), 2008. <a href="https://dl.acm.org/doi/10.1145/1346281.1346323">https://dl.acm.org/doi/10.1145/1346281.1346323</a>.</li>
+<li>Manson, J., Pugh, W., &amp; Adve, S. V. "The Java memory model." ACM SIGPLAN Notices, 40(1), 2005. <a href="https://dl.acm.org/doi/10.1145/1040305.1040336">https://dl.acm.org/doi/10.1145/1040305.1040336</a>.</li>
+<li>Goetz, B., Peierls, T., Bloch, J., Bowbeer, J., Holmes, D., &amp; Lea, D. <em>Java Concurrency in Practice</em>. Addison-Wesley Professional, 2006. <a href="https://github.com/AngelSanchezT/books-1/blob/master/concurrency/Java%20Concurrency%20in%20Practice.pdf">https://github.com/AngelSanchezT/books-1/blob/master/concurrency/Java%20Concurrency%20in%20Practice.pdf</a>.</li>
 </ul>
 <hr />
-<!-- Content Injected to every content markdown footer -->
-</div>
-  
-  <footer class="data-tags-footer">
-
-    <div class="content-authors-flex">
-      <div class="content-authors-full">
-        
-<div class="content-authors">
-    <ul>
-        
-            
-            
-            <li>
-                <a href="author-pedrohbl_.html">
-                    <img src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" alt="Pedro Lopes" class="avatar">
-                    Pedro Lopes
-                </a>
-            </li>
-            
-        
-    </ul>
-</div>
-
-
-      </div>
-
-      <div class="date-tags-container">
-        <div class="content-date">
-          
-
-
-<span class="content-date">
-    <small> Apr  2, 2025 - &#10710; 25 min</small>
-</span>
-
-        </div>
-
-        <ul class="content-tags">
-          
-          <li><a href="./tag-java.html">java</a></li>
-          
-          <li><a href="./tag-spring.html">spring</a></li>
-          
-          <li><a href="./tag-multithreading.html">multithreading</a></li>
-          
-          <li><a href="./tag-concurrency.html">concurrency</a></li>
-          
-          <li><a href="./tag-synchronization.html">synchronization</a></li>
-          
-          <li><a href="./tag-best-practices.html">best-practices</a></li>
-          
-        </ul>
-      </div>
+<ul>
+<li><a href="author-pedrohbl_.html"><img alt="Pedro Lopes" src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" />
+  Pedro Lopes</a></li>
+</ul>
+<p>Apr 2, 2025 - ⧖ 25 min</p>
+<ul>
+<li><a href="./tag-java.html">java</a></li>
+<li><a href="./tag-spring.html">spring</a></li>
+<li><a href="./tag-multithreading.html">multithreading</a></li>
+<li><a href="./tag-concurrency.html">concurrency</a></li>
+<li><a href="./tag-synchronization.html">synchronization</a></li>
+<li><a href="./tag-best-practices.html">best-practices</a></li>
+</ul>
     </div>
-  </footer>
-  
+
+    <!-- Post Footer with Navigation -->
+    
+    <footer class="post-footer" style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid rgba(255, 255, 255, 0.1);">
+        <div style="display: flex; justify-content: space-between; gap: 1rem;">
+            
+            <a href="kotlin-result-functional.html" class="button" style="flex: 1;">
+                ← How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin
+            </a>
+            
+
+            
+            <a href="immutable-databases.html" class="button" style="flex: 1; text-align: right;">
+                Immutable Databases: When Data Never Dies →
+            </a>
+            
+        </div>
+    </footer>
+    
+
+    <!-- Author Info -->
+    
+    <div class="curve-card" style="margin-top: 2rem; padding: 1.5rem;">
+        <h3>About the Author</h3>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            
+            <img src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" alt="Pedro Lopes" style="width: 60px; height: 60px; border-radius: 50%;">
+            
+            <div>
+                <strong>Pedro Lopes</strong>
+                <p style="margin: 0.5rem 0; color: var(--text-secondary);">Software Engineer =D</p>
+                
+                <div style="display: flex; gap: 0.5rem;">
+                    
+                    <a href="https://www.linkedin.com/in/pedro-lopes-4563a7196/" class="retro-badge" target="_blank" rel="noopener">Linkedin</a>
+                    
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
 </article>
 
+<!-- Related Posts (if available) -->
 
 
+            </main>
 
-  
-  
-  
-  
-  <article>
-    Related java content
-    <ul>
-      
-      
-      
-      
-      <li><a href="./garbage-collector.html">Choosing a Garbage Collector for Your Java/Kotlin Application: Things I Wish I Knew Back Then</a></li>
-      
-    </ul>
-  </article>
-  
+            <!-- Footer / Status Bar -->
+            <footer class="status-bar">
+                <div>Powered by <a href="https://github.com/rochacbruno/marmite">Marmite</a> | <small><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY_NC-SA</a></small></div>
+            </footer>
+        </div>
+    </div>
 
+    <!-- Retro Effects & Main JavaScript -->
+    <script src="./static/js/retro-effects.js"></script>
+    <script src="./static/js/main.js"></script>
 
-
-
-
-        </section>
-        
-        <footer class="footer-content grid">
-            <div>Powered by <a href="https://github.com/rochacbruno/marmite">Marmite</a> | <small><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY_NC-SA</a></small></div>
-            
-        </footer>
-        
-    </main>
-
-    <script src="./static/marmite.js"></script>
-    <script src="./static/custom.js"></script>
     
-    <script type="module" src="./static/search.js"></script>
-    
-    
-    
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
-<script>
-  hljs.highlightAll();
-</script>
-
-
-
 </body>
 </html>

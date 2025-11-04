@@ -1,183 +1,231 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/x-icon" href="./static/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="light dark" />
-    <meta name="generator" content="Marmite" />
-    
-    
-    <meta property="og:title" content="Pedro Lopes">
-    <meta property="og:description" content="Comput. Sci.">
-    
-    
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Pedro Lopes">
-    
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Pedro Lopes",
-      "url": ""
-    }
-</script>
-    <title>Posts tagged with 'functional-programming' | Pedro Lopes</title>
-    <link rel="stylesheet" type="text/css" href="./static/pico.min.css">
-    <link rel="stylesheet" type="text/css" href="./static/marmite.css">
-    
-    <link rel="stylesheet" type="text/css" href="./static/colorschemes/iceberg.css">
-    
-    <link rel="stylesheet" type="text/css" href="./static/custom.css">
-    
-    <link rel="alternate" type="application/rss+xml" title="index" href="index.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: java" href="tag-java.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: kotlin" href="tag-kotlin.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: concurrency" href="tag-concurrency.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: spring" href="tag-spring.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: synchronization" href="tag-synchronization.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: microservices" href="tag-microservices.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: garbage-collector" href="tag-garbage-collector.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: technical-debt" href="tag-technical-debt.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: multithreading" href="tag-multithreading.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: project-reactor" href="tag-project-reactor.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: software-architecture" href="tag-software-architecture.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: distributed-systems" href="tag-distributed-systems.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: reactive" href="tag-reactive.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: aws" href="tag-aws.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: kafka" href="tag-kafka.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: jvm" href="tag-jvm.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: best-practices" href="tag-best-practices.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: back-pressure" href="tag-back-pressure.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: messaging" href="tag-messaging.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: functional-programming" href="tag-functional-programming.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: webflux" href="tag-webflux.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: lambda" href="tag-lambda.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: exception" href="tag-exception.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: haskell" href="tag-haskell.rss">
-    <link rel="alternate" type="application/rss+xml" title="author: pedrohbl_" href="author-pedrohbl.rss">
-    <link rel="alternate" type="application/rss+xml" title="year: 2025" href="archive-2025.rss">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light" />
+    <meta name="generator" content="Marmite Retro Edition" />
+
+    <title>Pedro Lopes - Comput. Sci.</title>
 
     
+    <meta name="description" content="Comput. Sci.">
     
+
+    <!-- Retro Theme Styles -->
+    <link rel="stylesheet" href="./static/css/retro-theme.css">
+    <link rel="stylesheet" href="./static/css/windows95.css">
+    <link rel="stylesheet" href="./static/css/curve-inspired.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./static/favicon.ico">
+
     
 </head>
 <body>
-    
-    <main class="container">
-        
-        <header class="header-content">
-            <nav class="header-nav">
-                <ul class="header-name">
-                    <li>
-                        <hgroup>
-                            <h2><a href="./" class="contrast">Pedro Lopes</a></h2>
-                             <p>Comput. Sci.</p> 
-                        </hgroup>
-                    </li>
-                </ul>
-                <button id="menu-toggle" class="hamburger">&#9776;</button>
-                
-                <ul class="header-menu" id="header-menu">
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./tags.html">Tags</a>
-                        
-                    </li>
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./archive.html">Archive</a>
-                        
-                    </li>
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./authors.html">Authors</a>
-                        
-                    </li>
-                    
-                    <li><span class="theme-toggle secondary" title="dark mode">&#9789;</span></li>
-                    
-                    <li><a href="#" id="search-toggle" class="secondary" title="Search (Ctrl + Shift + F)"> <span class="search-txt">Search</span><span class="search-magnifier"></span></a></li>
-                    
-                    <div class="underline"></div>
-                </ul>
-            </nav>
-            
-            <div class="marmite-background-overlay" id="overlay-close"></div>
-            <div class="marmite-search-bar hidden">
-                <span></span>
-                <button class="marmite-close-button" id="search-close">X</button>
-                <input placeholder="Search" id="marmite-search-input" />
-                <div class="marmite-search-bar-result">
-                    <ul id="marmite-search-bar-result"></ul>
+    <!-- Desktop with Retro Background -->
+    <div class="desktop-wrapper">
+        <!-- Main Window Chrome -->
+        <div class="window-chrome">
+            <!-- Title Bar -->
+            <div class="title-bar">
+                <span class="title-text">
+                    Pedro Lopes - Posts tagged with &#39;functional-programming&#39;
+                </span>
+                <div class="window-controls">
+                    <button class="btn-minimize" aria-label="Minimize">_</button>
+                    <button class="btn-maximize" aria-label="Maximize">□</button>
+                    <button class="btn-close" aria-label="Close">×</button>
                 </div>
             </div>
+
+            <!-- Menu Bar / Navigation -->
+            <nav class="menu-bar">
+                <a href="https://pedroca.xyz">Home</a>
+                
+                <a href="tags.html">Tags</a>
+                
+                <a href="archive.html">Archive</a>
+                
+                <a href="authors.html">Authors</a>
+                
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="content-area">
+                
+<!-- Hero Section - Compact -->
+<section class="curve-card" style="padding: 1.5rem 2rem; margin-bottom: 2rem; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);">
+    <div style="display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 200px;">
+            <h1 class="curve-gradient-text" style="font-size: 1.75rem; margin-bottom: 0.25rem;">
+                Pedro Lopes
+            </h1>
             
-        </header>
-        
-        <section class="main-content">
+            <p style="font-size: 0.95rem; color: var(--text-secondary); margin: 0;">
+                Comput. Sci.
+            </p>
             
-
-
-<div class="list-title">
-    <article><strong> Posts tagged with 'functional-programming' </strong></article>
-</div>
-
-
-
-
-
-<div class="content-list ">
-    <div class="left">
-    <article class="content-list-item">
-        <div class="content-title-wrapper">
-            <h2 class="content-title"><a href="./kotlin-result-functional.html">How monads and functional programming can improve your exception handling in kotlin</a></h2>
-             
         </div>
-        <p class="content-excerpt">
-            
-            
-Introduction
-If you've been programming in Kotlin or Java, you're probably used to handling errors with try-catch blocks. While this approach is standard, it can become really messy in complex scenarios, leading to verbose and difficult-to-maintain  ...
-            <a class="secondary" href="./kotlin-result-functional.html">read more &rarr;</a>
-        </p>
-        <footer class="data-tags-footer">
-            <span class="content-date"><a class="secondary" href="./kotlin-result-functional.html">Mar  3, 2025</a></span>
-            <ul class="content-tags overflow-auto">
-                <li><a href="./tag-kotlin.html">kotlin</a></li><li><a href="./tag-exception.html">exception</a></li><li><a href="./tag-functional-programming.html">functional-programming</a></li>
-            </ul>
-        </footer>
-    </article>
-    
-    </div>
-</div>
 
-        </section>
         
-        <footer class="footer-content grid">
-            <div>Powered by <a href="https://github.com/rochacbruno/marmite">Marmite</a> | <small><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY_NC-SA</a></small></div>
+        <div style="flex: 1; min-width: 250px; max-width: 400px;">
+            <input type="search" id="search" placeholder="Search posts..." class="curve-input" style="width: 100%; margin: 0;">
+        </div>
+        
+    </div>
+</section>
+
+<!-- Authors Section -->
+
+
+<!-- Recent Posts -->
+<section>
+    <h2 style="margin-bottom: 1.5rem; font-size: 2rem;">
+        <span class="curve-gradient-text">Recent Posts</span>
+    </h2>
+
+    <div class="posts-grid" style="display: grid; gap: 2rem;">
+        
+        <article class="window-panel post-card">
+            <h2 style="margin-bottom: 0.75rem;">
+                <a href="kotlin-result-functional.html" style="text-decoration: none;">How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin</a>
+            </h2>
+
+            <div class="post-meta" style="margin-bottom: 1rem;">
+                
+
+                
+                <span class="post-author">
+                    👤 Pedro Lopes
+                </span>
+                
+            </div>
+
             
-        </footer>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                 Introduction If you&#39;ve been programming in Kotlin or Java, you&#39;re probably used to handling errors ...
+            </p>
+            
+
+            
+            <div class="post-tags" style="margin-bottom: 1rem;">
+                
+                
+                <a href="tag-kotlin.html" class="retro-badge">kotlin</a>
+                
+                
+                <a href="tag-exception.html" class="retro-badge">exception</a>
+                
+                
+                <a href="tag-functional-programming.html" class="retro-badge">functional-programming</a>
+                
+            </div>
+            
+
+            <a href="kotlin-result-functional.html" class="button">Read More →</a>
+        </article>
         
-    </main>
-    <script src="./static/marmite.js"></script>
-    <script src="./static/custom.js"></script>
+        <article class="window-panel post-card">
+            <h2 style="margin-bottom: 0.75rem;">
+                <a href="test.html" style="text-decoration: none;">How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin</a>
+            </h2>
+
+            <div class="post-meta" style="margin-bottom: 1rem;">
+                
+
+                
+                <span class="post-author">
+                    👤 Pedro Lopes
+                </span>
+                
+            </div>
+
+            
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                 Introduction: Why Rethink Exception Handling? If you’ve been working with Kotlin or Java for a whil...
+            </p>
+            
+
+            
+            <div class="post-tags" style="margin-bottom: 1rem;">
+                
+                
+                <a href="tag-kotlin.html" class="retro-badge">kotlin</a>
+                
+                
+                <a href="tag-exception.html" class="retro-badge">exception</a>
+                
+                
+                <a href="tag-functional-programming.html" class="retro-badge">functional-programming</a>
+                
+            </div>
+            
+
+            <a href="test.html" class="button">Read More →</a>
+        </article>
+        
+        <article class="window-panel post-card">
+            <h2 style="margin-bottom: 0.75rem;">
+                <a href="testetetetsd.html" style="text-decoration: none;">How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin</a>
+            </h2>
+
+            <div class="post-meta" style="margin-bottom: 1rem;">
+                
+
+                
+                <span class="post-author">
+                    👤 Pedro Lopes
+                </span>
+                
+            </div>
+
+            
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                 Introduction If you&#39;ve been programming in Kotlin or Java, you&#39;re probably used to handling errors ...
+            </p>
+            
+
+            
+            <div class="post-tags" style="margin-bottom: 1rem;">
+                
+                
+                <a href="tag-kotlin.html" class="retro-badge">kotlin</a>
+                
+                
+                <a href="tag-exception.html" class="retro-badge">exception</a>
+                
+                
+                <a href="tag-functional-programming.html" class="retro-badge">functional-programming</a>
+                
+            </div>
+            
+
+            <a href="testetetetsd.html" class="button">Read More →</a>
+        </article>
+        
+    </div>
+
+    <!-- Pagination -->
     
-    <script type="module" src="./static/search.js"></script>
-    
-    
+</section>
+
+<!-- Featured Tags -->
+
+
+            </main>
+
+            <!-- Footer / Status Bar -->
+            <footer class="status-bar">
+                <div>Powered by <a href="https://github.com/rochacbruno/marmite">Marmite</a> | <small><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY_NC-SA</a></small></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Retro Effects & Main JavaScript -->
+    <script src="./static/js/retro-effects.js"></script>
+    <script src="./static/js/main.js"></script>
+
     
 </body>
 </html>

@@ -1,169 +1,98 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/x-icon" href="./static/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="light dark" />
-    <meta name="generator" content="Marmite" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light" />
+    <meta name="generator" content="Marmite Retro Edition" />
+
+    <title>Understanding and Mitigating AWS Lambda Throttling in High-Concurrency Workloads - Pedro Lopes</title>
+
     
 <meta property="og:title" content="Understanding and Mitigating AWS Lambda Throttling in High-Concurrency Workloads">
-
-<meta property="og:description" content="
-Introduction
-When dealing with high-concurrency workloads, scaling AWS Lambda effectively while avo...">
-
-<meta property="og:image" content="/images/sqs-architecture.png">
-
-
+<meta property="og:description" content=" Introduction When dealing with high-concurrency workloads, scaling AWS Lambda effectively while avo...">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Pedro Lopes">
 
-<meta property="article:published_time" content=" 2025-01-25T00:00:00+00:00">
+
+<meta property="article:author" content="Pedro Lopes">
 
 
 
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "/post1.html"
-    },
-    "url": "/post1.html",
-    "headline": "Understanding and Mitigating AWS Lambda Throttling in High-Concurrency Workloads",
-    "description": "Introduction
-When dealing with high-concurrency workloads, scaling AWS Lambda effectively while avoiding throttling can become a challenge. ...",
-    "image": "/images/sqs-architecture.png",
-    
-    "publisher": {
-        "@type": "Organization",
-        "name": "Pedro Lopes",
-        "logo": {
-            "@type": "ImageObject",
-            "url": "/"
-        }
-    },
-    "datePublished": "2025-01-25T00:00:00+00:00"
-}
-</script>
+    <!-- Retro Theme Styles -->
+    <link rel="stylesheet" href="./static/css/retro-theme.css">
+    <link rel="stylesheet" href="./static/css/windows95.css">
+    <link rel="stylesheet" href="./static/css/curve-inspired.css">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./static/favicon.ico">
 
-    <title>Understanding and Mitigating AWS Lambda Throttling in High-Concurrency Workloads | Pedro Lopes</title>
-    <link rel="stylesheet" type="text/css" href="./static/pico.min.css">
-    <link rel="stylesheet" type="text/css" href="./static/marmite.css">
-    
-    <link rel="stylesheet" type="text/css" href="./static/colorschemes/nord.css">
-    
-    <link rel="stylesheet" type="text/css" href="./static/custom.css">
-    
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css" id="highlightjs-theme" />
-
-
-
-    <link rel="alternate" type="application/rss+xml" title="index" href="index.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: lambda" href="tag-lambda.rss">
-    <link rel="alternate" type="application/rss+xml" title="year: 2025" href="archive-2025.rss">
-    
-
-    
-    
     
 </head>
 <body>
-    
-    <div class="container-fluid announcement-wrapper">
-        <div class="announcement"><p>Give us a ☆ on <a href="https://github.com/rochacbruno/marmite">github</a></p>
-</div>
-    </div>
-    
-    <main class="container">
-        
-        <header class="header-content">
-            <nav class="header-nav">
-                <ul class="header-name">
-                    <li>
-                        <hgroup>
-                            <h2><a href="./" class="contrast">Pedro Lopes</a></h2>
-                             <p>Comput. Sci.</p> 
-                        </hgroup>
-                    </li>
-                </ul>
-                <button id="menu-toggle" class="hamburger">&#9776;</button>
-                
-                <ul class="header-menu" id="header-menu">
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./tags.html">Tags</a>
-                        
-                    </li>
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./archive.html">Archive</a>
-                        
-                    </li>
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./authors.html">Authors</a>
-                        
-                    </li>
-                    
-                    <li><span class="theme-toggle secondary" title="dark mode">&#9789;</span></li>
-                    
-                    <li><a href="#" id="search-toggle" class="secondary" title="Search (Ctrl + Shift + F)"> <span class="search-txt">Search</span><span class="search-magnifier"></span></a></li>
-                    
-                    <div class="underline"></div>
-                </ul>
-            </nav>
-            
-            <div class="marmite-background-overlay" id="overlay-close"></div>
-            <div class="marmite-search-bar hidden">
-                <span></span>
-                <button class="marmite-close-button" id="search-close">X</button>
-                <input placeholder="Search" id="marmite-search-input" />
-                <div class="marmite-search-bar-result">
-                    <ul id="marmite-search-bar-result"></ul>
+    <!-- Desktop with Retro Background -->
+    <div class="desktop-wrapper">
+        <!-- Main Window Chrome -->
+        <div class="window-chrome">
+            <!-- Title Bar -->
+            <div class="title-bar">
+                <span class="title-text">
+                    Pedro Lopes - Understanding and Mitigating AWS Lambda Throttling in High-Concurrency Workloads
+                </span>
+                <div class="window-controls">
+                    <button class="btn-minimize" aria-label="Minimize">_</button>
+                    <button class="btn-maximize" aria-label="Maximize">□</button>
+                    <button class="btn-close" aria-label="Close">×</button>
                 </div>
             </div>
+
+            <!-- Menu Bar / Navigation -->
+            <nav class="menu-bar">
+                <a href="https://pedroca.xyz">Home</a>
+                
+                <a href="tags.html">Tags</a>
+                
+                <a href="archive.html">Archive</a>
+                
+                <a href="authors.html">Authors</a>
+                
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="content-area">
+                
+<article class="window-panel">
+    <!-- Post Header -->
+    <header class="post-header">
+        <h1 class="post-title">Understanding and Mitigating AWS Lambda Throttling in High-Concurrency Workloads</h1>
+
+        <div class="post-meta">
             
-        </header>
-        
-        <section class="main-content">
+
+            
+            <span class="post-author">
+                👤 by <a href="author-pedrohbl_.html">Pedro Lopes</a>
+            </span>
             
 
+            
+            <div class="post-tags">
+                
+                
+                <a href="tag-lambda.html" class="retro-badge">lambda</a>
+                
+                
+                <a href="tag-throttling.html" class="retro-badge">throttling</a>
+                
+            </div>
+            
+        </div>
+    </header>
 
-
-<article>
-
-  
-
-
-<div class="content-title" id="title">
-    <h1>Understanding and Mitigating AWS Lambda Throttling in High-Concurrency Workloads</h1> 
-    
-
-
-<span class="content-date">
-    <small> Jan 25, 2025 - &#10710; 6 min</small>
-</span>
-
-</div>
-
-  
-
-  <div class="content-html"><!-- Content Injected to every content markdown header -->
-<h2><a href="#introduction" aria-hidden="true" class="anchor" id="introduction"></a>Introduction</h2>
+    <!-- Post Content -->
+    <div class="post-content">
+        <p>Jan 25, 2025 - ⧖ 6 min</p>
+<h2 id="introduction">Introduction</h2>
 <p>When dealing with high-concurrency workloads, scaling AWS Lambda effectively while avoiding throttling can become a challenge. This article explores a real-world scenario where an application, written in Kotlin, processed over 100,000 records using a custom asynchronous iteration method. Each record triggered an asynchronous Lambda invocation that interacted with DynamoDB. However, the setup led to <code>429 Too Many Requests</code> errors, indicating throttling issues with AWS Lambda.</p>
 <p>We will:</p>
 <ol>
@@ -173,45 +102,46 @@ When dealing with high-concurrency workloads, scaling AWS Lambda effectively whi
 <li><strong>Provide a real-world proof of concept (POC)</strong> to evaluate each mitigation technique.</li>
 </ol>
 <hr />
-<h2><a href="#the-challenge" aria-hidden="true" class="anchor" id="the-challenge"></a>The Challenge</h2>
-<h3><a href="#problem-context" aria-hidden="true" class="anchor" id="problem-context"></a>Problem Context</h3>
+<h2 id="the-challenge">The Challenge</h2>
+<h3 id="problem-context">Problem Context</h3>
 <p>Our workload involved processing a large file of over 100,000 records. Using Kotlin's <code>mapAsync</code> extension function, we implemented concurrency to invoke an AWS Lambda function for each record. The Lambda function performed a <code>putItem</code> operation on DynamoDB.</p>
 <p>Here’s the Kotlin code for <code>mapAsync</code>:</p>
-<pre><code class="language-kotlin">suspend fun &lt;T, R&gt; Iterable&lt;T&gt;.mapAsync(
-    transformation: suspend (T) -&gt; R
-): List&lt;R&gt; = coroutineScope {
-    this@mapAsync
-        .map { async { transformation(it) } }
-        .awaitAll()
-}
+<div class="codehilite"><pre><span></span><code><span class="n">suspend</span><span class="w"> </span><span class="n">fun</span><span class="w"> </span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Iterable</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">.</span><span class="n">mapAsync</span><span class="p">(</span>
+<span class="w">    </span><span class="nl">transformation</span><span class="p">:</span><span class="w"> </span><span class="n">suspend</span><span class="w"> </span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">R</span>
+<span class="p">)</span><span class="err">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">coroutineScope</span><span class="w"> </span><span class="err">{</span>
+<span class="w">    </span><span class="n">this</span><span class="nv">@mapAsync</span>
+<span class="w">        </span><span class="p">.</span><span class="k">map</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="n">async</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="n">transformation</span><span class="p">(</span><span class="n">it</span><span class="p">)</span><span class="w"> </span><span class="err">}</span><span class="w"> </span><span class="err">}</span>
+<span class="w">        </span><span class="p">.</span><span class="n">awaitAll</span><span class="p">()</span>
+<span class="err">}</span>
 
-suspend fun &lt;T, R&gt; Iterable&lt;T&gt;.mapAsync(
-    concurrency: Int,
-    transformation: suspend (T) -&gt; R
-): List&lt;R&gt; = coroutineScope {
-    val semaphore = Semaphore(concurrency)
-    this@mapAsync
-        .map { async { semaphore.withPermit { transformation(it) } } }
-        .awaitAll()
-}
-</code></pre>
-<p>While this method processed records significantly faster than a standard <code>for</code> loop, it caused the Lambda invocations to &quot;flood&quot; the system, triggering throttling. The <code>429 Too Many Requests</code> errors were linked to:</p>
+<span class="n">suspend</span><span class="w"> </span><span class="n">fun</span><span class="w"> </span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Iterable</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">.</span><span class="n">mapAsync</span><span class="p">(</span>
+<span class="w">    </span><span class="nl">concurrency</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">,</span>
+<span class="w">    </span><span class="nl">transformation</span><span class="p">:</span><span class="w"> </span><span class="n">suspend</span><span class="w"> </span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">R</span>
+<span class="p">)</span><span class="err">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">coroutineScope</span><span class="w"> </span><span class="err">{</span>
+<span class="w">    </span><span class="n">val</span><span class="w"> </span><span class="n">semaphore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Semaphore</span><span class="p">(</span><span class="n">concurrency</span><span class="p">)</span>
+<span class="w">    </span><span class="n">this</span><span class="nv">@mapAsync</span>
+<span class="w">        </span><span class="p">.</span><span class="k">map</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="n">async</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="n">semaphore</span><span class="p">.</span><span class="n">withPermit</span><span class="w"> </span><span class="err">{</span><span class="w"> </span><span class="n">transformation</span><span class="p">(</span><span class="n">it</span><span class="p">)</span><span class="w"> </span><span class="err">}</span><span class="w"> </span><span class="err">}</span><span class="w"> </span><span class="err">}</span>
+<span class="w">        </span><span class="p">.</span><span class="n">awaitAll</span><span class="p">()</span>
+<span class="err">}</span>
+</code></pre></div>
+
+<p>While this method processed records significantly faster than a standard <code>for</code> loop, it caused the Lambda invocations to "flood" the system, triggering throttling. The <code>429 Too Many Requests</code> errors were linked to:</p>
 <ol>
 <li><strong>Concurrency Limits</strong>: Lambda limits the number of concurrent executions per account.</li>
 <li><strong>TPS (Transactions Per Second) Limits</strong>: High TPS can overwhelm the Invoke Data Plane.</li>
 <li><strong>Burst Limits</strong>: A limit on how quickly concurrency can scale up, using the token bucket algorithm.</li>
 </ol>
-<h3><a href="#observed-errors" aria-hidden="true" class="anchor" id="observed-errors"></a>Observed Errors</h3>
+<h3 id="observed-errors">Observed Errors</h3>
 <ul>
 <li><strong>429 Too Many Requests</strong>: Errors indicated that the Lambda invocations exceeded the allowed concurrency or burst limits.</li>
 <li>DynamoDB “Provisioned Throughput Exceeded” errors were observed when spikes occurred in DynamoDB writes.</li>
 </ul>
 <hr />
-<h2><a href="#aws-lambda-throttling-mechanisms" aria-hidden="true" class="anchor" id="aws-lambda-throttling-mechanisms"></a>AWS Lambda Throttling Mechanisms</h2>
+<h2 id="aws-lambda-throttling-mechanisms">AWS Lambda Throttling Mechanisms</h2>
 <p>AWS enforces three key throttle limits to protect its infrastructure and ensure fair resource distribution:</p>
-<h3><a href="#1-concurrency-limits" aria-hidden="true" class="anchor" id="1-concurrency-limits"></a>1. <strong>Concurrency Limits</strong></h3>
+<h3 id="1-concurrency-limits">1. <strong>Concurrency Limits</strong></h3>
 <p>Concurrency defines the number of in-flight Lambda executions allowed at a time. For example, if your concurrency limit is 1,000, you can have up to 1,000 Lambda functions executing simultaneously. This limit is shared across all Lambdas in your account and region.</p>
-<h3><a href="#2-tps-limits" aria-hidden="true" class="anchor" id="2-tps-limits"></a>2. <strong>TPS Limits</strong></h3>
+<h3 id="2-tps-limits">2. <strong>TPS Limits</strong></h3>
 <p>TPS is a derived limit based on concurrency and function duration. For example:</p>
 <ul>
 <li>Function duration: 100 ms</li>
@@ -219,7 +149,7 @@ suspend fun &lt;T, R&gt; Iterable&lt;T&gt;.mapAsync(
 </ul>
 <p>TPS = Concurrency / Function Duration = 10,000 TPS</p>
 <p>However, if function duration drops below 100 ms, TPS is capped at 10x the concurrency.</p>
-<h3><a href="#3-burst-limits" aria-hidden="true" class="anchor" id="3-burst-limits"></a>3. <strong>Burst Limits</strong></h3>
+<h3 id="3-burst-limits">3. <strong>Burst Limits</strong></h3>
 <p>The burst limit ensures that concurrency increases gradually, avoiding large spikes in cold starts. AWS uses a token bucket algorithm to regulate this:</p>
 <ul>
 <li>Each invocation consumes a token.</li>
@@ -228,137 +158,141 @@ suspend fun &lt;T, R&gt; Iterable&lt;T&gt;.mapAsync(
 </ul>
 <p>For more details, refer to the <a href="https://docs.aws.amazon.com/lambda/latest/dg/invocation-scaling.html">AWS Lambda Burst Limits</a>.</p>
 <hr />
-<h2><a href="#mitigation-strategies" aria-hidden="true" class="anchor" id="mitigation-strategies"></a>Mitigation Strategies</h2>
+<h2 id="mitigation-strategies">Mitigation Strategies</h2>
 <p>Here are some techniques we implemented to mitigate the throttling issues:</p>
-<h3><a href="#1-limit-concurrency-using-semaphore" aria-hidden="true" class="anchor" id="1-limit-concurrency-using-semaphore"></a>1. <strong>Limit Concurrency Using Semaphore</strong></h3>
+<h3 id="1-limit-concurrency-using-semaphore">1. <strong>Limit Concurrency Using Semaphore</strong></h3>
 <p>We added a concurrency limit to the <code>mapAsync</code> function to control the number of simultaneous Lambda invocations:</p>
-<pre><code class="language-kotlin">val results = records.mapAsync(concurrency = 100) { record -&gt;
-    invokeLambda(record)
-}
-</code></pre>
-<h4><a href="#pros" aria-hidden="true" class="anchor" id="pros"></a>Pros:</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">val</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">records</span><span class="p">.</span><span class="n">mapAsync</span><span class="p">(</span><span class="n">concurrency</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kd">record </span><span class="o">-&gt;</span>
+<span class="w">    </span><span class="n">invokeLambda</span><span class="p">(</span><span class="kd">record)</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h4 id="pros">Pros:</h4>
 <ul>
 <li>Simple to implement.</li>
 <li>Reduces <code>429</code> errors significantly.</li>
 </ul>
-<h4><a href="#cons" aria-hidden="true" class="anchor" id="cons"></a>Cons:</h4>
+<h4 id="cons">Cons:</h4>
 <ul>
 <li>Slower overall processing time due to limited concurrency.</li>
 </ul>
-<h3><a href="#2-retry-with-exponential-backoff" aria-hidden="true" class="anchor" id="2-retry-with-exponential-backoff"></a>2. <strong>Retry with Exponential Backoff</strong></h3>
+<h3 id="2-retry-with-exponential-backoff">2. <strong>Retry with Exponential Backoff</strong></h3>
 <p>We implemented a retry mechanism with exponential backoff to handle throttled requests:</p>
-<pre><code class="language-kotlin">suspend fun invokeWithRetry(record: Record, retries: Int = 3) {
-    var attempts = 0
-    while (attempts &lt; retries) {
-        try {
-            invokeLambda(record)
-            break
-        } catch (e: Exception) {
-            if (++attempts == retries) throw e
-            delay((2.0.pow(attempts) * 100).toLong())
-        }
-    }
-}
-</code></pre>
-<h4><a href="#pros-1" aria-hidden="true" class="anchor" id="pros-1"></a>Pros:</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">suspend</span><span class="w"> </span><span class="n">fun</span><span class="w"> </span><span class="n">invokeWithRetry</span><span class="p">(</span><span class="n">record</span><span class="p">:</span><span class="w"> </span><span class="n">Record</span><span class="p">,</span><span class="w"> </span><span class="n">retries</span><span class="p">:</span><span class="w"> </span><span class="n">Int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">attempts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">attempts</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">retries</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">invokeLambda</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+<span class="w">            </span><span class="k">break</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="n">catch</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="p">:</span><span class="w"> </span><span class="n">Exception</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">++</span><span class="n">attempts</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">retries</span><span class="p">)</span><span class="w"> </span><span class="n">throw</span><span class="w"> </span><span class="n">e</span>
+<span class="w">            </span><span class="n">delay</span><span class="p">((</span><span class="mf">2.0</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">attempts</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">toLong</span><span class="p">())</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h4 id="pros_1">Pros:</h4>
 <ul>
 <li>Handles transient errors gracefully.</li>
 <li>Avoids overwhelming the system during retries.</li>
 </ul>
-<h4><a href="#cons-1" aria-hidden="true" class="anchor" id="cons-1"></a>Cons:</h4>
+<h4 id="cons_1">Cons:</h4>
 <ul>
 <li>Adds latency.</li>
 <li>Increases code complexity.</li>
 </ul>
-<h3><a href="#3-use-sqs-for-decoupling" aria-hidden="true" class="anchor" id="3-use-sqs-for-decoupling"></a>3. <strong>Use SQS for Decoupling</strong></h3>
+<h3 id="3-use-sqs-for-decoupling">3. <strong>Use SQS for Decoupling</strong></h3>
 <p>Instead of invoking Lambdas directly, we used SQS to queue the requests and let the Lambdas process them at a controlled rate:</p>
-<p><figure><img src="./images/sqs-architecture.png" alt="SQS Decoupling Architecture" /></figure></p>
-<h4><a href="#pros-2" aria-hidden="true" class="anchor" id="pros-2"></a>Pros:</h4>
+<p><img alt="SQS Decoupling Architecture" src="./images/sqs-architecture.png" /></p>
+<h4 id="pros_2">Pros:</h4>
 <ul>
 <li>Decouples producers and consumers.</li>
 <li>Avoids throttling by controlling the consumer rate.</li>
 </ul>
-<h4><a href="#cons-2" aria-hidden="true" class="anchor" id="cons-2"></a>Cons:</h4>
+<h4 id="cons_2">Cons:</h4>
 <ul>
 <li>Adds architectural complexity.</li>
 <li>Increases latency due to queueing.</li>
 </ul>
 <hr />
-<h2><a href="#proof-of-concept-poc" aria-hidden="true" class="anchor" id="proof-of-concept-poc"></a>Proof of Concept (POC)</h2>
+<h2 id="proof-of-concept-poc">Proof of Concept (POC)</h2>
 <p>We tested each mitigation strategy using the following setup:</p>
-<h3><a href="#test-setup" aria-hidden="true" class="anchor" id="test-setup"></a>Test Setup</h3>
+<h3 id="test-setup">Test Setup</h3>
 <ul>
 <li><strong>Dataset</strong>: 100,000 records.</li>
 <li><strong>AWS Lambda</strong>: 512 MB memory, default concurrency limits.</li>
 <li><strong>Environment</strong>: Local machine (32 GB RAM, 8 cores) for testing <code>mapAsync</code>.</li>
 </ul>
-<h3><a href="#implementing-the-lambda-function" aria-hidden="true" class="anchor" id="implementing-the-lambda-function"></a>Implementing the Lambda Function</h3>
+<h3 id="implementing-the-lambda-function">Implementing the Lambda Function</h3>
 <p>The Lambda function was written in Go and performed a <code>putItem</code> operation on DynamoDB:</p>
-<pre><code class="language-go">package main
+<div class="codehilite"><pre><span></span><code><span class="n">package</span> <span class="n">main</span>
 
-import (
-    &quot;context&quot;
-    &quot;fmt&quot;
-    &quot;github.com/aws/aws-lambda-go/lambda&quot;
-    &quot;github.com/aws/aws-sdk-go/aws&quot;
-    &quot;github.com/aws/aws-sdk-go/aws/session&quot;
-    &quot;github.com/aws/aws-sdk-go/service/dynamodb&quot;
-)
+<span class="kn">import</span><span class="w"> </span><span class="p">(</span>
+    <span class="s2">&quot;context&quot;</span>
+    <span class="s2">&quot;fmt&quot;</span>
+    <span class="s2">&quot;github.com/aws/aws-lambda-go/lambda&quot;</span>
+    <span class="s2">&quot;github.com/aws/aws-sdk-go/aws&quot;</span>
+    <span class="s2">&quot;github.com/aws/aws-sdk-go/aws/session&quot;</span>
+    <span class="s2">&quot;github.com/aws/aws-sdk-go/service/dynamodb&quot;</span>
+<span class="p">)</span>
 
-type Request struct {
-    TableName string `json:&quot;tableName&quot;`
-    Item      map[string]*dynamodb.AttributeValue `json:&quot;item&quot;`
-}
+<span class="nb">type</span> <span class="n">Request</span> <span class="n">struct</span> <span class="p">{</span>
+    <span class="n">TableName</span> <span class="n">string</span> <span class="err">`</span><span class="n">json</span><span class="p">:</span><span class="s2">&quot;tableName&quot;</span><span class="err">`</span>
+    <span class="n">Item</span>      <span class="nb">map</span><span class="p">[</span><span class="n">string</span><span class="p">]</span><span class="o">*</span><span class="n">dynamodb</span><span class="o">.</span><span class="n">AttributeValue</span> <span class="err">`</span><span class="n">json</span><span class="p">:</span><span class="s2">&quot;item&quot;</span><span class="err">`</span>
+<span class="p">}</span>
 
-func handler(ctx context.Context, req Request) (string, error) {
-    sess := session.Must(session.NewSession())
-    svc := dynamodb.New(sess)
+<span class="n">func</span> <span class="n">handler</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">req</span> <span class="n">Request</span><span class="p">)</span> <span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">sess</span> <span class="o">:=</span> <span class="n">session</span><span class="o">.</span><span class="n">Must</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">NewSession</span><span class="p">())</span>
+    <span class="n">svc</span> <span class="o">:=</span> <span class="n">dynamodb</span><span class="o">.</span><span class="n">New</span><span class="p">(</span><span class="n">sess</span><span class="p">)</span>
 
-    _, err := svc.PutItem(&amp;dynamodb.PutItemInput{
-        TableName: aws.String(req.TableName),
-        Item:      req.Item,
-    })
-    if err != nil {
-        return &quot;&quot;, fmt.Errorf(&quot;failed to put item: %v&quot;, err)
-    }
+    <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">svc</span><span class="o">.</span><span class="n">PutItem</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dynamodb</span><span class="o">.</span><span class="n">PutItemInput</span><span class="p">{</span>
+        <span class="n">TableName</span><span class="p">:</span> <span class="n">aws</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">TableName</span><span class="p">),</span>
+        <span class="n">Item</span><span class="p">:</span>      <span class="n">req</span><span class="o">.</span><span class="n">Item</span><span class="p">,</span>
+    <span class="p">})</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="n">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s2">&quot;failed to put item: %v&quot;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
 
-    return &quot;Success&quot;, nil
-}
+    <span class="k">return</span> <span class="s2">&quot;Success&quot;</span><span class="p">,</span> <span class="n">nil</span>
+<span class="p">}</span>
 
-func main() {
-    lambda.Start(handler)
-}
-</code></pre>
-<h3><a href="#invoking-the-lambda-in-kotlin" aria-hidden="true" class="anchor" id="invoking-the-lambda-in-kotlin"></a>Invoking the Lambda in Kotlin</h3>
+<span class="n">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">lambda</span><span class="o">.</span><span class="n">Start</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="invoking-the-lambda-in-kotlin">Invoking the Lambda in Kotlin</h3>
 <p>We invoked the Lambda function from Kotlin using AWS SDK for Java:</p>
-<pre><code class="language-kotlin">import software.amazon.awssdk.services.lambda.LambdaClient
-import software.amazon.awssdk.services.lambda.model.InvokeRequest
-import software.amazon.awssdk.services.lambda.model.InvokeResponse
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">software.amazon.awssdk.services.lambda.LambdaClient</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">software.amazon.awssdk.services.lambda.model.InvokeRequest</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">software.amazon.awssdk.services.lambda.model.InvokeResponse</span>
 
-fun invokeLambda(record: String): String {
-    val lambdaClient = LambdaClient.create()
+<span class="n">fun</span> <span class="n">invokeLambda</span><span class="p">(</span><span class="n">record</span><span class="p">:</span> <span class="n">String</span><span class="p">):</span> <span class="n">String</span> <span class="p">{</span>
+    <span class="n">val</span> <span class="n">lambdaClient</span> <span class="o">=</span> <span class="n">LambdaClient</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
 
-    val payload = &quot;&quot;&quot;
-        {
-            &quot;tableName&quot;: &quot;MyTable&quot;,
-            &quot;item&quot;: {
-                &quot;id&quot;: { &quot;S&quot;: &quot;$record&quot; },
-                &quot;value&quot;: { &quot;S&quot;: &quot;SomeValue&quot; }
-            }
-        }
-    &quot;&quot;&quot;.trimIndent()
+    <span class="n">val</span> <span class="n">payload</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        {</span>
+<span class="s2">            &quot;tableName&quot;: &quot;MyTable&quot;,</span>
+<span class="s2">            &quot;item&quot;: {</span>
+<span class="s2">                &quot;id&quot;: { &quot;S&quot;: &quot;$record&quot; },</span>
+<span class="s2">                &quot;value&quot;: { &quot;S&quot;: &quot;SomeValue&quot; }</span>
+<span class="s2">            }</span>
+<span class="s2">        }</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">trimIndent</span><span class="p">()</span>
 
-    val request = InvokeRequest.builder()
-        .functionName(&quot;MyLambdaFunction&quot;)
-        .payload(payload)
-        .build()
+    <span class="n">val</span> <span class="n">request</span> <span class="o">=</span> <span class="n">InvokeRequest</span><span class="o">.</span><span class="n">builder</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">functionName</span><span class="p">(</span><span class="s2">&quot;MyLambdaFunction&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">payload</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">build</span><span class="p">()</span>
 
-    val response: InvokeResponse = lambdaClient.invoke(request)
+    <span class="n">val</span> <span class="n">response</span><span class="p">:</span> <span class="n">InvokeResponse</span> <span class="o">=</span> <span class="n">lambdaClient</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
 
-    return response.payload().asUtf8String()
-}
-</code></pre>
-<h3><a href="#results" aria-hidden="true" class="anchor" id="results"></a>Results</h3>
+    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">payload</span><span class="p">()</span><span class="o">.</span><span class="n">asUtf8String</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="results">Results</h3>
 <table>
 <thead>
 <tr>
@@ -396,90 +330,75 @@ fun invokeLambda(record: String): String {
 </tbody>
 </table>
 <hr />
-<h2><a href="#conclusion" aria-hidden="true" class="anchor" id="conclusion"></a>Conclusion</h2>
+<h2 id="conclusion">Conclusion</h2>
 <p>High-concurrency workloads require careful consideration of AWS Lambda’s throttling limits. By applying strategies such as concurrency control, retry mechanisms, or decoupling with SQS, you can mitigate throttling and improve system stability. Each solution has trade-offs, so the choice depends on your specific use case and performance requirements.</p>
 <p>For more details on Lambda throttling, refer to the <a href="https://docs.aws.amazon.com/lambda/latest/dg/invocation-scaling.html">AWS Lambda Developer Guide</a> and the <a href="https://aws.amazon.com/blogs/compute/understanding-aws-lambdas-invoke-throttle-limits/">AWS Compute Blog</a>.</p>
-<!-- Content Injected to every content markdown footer -->
-</div>
-  
-  <footer class="data-tags-footer">
-
-    <div class="content-authors-flex">
-      <div class="content-authors-full">
-        
-
-      </div>
-
-      <div class="date-tags-container">
-        <div class="content-date">
-          
-
-
-<span class="content-date">
-    <small> Jan 25, 2025 - &#10710; 6 min</small>
-</span>
-
-        </div>
-
-        <ul class="content-tags">
-          
-          <li><a href="./tag-lambda.html">lambda</a></li>
-          
-          <li><a href="./tag-throttling.html">throttling</a></li>
-          
-        </ul>
-      </div>
+<p>Jan 25, 2025 - ⧖ 6 min</p>
+<ul>
+<li><a href="./tag-lambda.html">lambda</a></li>
+<li><a href="./tag-throttling.html">throttling</a></li>
+</ul>
     </div>
-  </footer>
-  
-</article>
 
-
-
-
-  
-  
-  
-  
-
-
-
-    <article><h5><a href="#comments" aria-hidden="true" class="anchor" id="comments"></a>Comments</h5>
-<p><strong>edit <code>content/_comments.md</code> to adjust for your own site/repo</strong></p>
-<p><strong>remove</strong> the file to disable comments</p>
-<script src='https://utteranc.es/client.js'
-repo='rochacbruno/issue-bin'
-issue-term='pathname'
-theme='preferred-color-scheme'
-crossorigin='anonymous'
-async>
-</script>
-</article>
-
-
-
-        </section>
-        
-        <footer class="footer-content grid">
-            <div>Powered by <a href="https://github.com/rochacbruno/marmite">Marmite</a> | <small><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY_NC-SA</a></small></div>
+    <!-- Post Footer with Navigation -->
+    
+    <footer class="post-footer" style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid rgba(255, 255, 255, 0.1);">
+        <div style="display: flex; justify-content: space-between; gap: 1rem;">
             
-        </footer>
-        
-    </main>
+            <a href="reactive-programming-spring.html" class="button" style="flex: 1;">
+                ← Reactive Programming(Paradigm) and how to work with it in Spring
+            </a>
+            
 
-    <script src="./static/marmite.js"></script>
-    <script src="./static/custom.js"></script>
+            
+            <a href="multiple-lambda.html" class="button" style="flex: 1; text-align: right;">
+                How to trigger multiple AWS lambdas from a single S3 operation (Terraform approach) →
+            </a>
+            
+        </div>
+    </footer>
     
-    <script type="module" src="./static/search.js"></script>
+
+    <!-- Author Info -->
     
+    <div class="curve-card" style="margin-top: 2rem; padding: 1.5rem;">
+        <h3>About the Author</h3>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            
+            <img src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" alt="Pedro Lopes" style="width: 60px; height: 60px; border-radius: 50%;">
+            
+            <div>
+                <strong>Pedro Lopes</strong>
+                <p style="margin: 0.5rem 0; color: var(--text-secondary);">Software Engineer =D</p>
+                
+                <div style="display: flex; gap: 0.5rem;">
+                    
+                    <a href="https://www.linkedin.com/in/pedro-lopes-4563a7196/" class="retro-badge" target="_blank" rel="noopener">Linkedin</a>
+                    
+                </div>
+                
+            </div>
+        </div>
+    </div>
     
-    
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
-<script>
-  hljs.highlightAll();
-</script>
+</article>
+
+<!-- Related Posts (if available) -->
 
 
+            </main>
 
+            <!-- Footer / Status Bar -->
+            <footer class="status-bar">
+                <div>Powered by <a href="https://github.com/rochacbruno/marmite">Marmite</a> | <small><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY_NC-SA</a></small></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Retro Effects & Main JavaScript -->
+    <script src="./static/js/retro-effects.js"></script>
+    <script src="./static/js/main.js"></script>
+
+    
 </body>
 </html>

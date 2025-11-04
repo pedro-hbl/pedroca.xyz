@@ -1,204 +1,114 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/x-icon" href="./static/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="light dark" />
-    <meta name="generator" content="Marmite" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light" />
+    <meta name="generator" content="Marmite Retro Edition" />
+
+    <title>About me - Pedro Lopes</title>
+
     
 <meta property="og:title" content="About me">
-
-<meta property="og:description" content="
-I frequently discuss topics related to Cloud Architectures(mostly AWS), Distributed Systems, Highly...">
-
-
+<meta property="og:description" content=" I frequently discuss topics related to Cloud Architectures(mostly AWS), Distributed Systems, Highly...">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Pedro Lopes">
 
 
-
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "/about.html"
-    },
-    "url": "/about.html",
-    "headline": "About me",
-    "description": "I frequently discuss topics related to Cloud Architectures(mostly AWS), Distributed Systems, Highly Available Web Services, Banking Technolo...",
-    
-    "author": {
-        "@type": "Person",
-        "name": "Pedro Lopes",
-        "url": "/author-pedrohbl_.html",
-    },
-    "publisher": {
-        "@type": "Organization",
-        "name": "Pedro Lopes",
-        "logo": {
-            "@type": "ImageObject",
-            "url": "/"
-        }
-    },
-    
-}
-</script>
-
-
-    <title>About me | Pedro Lopes</title>
-    <link rel="stylesheet" type="text/css" href="./static/pico.min.css">
-    <link rel="stylesheet" type="text/css" href="./static/marmite.css">
-    
-    <link rel="stylesheet" type="text/css" href="./static/colorschemes/iceberg.css">
-    
-    <link rel="stylesheet" type="text/css" href="./static/custom.css">
-    
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css" id="highlightjs-theme" />
+<meta property="article:author" content="">
 
 
 
-    <link rel="alternate" type="application/rss+xml" title="index" href="index.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: garbage-collector" href="tag-garbage-collector.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: jvm" href="tag-jvm.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: lambda" href="tag-lambda.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: aws" href="tag-aws.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: kotlin" href="tag-kotlin.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: java" href="tag-java.rss">
-    <link rel="alternate" type="application/rss+xml" title="author: pedrohbl_" href="author-pedrohbl.rss">
-    <link rel="alternate" type="application/rss+xml" title="year: 2025" href="archive-2025.rss">
-    
+    <!-- Retro Theme Styles -->
+    <link rel="stylesheet" href="./static/css/retro-theme.css">
+    <link rel="stylesheet" href="./static/css/windows95.css">
+    <link rel="stylesheet" href="./static/css/curve-inspired.css">
 
-    
-    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./static/favicon.ico">
+
     
 </head>
 <body>
-    
-    <main class="container">
-        
-        <header class="header-content">
-            <nav class="header-nav">
-                <ul class="header-name">
-                    <li>
-                        <hgroup>
-                            <h2><a href="./" class="contrast">Pedro Lopes</a></h2>
-                             <p>Comput. Sci.</p> 
-                        </hgroup>
-                    </li>
-                </ul>
-                <button id="menu-toggle" class="hamburger">&#9776;</button>
-                
-                <ul class="header-menu" id="header-menu">
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./tags.html">Tags</a>
-                        
-                    </li>
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./archive.html">Archive</a>
-                        
-                    </li>
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./authors.html">Authors</a>
-                        
-                    </li>
-                    
-                    <li><span class="theme-toggle secondary" title="dark mode">&#9789;</span></li>
-                    
-                    <li><a href="#" id="search-toggle" class="secondary" title="Search (Ctrl + Shift + F)"> <span class="search-txt">Search</span><span class="search-magnifier"></span></a></li>
-                    
-                    <div class="underline"></div>
-                </ul>
-            </nav>
-            
-            <div class="marmite-background-overlay" id="overlay-close"></div>
-            <div class="marmite-search-bar hidden">
-                <span></span>
-                <button class="marmite-close-button" id="search-close">X</button>
-                <input placeholder="Search" id="marmite-search-input" />
-                <div class="marmite-search-bar-result">
-                    <ul id="marmite-search-bar-result"></ul>
+    <!-- Desktop with Retro Background -->
+    <div class="desktop-wrapper">
+        <!-- Main Window Chrome -->
+        <div class="window-chrome">
+            <!-- Title Bar -->
+            <div class="title-bar">
+                <span class="title-text">
+                    Pedro Lopes - About me
+                </span>
+                <div class="window-controls">
+                    <button class="btn-minimize" aria-label="Minimize">_</button>
+                    <button class="btn-maximize" aria-label="Maximize">□</button>
+                    <button class="btn-close" aria-label="Close">×</button>
                 </div>
             </div>
+
+            <!-- Menu Bar / Navigation -->
+            <nav class="menu-bar">
+                <a href="https://pedroca.xyz">Home</a>
+                
+                <a href="tags.html">Tags</a>
+                
+                <a href="archive.html">Archive</a>
+                
+                <a href="authors.html">Authors</a>
+                
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="content-area">
+                
+<article class="window-panel">
+    <!-- Post Header -->
+    <header class="post-header">
+        <h1 class="post-title">About me</h1>
+
+        <div class="post-meta">
             
-        </header>
-        
-        <section class="main-content">
+
+            
+            <span class="post-author">
+                👤 by <a href="#"></a>
+            </span>
             
 
+            
+        </div>
+    </header>
 
+    <!-- Post Content -->
+    <div class="post-content">
+        <p>I frequently discuss topics related to Cloud Architectures(mostly AWS), Distributed Systems, Highly Available Web Services, Banking Technology and Performance Optimization. Open to connecting globally for collaboration and knowledge sharing.</p>
+<p>Email me at <a href="mailto:pedro.hnblopes@gmail.com">pedro.hnblopes@gmail.com</a>
+Follow me on linkedin <a href="https://www.linkedin.com/in/pedro-lopes-4563a7196/">https://www.linkedin.com/in/pedro-lopes-4563a7196/</a></p>
+    </div>
 
-<article>
-
-  
-
-
-<div class="content-title" id="title">
-    <h1>About me</h1> 
+    <!-- Post Footer with Navigation -->
     
 
-
-<span class="content-date">
-    <small></small>
-</span>
-
-</div>
-
-  
-
-  <div class="content-html"><!-- Content Injected to every content markdown header -->
-<p>I frequently discuss topics related to Cloud Architectures(mostly AWS), Distributed Systems, Highly Available Web Services, Banking Technology and Performance Optimization. Open to connecting globally for collaboration and knowledge sharing.</p>
-<p>Email me at <a href="mailto:pedro.hnblopes@gmail.com">pedro.hnblopes@gmail.com</a>
-Follow me on linkedin <a href="https://www.linkedin.com/in/pedro-lopes-4563a7196/"><a href="https://www.linkedin.com/in/pedro-lopes-4563a7196/">https://www.linkedin.com/in/pedro-lopes-4563a7196/</a></a></p>
-<!-- Content Injected to every content markdown footer -->
-</div>
-  
+    <!-- Author Info -->
+    
 </article>
 
+<!-- Related Posts (if available) -->
 
 
+            </main>
 
+            <!-- Footer / Status Bar -->
+            <footer class="status-bar">
+                <div>Powered by <a href="https://github.com/rochacbruno/marmite">Marmite</a> | <small><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY_NC-SA</a></small></div>
+            </footer>
+        </div>
+    </div>
 
+    <!-- Retro Effects & Main JavaScript -->
+    <script src="./static/js/retro-effects.js"></script>
+    <script src="./static/js/main.js"></script>
 
-
-
-        </section>
-        
-        <footer class="footer-content grid">
-            <div>Powered by <a href="https://github.com/rochacbruno/marmite">Marmite</a> | <small><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY_NC-SA</a></small></div>
-            
-        </footer>
-        
-    </main>
-
-    <script src="./static/marmite.js"></script>
-    <script src="./static/custom.js"></script>
     
-    <script type="module" src="./static/search.js"></script>
-    
-    
-    
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
-<script>
-  hljs.highlightAll();
-</script>
-
-
-
 </body>
 </html>

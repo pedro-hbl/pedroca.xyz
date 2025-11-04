@@ -1,203 +1,129 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/x-icon" href="./static/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="light dark" />
-    <meta name="generator" content="Marmite" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light" />
+    <meta name="generator" content="Marmite Retro Edition" />
+
+    <title>How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin - Pedro Lopes</title>
+
     
 <meta property="og:title" content="How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin">
-
-<meta property="og:description" content="
-Introduction: Why Rethink Exception Handling?
-If you’ve been working with Kotlin or Java for a whil...">
-
-
+<meta property="og:description" content=" Introduction: Why Rethink Exception Handling? If you’ve been working with Kotlin or Java for a whil...">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Pedro Lopes">
 
-<meta property="article:published_time" content=" 2025-02-17T00:00:00+00:00">
+
+<meta property="article:author" content="Pedro Lopes">
 
 
 
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "/test.html"
-    },
-    "url": "/test.html",
-    "headline": "How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin",
-    "description": "Introduction: Why Rethink Exception Handling?
-If you’ve been working with Kotlin or Java for a while, you’re probably used to handling error...",
-    
-    "author": {
-        "@type": "Person",
-        "name": "Pedro Lopes",
-        "url": "/author-pedrohbl_.html",
-    },
-    "publisher": {
-        "@type": "Organization",
-        "name": "Pedro Lopes",
-        "logo": {
-            "@type": "ImageObject",
-            "url": "/"
-        }
-    },
-    "datePublished": "2025-02-17T00:00:00+00:00"
-}
-</script>
+    <!-- Retro Theme Styles -->
+    <link rel="stylesheet" href="./static/css/retro-theme.css">
+    <link rel="stylesheet" href="./static/css/windows95.css">
+    <link rel="stylesheet" href="./static/css/curve-inspired.css">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./static/favicon.ico">
 
-    <title>How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin | Pedro Lopes</title>
-    <link rel="stylesheet" type="text/css" href="./static/pico.min.css">
-    <link rel="stylesheet" type="text/css" href="./static/marmite.css">
-    
-    <link rel="stylesheet" type="text/css" href="./static/colorschemes/iceberg.css">
-    
-    <link rel="stylesheet" type="text/css" href="./static/custom.css">
-    
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css" id="highlightjs-theme" />
-
-
-
-    <link rel="alternate" type="application/rss+xml" title="index" href="index.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: kotlin" href="tag-kotlin.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: exception" href="tag-exception.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: functional-programming" href="tag-functional-programming.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: haskell" href="tag-haskell.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: distributed-systems" href="tag-distributed-systems.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: garbage-collector" href="tag-garbage-collector.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: microservices" href="tag-microservices.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: jvm" href="tag-jvm.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: aws" href="tag-aws.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: throttling" href="tag-throttling.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: java" href="tag-java.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: lambda" href="tag-lambda.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: technical-debt" href="tag-technical-debt.rss">
-    <link rel="alternate" type="application/rss+xml" title="tag: software-architecture" href="tag-software-architecture.rss">
-    <link rel="alternate" type="application/rss+xml" title="author: pedrohbl_" href="author-pedrohbl.rss">
-    <link rel="alternate" type="application/rss+xml" title="year: 2025" href="archive-2025.rss">
-    
-
-    
-    
     
 </head>
 <body>
-    
-    <main class="container">
-        
-        <header class="header-content">
-            <nav class="header-nav">
-                <ul class="header-name">
-                    <li>
-                        <hgroup>
-                            <h2><a href="./" class="contrast">Pedro Lopes</a></h2>
-                             <p>Comput. Sci.</p> 
-                        </hgroup>
-                    </li>
-                </ul>
-                <button id="menu-toggle" class="hamburger">&#9776;</button>
-                
-                <ul class="header-menu" id="header-menu">
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./tags.html">Tags</a>
-                        
-                    </li>
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./archive.html">Archive</a>
-                        
-                    </li>
-                    
-                      
-                      
-                    <li>
-                        
-                        <a class="menu-item secondary"  href="./authors.html">Authors</a>
-                        
-                    </li>
-                    
-                    <li><span class="theme-toggle secondary" title="dark mode">&#9789;</span></li>
-                    
-                    <li><a href="#" id="search-toggle" class="secondary" title="Search (Ctrl + Shift + F)"> <span class="search-txt">Search</span><span class="search-magnifier"></span></a></li>
-                    
-                    <div class="underline"></div>
-                </ul>
-            </nav>
-            
-            <div class="marmite-background-overlay" id="overlay-close"></div>
-            <div class="marmite-search-bar hidden">
-                <span></span>
-                <button class="marmite-close-button" id="search-close">X</button>
-                <input placeholder="Search" id="marmite-search-input" />
-                <div class="marmite-search-bar-result">
-                    <ul id="marmite-search-bar-result"></ul>
+    <!-- Desktop with Retro Background -->
+    <div class="desktop-wrapper">
+        <!-- Main Window Chrome -->
+        <div class="window-chrome">
+            <!-- Title Bar -->
+            <div class="title-bar">
+                <span class="title-text">
+                    Pedro Lopes - How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin
+                </span>
+                <div class="window-controls">
+                    <button class="btn-minimize" aria-label="Minimize">_</button>
+                    <button class="btn-maximize" aria-label="Maximize">□</button>
+                    <button class="btn-close" aria-label="Close">×</button>
                 </div>
             </div>
+
+            <!-- Menu Bar / Navigation -->
+            <nav class="menu-bar">
+                <a href="https://pedroca.xyz">Home</a>
+                
+                <a href="tags.html">Tags</a>
+                
+                <a href="archive.html">Archive</a>
+                
+                <a href="authors.html">Authors</a>
+                
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="content-area">
+                
+<article class="window-panel">
+    <!-- Post Header -->
+    <header class="post-header">
+        <h1 class="post-title">How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin</h1>
+
+        <div class="post-meta">
             
-        </header>
-        
-        <section class="main-content">
+
+            
+            <span class="post-author">
+                👤 by <a href="author-pedrohbl_.html">Pedro Lopes</a>
+            </span>
             
 
+            
+            <div class="post-tags">
+                
+                
+                <a href="tag-kotlin.html" class="retro-badge">kotlin</a>
+                
+                
+                <a href="tag-exception.html" class="retro-badge">exception</a>
+                
+                
+                <a href="tag-functional-programming.html" class="retro-badge">functional-programming</a>
+                
+                
+                <a href="tag-haskell.html" class="retro-badge">haskell</a>
+                
+            </div>
+            
+        </div>
+    </header>
 
-
-<article>
-
-  
-
-
-<div class="content-title" id="title">
-    <h1>How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin</h1> 
-    
-
-
-<span class="content-date">
-    <small> Feb 17, 2025 - &#10710; 10 min</small>
-</span>
-
-</div>
-
-  
-
-  <div class="content-html"><!-- Content Injected to every content markdown header -->
-<h2><a href="#introduction-why-rethink-exception-handling" aria-hidden="true" class="anchor" id="introduction-why-rethink-exception-handling"></a>Introduction: Why Rethink Exception Handling?</h2>
+    <!-- Post Content -->
+    <div class="post-content">
+        <p>Feb 17, 2025 - ⧖ 10 min</p>
+<h2 id="introduction-why-rethink-exception-handling">Introduction: Why Rethink Exception Handling?</h2>
 <p>If you’ve been working with Kotlin or Java for a while, you’re probably used to handling errors with <code>try-catch</code> blocks. It’s the standard way, and it works fine for most standard porpuse applications... But, on complex scenarios just adding more and more of those blocks can be often messy, verbose, and forces you to <strong>constantly worry about where exceptions might be thrown</strong>. What if there were a better way? A way to handle errors explicitly, without unexpected surprises?</p>
-<p>That’s where functional programming concepts come in. While I wouldn’t call myself a functional programming purist(I'm mostly scared of haskell nerds), I’ve learned over time that some of those &quot;academic&quot; ideas can actually make our code <strong>cleaner, more robust, and easier to reason about</strong>.</p>
+<p>That’s where functional programming concepts come in. While I wouldn’t call myself a functional programming purist(I'm mostly scared of haskell nerds), I’ve learned over time that some of those "academic" ideas can actually make our code <strong>cleaner, more robust, and easier to reason about</strong>.</p>
 <p>One such concept is the <strong>monad</strong>, which, provides a powerful way to handle side effects, errors, and sequencing. Kotlin, even though it’s not a purely functional language, provides tools that let us embrace this style and libraries like <a href="https://github.com/michaelbull/kotlin-result">kotlin-result</a> make it even simpler.</p>
 <p>In this post, I’ll try to break down why traditional exception handling falls short on complex scenarios, how monads work, and how you can use them to <strong>write cleaner, organized and safer Kotlin code</strong>.</p>
-<h2><a href="#the-problem-traditional-exception-handling" aria-hidden="true" class="anchor" id="the-problem-traditional-exception-handling"></a>The Problem: Traditional Exception Handling</h2>
+<h2 id="the-problem-traditional-exception-handling">The Problem: Traditional Exception Handling</h2>
 <p>Traditional exception handling in Java and Kotlin relies heavily on <strong>try-catch</strong> blocks. While this approach works, it comes with some well-known problems:</p>
-<h3><a href="#1-hidden-control-flow" aria-hidden="true" class="anchor" id="1-hidden-control-flow"></a>1. Hidden Control Flow</h3>
-<p>Traditional exceptions create an invisible &quot;goto&quot; in your code. When you see:</p>
-<pre><code class="language-kotlin">fun processUser(user: User) {
+<h3 id="1-hidden-control-flow">1. Hidden Control Flow</h3>
+<p>Traditional exceptions create an invisible "goto" in your code. When you see:</p>
+<div class="codehilite"><pre><span></span><code>fun processUser(user: User) {
     validateUser(user)
     updateProfile(user)
     notifyUser(user)
 }
-</code></pre>
-<p>You might think this code runs sequentially, but any of these methods could throw an exception, creating hidden control flow paths. As Raymond Chen from Microsoft noted, &quot;Exceptions are like non-local goto statements.&quot; This makes it:</p>
+</code></pre></div>
+
+<p>You might think this code runs sequentially, but any of these methods could throw an exception, creating hidden control flow paths. As Raymond Chen from Microsoft noted, "Exceptions are like non-local goto statements." This makes it:</p>
 <ul>
 <li>Hard to reason about the code's execution path</li>
 <li>Difficult to ensure all error cases are handled</li>
 <li>Easy to miss cleanup code in some error paths</li>
 </ul>
 <p>Wouldn’t it be better in this case if we could treat errors as <strong>values</strong>, passing them around like any other data? That’s exactly what the functional approach enables.</p>
-<h3><a href="#2-the-checked-vs-unchecked-dilemma" aria-hidden="true" class="anchor" id="2-the-checked-vs-unchecked-dilemma"></a>2. The Checked vs. Unchecked Dilemma</h3>
+<h3 id="2-the-checked-vs-unchecked-dilemma">2. The Checked vs. Unchecked Dilemma</h3>
 <p>Java tried to solve this with checked exceptions, but that created its own set of problems:</p>
-<pre><code class="language-kotlin">try {
+<div class="codehilite"><pre><span></span><code>try {
     fileOperation()  // throws IOException
     networkCall()    // throws NetworkException
     dbOperation()    // throws SQLException
@@ -208,17 +134,18 @@ If you’ve been working with Kotlin or Java for a while, you’re probably used
 } catch (SQLException e) {
     // Handle DB error
 }
-</code></pre>
+</code></pre></div>
+
 <p>This leads to:</p>
 <ul>
 <li>Exception proliferation through the codebase</li>
 <li>Forced handling of exceptions at inappropriate levels</li>
 <li>Violation of the Open/Closed Principle when adding new error cases</li>
-<li>&quot;Exception tunneling&quot; where developers wrap exceptions just to satisfy the compiler, possibly the ugliest thing we see out there.</li>
+<li>"Exception tunneling" where developers wrap exceptions just to satisfy the compiler, possibly the ugliest thing we see out there.</li>
 </ul>
-<h3><a href="#3-resource-management-complexity" aria-hidden="true" class="anchor" id="3-resource-management-complexity"></a>3. Resource Management Complexity</h3>
+<h3 id="3-resource-management-complexity">3. Resource Management Complexity</h3>
 <p>Consider this seemingly simple operation:</p>
-<pre><code class="language-kotlin">fun processOrders() {
+<div class="codehilite"><pre><span></span><code>fun processOrders() {
     val connection = dataSource.connection
     try {
         val statement = connection.createStatement()
@@ -236,7 +163,8 @@ If you’ve been working with Kotlin or Java for a while, you’re probably used
         connection.close()
     }
 }
-</code></pre>
+</code></pre></div>
+
 <p>Problems here include:</p>
 <ul>
 <li>Nested try-finally blocks create unreadable code</li>
@@ -244,18 +172,19 @@ If you’ve been working with Kotlin or Java for a while, you’re probably used
 <li>Difficult to maintain proper cleanup order</li>
 <li>Hard to ensure all resources are properly disposed</li>
 </ul>
-<h3><a href="#4-loss-of-type-safety" aria-hidden="true" class="anchor" id="4-loss-of-type-safety"></a>4. Loss of Type Safety</h3>
+<h3 id="4-loss-of-type-safety">4. Loss of Type Safety</h3>
 <p>Exceptions break type safety by introducing failure modes that aren't represented in function signatures:</p>
-<pre><code class="language-kotlin">// What can go wrong here? The signature doesn't tell us
-fun getUserProfile(id: String): UserProfile {
-    // Could throw:
-    // - DatabaseException
-    // - ValidationException
-    // - SerializationException
-    // - NetworkException
-    // ... and we wouldn't know from the signature
-}
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="c1">// What can go wrong here? The signature doesn&#39;t tell us</span>
+<span class="n">fun</span><span class="w"> </span><span class="n">getUserProfile</span><span class="p">(</span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="n">String</span><span class="p">):</span><span class="w"> </span><span class="n">UserProfile</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Could throw:</span>
+<span class="w">    </span><span class="c1">// - DatabaseException</span>
+<span class="w">    </span><span class="c1">// - ValidationException</span>
+<span class="w">    </span><span class="c1">// - SerializationException</span>
+<span class="w">    </span><span class="c1">// - NetworkException</span>
+<span class="w">    </span><span class="c1">// ... and we wouldn&#39;t know from the signature</span>
+<span class="p">}</span>
+</code></pre></div>
+
 <p>This leads to:</p>
 <ul>
 <li>Runtime surprises</li>
@@ -263,46 +192,49 @@ fun getUserProfile(id: String): UserProfile {
 <li>Impossible to ensure all error cases are handled at compile time</li>
 <li>Breaking of referential transparency</li>
 </ul>
-<h2><a href="#enter-the-functional-world-how-monads-solve-these-problems" aria-hidden="true" class="anchor" id="enter-the-functional-world-how-monads-solve-these-problems"></a>Enter the Functional World: How Monads Solve These Problems</h2>
+<h2 id="enter-the-functional-world-how-monads-solve-these-problems">Enter the Functional World: How Monads Solve These Problems</h2>
 <p>Before we dive into the solution, let's understand how functional programming concepts can address each of these issues. <em>No catehory theory diagrams or greek symbols will be used here.</em></p>
-<h2><a href="#functors-applicatives-and-monads" aria-hidden="true" class="anchor" id="functors-applicatives-and-monads"></a>Functors, Applicatives, and Monads</h2>
-<h3><a href="#functors-safe-value-transformations" aria-hidden="true" class="anchor" id="functors-safe-value-transformations"></a>Functors: Safe Value Transformations</h3>
+<h2 id="functors-applicatives-and-monads">Functors, Applicatives, and Monads</h2>
+<h3 id="functors-safe-value-transformations">Functors: Safe Value Transformations</h3>
 <p>A functor is any type that can be mapped over while preserving its structure. In Kotlin, the simplest example is <code>List</code>:</p>
-<pre><code class="language-kotlin">val numbers = listOf(1, 2, 3)
+<div class="codehilite"><pre><span></span><code>val numbers = listOf(1, 2, 3)
 val doubled = numbers.map { it * 2 } // [2, 4, 6]
-</code></pre>
+</code></pre></div>
+
 <p>A monad extends this concept by allowing us to chain operations while maintaining context (like success/failure states). This is exactly what we need for proper error handling!</p>
-<h2><a href="#the-solution-kotlin-result-in-action" aria-hidden="true" class="anchor" id="the-solution-kotlin-result-in-action"></a>The Solution: kotlin-result in Action</h2>
+<h2 id="the-solution-kotlin-result-in-action">The Solution: kotlin-result in Action</h2>
 <p>The <code>kotlin-result</code> library brings these functional programming concepts to Kotlin with zero runtime overhead. Let's see how it addresses each of our problems:</p>
-<h3><a href="#1-explicit-control-flow" aria-hidden="true" class="anchor" id="1-explicit-control-flow"></a>1. Explicit Control Flow</h3>
+<h3 id="1-explicit-control-flow">1. Explicit Control Flow</h3>
 <p>Instead of hidden exception paths, we make failures explicit:</p>
-<pre><code class="language-kotlin">fun processUser(user: User): Result&lt;ProcessedUser, UserError&gt; =
-    validateUser(user)
-        .andThen { validUser -&gt; 
-            updateProfile(validUser)
-        }
-        .andThen { updatedUser -&gt;
-            notifyUser(updatedUser)
-        }
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="n">fun</span><span class="w"> </span><span class="n">processUser</span><span class="p">(</span><span class="n">user</span><span class="o">:</span><span class="w"> </span><span class="n">User</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Result</span><span class="o">&lt;</span><span class="n">ProcessedUser</span><span class="p">,</span><span class="w"> </span><span class="n">UserError</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">validateUser</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">andThen</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">validUser</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span>
+<span class="w">            </span><span class="n">updateProfile</span><span class="p">(</span><span class="n">validUser</span><span class="p">)</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="p">.</span><span class="n">andThen</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">updatedUser</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="n">notifyUser</span><span class="p">(</span><span class="n">updatedUser</span><span class="p">)</span>
+<span class="w">        </span><span class="p">}</span>
+</code></pre></div>
+
 <p>Now we can:</p>
 <ul>
 <li>See exactly where things might fail</li>
 <li>Handle each error case explicitly</li>
 <li>Ensure proper resource cleanup</li>
 </ul>
-<h3><a href="#2-type-safe-error-handling" aria-hidden="true" class="anchor" id="2-type-safe-error-handling"></a>2. Type-Safe Error Handling</h3>
+<h3 id="2-type-safe-error-handling">2. Type-Safe Error Handling</h3>
 <p>Instead of catching random exceptions, we model our errors as types:</p>
-<pre><code class="language-kotlin">sealed class UserError {
-    data class ValidationError(val reason: String) : UserError()
-    data class DatabaseError(val message: String) : UserError()
-    data class NotificationError(val message: String) : UserError()
+<div class="codehilite"><pre><span></span><code>sealed<span class="w"> </span>class<span class="w"> </span>UserError<span class="w"> </span>{
+<span class="w">    </span>data<span class="w"> </span>class<span class="w"> </span>ValidationError(val<span class="w"> </span>reason:<span class="w"> </span>String)<span class="w"> </span>:<span class="w"> </span>UserError()
+<span class="w">    </span>data<span class="w"> </span>class<span class="w"> </span>DatabaseError(val<span class="w"> </span>message:<span class="w"> </span>String)<span class="w"> </span>:<span class="w"> </span>UserError()
+<span class="w">    </span>data<span class="w"> </span>class<span class="w"> </span>NotificationError(val<span class="w"> </span>message:<span class="w"> </span>String)<span class="w"> </span>:<span class="w"> </span>UserError()
 }
 
-fun validateUser(user: User): Result&lt;ValidUser, UserError.ValidationError&gt;
-fun updateProfile(user: ValidUser): Result&lt;UpdatedUser, UserError.DatabaseError&gt;
-fun notifyUser(user: UpdatedUser): Result&lt;ProcessedUser, UserError.NotificationError&gt;
-</code></pre>
+fun<span class="w"> </span>validateUser(user:<span class="w"> </span>User):<span class="w"> </span>Result<span class="nt">&lt;ValidUser</span><span class="err">,</span><span class="w"> </span><span class="err">UserError.ValidationError</span><span class="nt">&gt;</span>
+fun<span class="w"> </span>updateProfile(user:<span class="w"> </span>ValidUser):<span class="w"> </span>Result<span class="nt">&lt;UpdatedUser</span><span class="err">,</span><span class="w"> </span><span class="err">UserError.DatabaseError</span><span class="nt">&gt;</span>
+fun<span class="w"> </span>notifyUser(user:<span class="w"> </span>UpdatedUser):<span class="w"> </span>Result<span class="nt">&lt;ProcessedUser</span><span class="err">,</span><span class="w"> </span><span class="err">UserError.NotificationError</span><span class="nt">&gt;</span>
+</code></pre></div>
+
 <p>Benefits:</p>
 <ul>
 <li>Error types are part of the function signature</li>
@@ -310,37 +242,39 @@ fun notifyUser(user: UpdatedUser): Result&lt;ProcessedUser, UserError.Notificati
 <li>No more exception tunneling</li>
 <li>Clear API contracts</li>
 </ul>
-<h3><a href="#3-clean-resource-management" aria-hidden="true" class="anchor" id="3-clean-resource-management"></a>3. Clean Resource Management</h3>
+<h3 id="3-clean-resource-management">3. Clean Resource Management</h3>
 <p>The <code>Result</code> type works beautifully with Kotlin's scope functions:</p>
-<pre><code class="language-kotlin">fun processOrders(): Result&lt;List&lt;Order&gt;, DBError&gt; =
-    dataSource.connection.use { connection -&gt;
-        connection.createStatement().use { statement -&gt;
-            statement.executeQuery(&quot;SELECT * FROM orders&quot;).use { result -&gt;
-                runCatching { 
-                    result.toOrders()
-                }.mapError { 
-                    DBError.QueryFailed(it.message)
-                }
-            }
-        }
-    }
-</code></pre>
-<h3><a href="#4-composable-error-handling" aria-hidden="true" class="anchor" id="4-composable-error-handling"></a>4. Composable Error Handling</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">fun</span><span class="w"> </span><span class="n">processOrders</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="n">Result</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">DBError</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">dataSource</span><span class="p">.</span><span class="n">connection</span><span class="p">.</span><span class="n">use</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">connection</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">connection</span><span class="p">.</span><span class="n">createStatement</span><span class="p">().</span><span class="n">use</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">statement</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="n">statement</span><span class="p">.</span><span class="n">executeQuery</span><span class="p">(</span><span class="s">&quot;SELECT * FROM orders&quot;</span><span class="p">).</span><span class="n">use</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">                </span><span class="n">runCatching</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">                    </span><span class="n">result</span><span class="p">.</span><span class="n">toOrders</span><span class="p">()</span>
+<span class="w">                </span><span class="p">}.</span><span class="n">mapError</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">                    </span><span class="n">DBError</span><span class="p">.</span><span class="n">QueryFailed</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">message</span><span class="p">)</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+
+<h3 id="4-composable-error-handling">4. Composable Error Handling</h3>
 <p>For complex operations with multiple failure points, we can use monad comprehensions:</p>
-<pre><code class="language-kotlin">val result: Result&lt;ProcessedOrder, OrderError&gt; = binding {
-    val user = findUser(userId).bind()
-    val order = validateOrder(orderData).bind()
-    val payment = processPayment(order.total).bind()
-    val savedOrder = saveOrder(order, payment).bind()
-    
-    // Notification failure doesn't stop the flow
-    notifyUser(savedOrder.id).onFailure { error -&gt;
-        logger.warn(&quot;Failed to notify user: $error&quot;)
-    }
-    
-    savedOrder
+<div class="codehilite"><pre><span></span><code>val<span class="w"> </span>result:<span class="w"> </span>Result<span class="nt">&lt;ProcessedOrder</span><span class="err">,</span><span class="w"> </span><span class="err">OrderError</span><span class="nt">&gt;</span><span class="w"> </span>=<span class="w"> </span>binding<span class="w"> </span>{
+<span class="w">    </span>val<span class="w"> </span>user<span class="w"> </span>=<span class="w"> </span>findUser(userId).bind()
+<span class="w">    </span>val<span class="w"> </span>order<span class="w"> </span>=<span class="w"> </span>validateOrder(orderData).bind()
+<span class="w">    </span>val<span class="w"> </span>payment<span class="w"> </span>=<span class="w"> </span>processPayment(order.total).bind()
+<span class="w">    </span>val<span class="w"> </span>savedOrder<span class="w"> </span>=<span class="w"> </span>saveOrder(order,<span class="w"> </span>payment).bind()
+
+<span class="w">    </span>//<span class="w"> </span>Notification<span class="w"> </span>failure<span class="w"> </span>doesn&#39;t<span class="w"> </span>stop<span class="w"> </span>the<span class="w"> </span>flow
+<span class="w">    </span>notifyUser(savedOrder.id).onFailure<span class="w"> </span>{<span class="w"> </span>error<span class="w"> </span>-&gt;
+<span class="w">        </span>logger.warn(&quot;Failed<span class="w"> </span>to<span class="w"> </span>notify<span class="w"> </span>user:<span class="w"> </span>$error&quot;)
+<span class="w">    </span>}
+
+<span class="w">    </span>savedOrder
 }
-</code></pre>
+</code></pre></div>
+
 <p>Benefits:</p>
 <ul>
 <li>Linear code flow</li>
@@ -348,19 +282,20 @@ fun notifyUser(user: UpdatedUser): Result&lt;ProcessedUser, UserError.Notificati
 <li>Clear error propagation</li>
 <li>Easy to test each step independently</li>
 </ul>
-<h3><a href="#5-railway-oriented-programming" aria-hidden="true" class="anchor" id="5-railway-oriented-programming"></a>5. Railway-Oriented Programming</h3>
+<h3 id="5-railway-oriented-programming">5. Railway-Oriented Programming</h3>
 <p>The <code>Result</code> type implements what's known as Railway-Oriented Programming, where success and failure are like two parallel tracks:</p>
-<pre><code class="language-kotlin">fun validateUserRegistration(input: RegistrationInput): Result&lt;ValidUser, ValidationError&gt; =
-    validateEmail(input.email)
-        .andThen { email -&gt;
-            validatePassword(input.password)
-                .map { password -&gt; email to password }
-        }
-        .andThen { (email, password) -&gt;
-            validateAge(input.age)
-                .map { age -&gt; ValidUser(email, password, age) }
-        }
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="n">fun</span><span class="w"> </span><span class="n">validateUserRegistration</span><span class="p">(</span><span class="n">input</span><span class="o">:</span><span class="w"> </span><span class="n">RegistrationInput</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Result</span><span class="o">&lt;</span><span class="n">ValidUser</span><span class="p">,</span><span class="w"> </span><span class="n">ValidationError</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">validateEmail</span><span class="p">(</span><span class="n">input</span><span class="p">.</span><span class="n">email</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">andThen</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="n">validatePassword</span><span class="p">(</span><span class="n">input</span><span class="p">.</span><span class="n">password</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="nf">map</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">password</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">password</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="p">.</span><span class="n">andThen</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="n">validateAge</span><span class="p">(</span><span class="n">input</span><span class="p">.</span><span class="n">age</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="nf">map</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ValidUser</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+</code></pre></div>
+
 <p>This gives us:</p>
 <ul>
 <li>Clear separation of happy and unhappy paths</li>
@@ -368,45 +303,47 @@ fun notifyUser(user: UpdatedUser): Result&lt;ProcessedUser, UserError.Notificati
 <li>Composable error handling</li>
 <li>Type-safe error accumulation</li>
 </ul>
-<h2><a href="#making-life-even-better-advanced-patterns" aria-hidden="true" class="anchor" id="making-life-even-better-advanced-patterns"></a>Making Life Even Better: Advanced Patterns</h2>
-<h3><a href="#pattern-1-parallel-validations" aria-hidden="true" class="anchor" id="pattern-1-parallel-validations"></a>Pattern 1: Parallel Validations</h3>
-<pre><code class="language-kotlin">suspend fun validateUserProfile(profile: UserProfile): Result&lt;ValidProfile, ValidationError&gt; =
-    coroutineBinding {
-        val email = async { validateEmail(profile.email).bind() }
-        val phone = async { validatePhone(profile.phone).bind() }
-        val address = async { validateAddress(profile.address).bind() }
-        
-        ValidProfile(
-            email = email.await(),
-            phone = phone.await(),
-            address = address.await()
-        )
-    }
-</code></pre>
-<h3><a href="#pattern-2-domain-error-handling" aria-hidden="true" class="anchor" id="pattern-2-domain-error-handling"></a>Pattern 2: Domain Error Handling</h3>
-<pre><code class="language-kotlin">sealed class DomainError {
-    sealed class Validation : DomainError() {
-        data class InvalidEmail(val email: String) : Validation()
-        data class InvalidPassword(val reason: String) : Validation()
-        data class InvalidAge(val age: Int) : Validation()
-    }
-    
-    sealed class Infrastructure : DomainError() {
-        data class DatabaseError(val message: String) : Infrastructure()
-        data class NetworkError(val message: String) : Infrastructure()
-    }
+<h2 id="making-life-even-better-advanced-patterns">Making Life Even Better: Advanced Patterns</h2>
+<h3 id="pattern-1-parallel-validations">Pattern 1: Parallel Validations</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">suspend</span><span class="w"> </span><span class="nx">fun</span><span class="w"> </span><span class="nx">validateUserProfile</span><span class="p">(</span><span class="nx">profile</span><span class="p">:</span><span class="w"> </span><span class="nx">UserProfile</span><span class="p">):</span><span class="w"> </span><span class="nx">Result</span><span class="p">&lt;</span><span class="nx">ValidProfile</span><span class="p">,</span><span class="w"> </span><span class="nx">ValidationError</span><span class="p">&gt;</span><span class="w"> </span><span class="p">=</span>
+<span class="w">    </span><span class="nx">coroutineBinding</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">val</span><span class="w"> </span><span class="nx">email</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">async</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">validateEmail</span><span class="p">(</span><span class="nx">profile</span><span class="p">.</span><span class="nx">email</span><span class="p">).</span><span class="nx">bind</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="nx">val</span><span class="w"> </span><span class="nx">phone</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">async</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">validatePhone</span><span class="p">(</span><span class="nx">profile</span><span class="p">.</span><span class="nx">phone</span><span class="p">).</span><span class="nx">bind</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="nx">val</span><span class="w"> </span><span class="nx">address</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">async</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">validateAddress</span><span class="p">(</span><span class="nx">profile</span><span class="p">.</span><span class="nx">address</span><span class="p">).</span><span class="nx">bind</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">        </span><span class="nx">ValidProfile</span><span class="p">(</span>
+<span class="w">            </span><span class="nx">email</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">email</span><span class="p">.</span><span class="nx">await</span><span class="p">(),</span>
+<span class="w">            </span><span class="nx">phone</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">phone</span><span class="p">.</span><span class="nx">await</span><span class="p">(),</span>
+<span class="w">            </span><span class="nx">address</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">address</span><span class="p">.</span><span class="nx">await</span><span class="p">()</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+
+<h3 id="pattern-2-domain-error-handling">Pattern 2: Domain Error Handling</h3>
+<div class="codehilite"><pre><span></span><code>sealed<span class="w"> </span>class<span class="w"> </span>DomainError<span class="w"> </span>{
+<span class="w">    </span>sealed<span class="w"> </span>class<span class="w"> </span>Validation<span class="w"> </span>:<span class="w"> </span>DomainError()<span class="w"> </span>{
+<span class="w">        </span>data<span class="w"> </span>class<span class="w"> </span>InvalidEmail(val<span class="w"> </span>email:<span class="w"> </span>String)<span class="w"> </span>:<span class="w"> </span>Validation()
+<span class="w">        </span>data<span class="w"> </span>class<span class="w"> </span>InvalidPassword(val<span class="w"> </span>reason:<span class="w"> </span>String)<span class="w"> </span>:<span class="w"> </span>Validation()
+<span class="w">        </span>data<span class="w"> </span>class<span class="w"> </span>InvalidAge(val<span class="w"> </span>age:<span class="w"> </span>Int)<span class="w"> </span>:<span class="w"> </span>Validation()
+<span class="w">    </span>}
+
+<span class="w">    </span>sealed<span class="w"> </span>class<span class="w"> </span>Infrastructure<span class="w"> </span>:<span class="w"> </span>DomainError()<span class="w"> </span>{
+<span class="w">        </span>data<span class="w"> </span>class<span class="w"> </span>DatabaseError(val<span class="w"> </span>message:<span class="w"> </span>String)<span class="w"> </span>:<span class="w"> </span>Infrastructure()
+<span class="w">        </span>data<span class="w"> </span>class<span class="w"> </span>NetworkError(val<span class="w"> </span>message:<span class="w"> </span>String)<span class="w"> </span>:<span class="w"> </span>Infrastructure()
+<span class="w">    </span>}
 }
 
-// Easy mapping to HTTP responses
-fun DomainError.toHttpResponse(): ResponseEntity&lt;ErrorResponse&gt; =
-    when (this) {
-        is DomainError.Validation -&gt; ResponseEntity.badRequest()
-            .body(ErrorResponse(this.toString()))
-        is DomainError.Infrastructure -&gt; ResponseEntity.internalServerError()
-            .body(ErrorResponse(&quot;An internal error occurred&quot;))
-    }
-</code></pre>
-<h2><a href="#conclusion-better-exception-handling-through-functional-programming" aria-hidden="true" class="anchor" id="conclusion-better-exception-handling-through-functional-programming"></a>Conclusion: Better Exception Handling Through Functional Programming</h2>
+//<span class="w"> </span>Easy<span class="w"> </span>mapping<span class="w"> </span>to<span class="w"> </span>HTTP<span class="w"> </span>responses
+fun<span class="w"> </span>DomainError.toHttpResponse():<span class="w"> </span>ResponseEntity<span class="nt">&lt;ErrorResponse&gt;</span><span class="w"> </span>=
+<span class="w">    </span>when<span class="w"> </span>(this)<span class="w"> </span>{
+<span class="w">        </span>is<span class="w"> </span>DomainError.Validation<span class="w"> </span>-&gt;<span class="w"> </span>ResponseEntity.badRequest()
+<span class="w">            </span>.body(ErrorResponse(this.toString()))
+<span class="w">        </span>is<span class="w"> </span>DomainError.Infrastructure<span class="w"> </span>-&gt;<span class="w"> </span>ResponseEntity.internalServerError()
+<span class="w">            </span>.body(ErrorResponse(&quot;An<span class="w"> </span>internal<span class="w"> </span>error<span class="w"> </span>occurred&quot;))
+<span class="w">    </span>}
+</code></pre></div>
+
+<h2 id="conclusion-better-exception-handling-through-functional-programming">Conclusion: Better Exception Handling Through Functional Programming</h2>
 <p>Functional programming concepts like monads aren't just academic exercises—they provide practical solutions to real problems in exception handling:</p>
 <p>✅ Explicit error paths instead of hidden control flow
 ✅ Type-safe error handling
@@ -418,110 +355,78 @@ fun DomainError.toHttpResponse(): ResponseEntity&lt;ErrorResponse&gt; =
 <p>Remember: good error handling isn't about catching exceptions—it's about making failure impossible to ignore and easy to handle. Functional programming gives us the tools to do exactly that.</p>
 <hr />
 <p>🔧 Ready to upgrade your error handling? Give <code>kotlin-result</code> a try and let me know in the comments how it transformed your code!</p>
-<!-- Content Injected to every content markdown footer -->
-</div>
-  
-  <footer class="data-tags-footer">
-
-    <div class="content-authors-flex">
-      <div class="content-authors-full">
-        
-<div class="content-authors">
-    <ul>
-        
-            
-            
-            <li>
-                <a href="author-pedrohbl_.html">
-                    <img src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" alt="Pedro Lopes" class="avatar">
-                    Pedro Lopes
-                </a>
-            </li>
-            
-        
-    </ul>
-</div>
-
-
-      </div>
-
-      <div class="date-tags-container">
-        <div class="content-date">
-          
-
-
-<span class="content-date">
-    <small> Feb 17, 2025 - &#10710; 10 min</small>
-</span>
-
-        </div>
-
-        <ul class="content-tags">
-          
-          <li><a href="./tag-kotlin.html">kotlin</a></li>
-          
-          <li><a href="./tag-exception.html">exception</a></li>
-          
-          <li><a href="./tag-functional-programming.html">functional-programming</a></li>
-          
-          <li><a href="./tag-haskell.html">haskell</a></li>
-          
-        </ul>
-      </div>
+<ul>
+<li><a href="author-pedrohbl_.html"><img alt="Pedro Lopes" src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" />
+  Pedro Lopes</a></li>
+</ul>
+<p>Feb 17, 2025 - ⧖ 10 min</p>
+<ul>
+<li><a href="./tag-kotlin.html">kotlin</a></li>
+<li><a href="./tag-exception.html">exception</a></li>
+<li><a href="./tag-functional-programming.html">functional-programming</a></li>
+<li><a href="./tag-haskell.html">haskell</a></li>
+</ul>
     </div>
-  </footer>
-  
+
+    <!-- Post Footer with Navigation -->
+    
+    <footer class="post-footer" style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid rgba(255, 255, 255, 0.1);">
+        <div style="display: flex; justify-content: space-between; gap: 1rem;">
+            
+            <a href="testetetetsd.html" class="button" style="flex: 1;">
+                ← How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin
+            </a>
+            
+
+            
+            <a href="reactive-programming-spring.html" class="button" style="flex: 1; text-align: right;">
+                Reactive Programming(Paradigm) and how to work with it in Spring →
+            </a>
+            
+        </div>
+    </footer>
+    
+
+    <!-- Author Info -->
+    
+    <div class="curve-card" style="margin-top: 2rem; padding: 1.5rem;">
+        <h3>About the Author</h3>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            
+            <img src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" alt="Pedro Lopes" style="width: 60px; height: 60px; border-radius: 50%;">
+            
+            <div>
+                <strong>Pedro Lopes</strong>
+                <p style="margin: 0.5rem 0; color: var(--text-secondary);">Software Engineer =D</p>
+                
+                <div style="display: flex; gap: 0.5rem;">
+                    
+                    <a href="https://www.linkedin.com/in/pedro-lopes-4563a7196/" class="retro-badge" target="_blank" rel="noopener">Linkedin</a>
+                    
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
 </article>
 
+<!-- Related Posts (if available) -->
 
 
+            </main>
 
-  
-  
-  
-  
-  <article>
-    Related kotlin content
-    <ul>
-      
-      
-      
-      
-      <li><a href="./kotlin-result-functional.html">How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin</a></li>
-      
-      
-      <li><a href="./garbage-collector.html">Choosing a Garbage Collector for Your Java/Kotlin Application: Things I Wish I Knew Back Then</a></li>
-      
-    </ul>
-  </article>
-  
+            <!-- Footer / Status Bar -->
+            <footer class="status-bar">
+                <div>Powered by <a href="https://github.com/rochacbruno/marmite">Marmite</a> | <small><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY_NC-SA</a></small></div>
+            </footer>
+        </div>
+    </div>
 
+    <!-- Retro Effects & Main JavaScript -->
+    <script src="./static/js/retro-effects.js"></script>
+    <script src="./static/js/main.js"></script>
 
-
-
-
-        </section>
-        
-        <footer class="footer-content grid">
-            <div>Powered by <a href="https://github.com/rochacbruno/marmite">Marmite</a> | <small><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY_NC-SA</a></small></div>
-            
-        </footer>
-        
-    </main>
-
-    <script src="./static/marmite.js"></script>
-    <script src="./static/custom.js"></script>
     
-    <script type="module" src="./static/search.js"></script>
-    
-    
-    
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
-<script>
-  hljs.highlightAll();
-</script>
-
-
-
 </body>
 </html>

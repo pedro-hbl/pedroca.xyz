@@ -1,0 +1,349 @@
+/*
+ * Windows 95 UI Elements
+ * Classic PC aesthetic with modern twist
+ */
+
+/* Classic Windows 95 Bevel Borders */
+.win95-border {
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+  box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #000000;
+}
+
+.win95-border-inset {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  box-shadow: inset -1px -1px 0 #dfdfdf, inset 1px 1px 0 #000000;
+}
+
+/* Classic Button Style */
+.win95-button {
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+  padding: 4px 12px;
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+  transition: all 0.1s ease;
+}
+
+.win95-button:hover {
+  background: #d0d0d0;
+}
+
+.win95-button:active {
+  border-top: 2px solid #000000;
+  border-left: 2px solid #000000;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  box-shadow: inset -1px -1px 0 #dfdfdf, inset 1px 1px 0 #808080;
+  padding: 5px 11px 3px 13px;
+}
+
+/* Taskbar Style */
+.win95-taskbar {
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  padding: 4px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Start Button Style */
+.start-button {
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+}
+
+.start-button::before {
+  content: '⊞';
+  font-size: 1.2rem;
+  color: #000000;
+}
+
+.start-button:active {
+  border-top: 2px solid #000000;
+  border-left: 2px solid #000000;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  box-shadow: inset -1px -1px 0 #dfdfdf, inset 1px 1px 0 #808080;
+}
+
+/* Menu Items */
+.win95-menu {
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #ffffff #000000 #000000 #ffffff;
+  padding: 2px;
+  min-width: 180px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.win95-menu-item {
+  padding: 4px 24px 4px 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+.win95-menu-item:hover {
+  background: #000080;
+  color: #ffffff;
+}
+
+/* Text Input */
+.win95-input {
+  background: #ffffff;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #dfdfdf;
+  border-bottom: 2px solid #dfdfdf;
+  padding: 4px;
+  font-family: var(--font-mono);
+  box-shadow: inset 1px 1px 0 #000000;
+}
+
+/* Scrollbar (Windows 95 style) */
+.win95-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #c0c0c0 #ffffff;
+}
+
+.win95-scrollbar::-webkit-scrollbar {
+  width: 16px;
+  background: #c0c0c0;
+}
+
+.win95-scrollbar::-webkit-scrollbar-track {
+  background: #ffffff;
+  border: 1px solid #808080;
+}
+
+.win95-scrollbar::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+}
+
+.win95-scrollbar::-webkit-scrollbar-button {
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #ffffff #000000 #000000 #ffffff;
+  height: 16px;
+}
+
+/* Progress Bar */
+.win95-progress {
+  background: #ffffff;
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+  height: 24px;
+  overflow: hidden;
+}
+
+.win95-progress-bar {
+  height: 100%;
+  background: #000080;
+  background-image: repeating-linear-gradient(
+    90deg,
+    #000080 0px,
+    #000080 8px,
+    #0000c0 8px,
+    #0000c0 16px
+  );
+  animation: progressMove 0.8s linear infinite;
+}
+
+@keyframes progressMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 16px 0; }
+}
+
+/* Status Bar Grip */
+.win95-grip {
+  background-image:
+    linear-gradient(135deg, transparent 45%, #808080 45%, #808080 55%, transparent 55%),
+    linear-gradient(45deg, transparent 45%, #808080 45%, #808080 55%, transparent 55%);
+  background-size: 4px 4px;
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+}
+
+/* Checkbox */
+.win95-checkbox {
+  width: 13px;
+  height: 13px;
+  background: #ffffff;
+  border: 1px solid #808080;
+  box-shadow: inset 0 0 0 1px #000000;
+  cursor: pointer;
+  position: relative;
+}
+
+.win95-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: -3px;
+  left: 1px;
+  color: #000000;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Radio Button */
+.win95-radio {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #808080;
+  box-shadow: inset 0 0 0 1px #000000;
+  cursor: pointer;
+  position: relative;
+}
+
+.win95-radio:checked::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #000000;
+}
+
+/* Folder/File Icons */
+.win95-icon {
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Desktop Pattern Background */
+.win95-desktop {
+  background-color: #008080;
+  background-image:
+    linear-gradient(45deg, #007070 25%, transparent 25%),
+    linear-gradient(-45deg, #007070 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #007070 75%),
+    linear-gradient(-45deg, transparent 75%, #007070 75%);
+  background-size: 2px 2px;
+  background-position: 0 0, 0 1px, 1px -1px, -1px 0px;
+}
+
+/* Classic Gray Panel */
+.win95-panel {
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #ffffff #000000 #000000 #ffffff;
+  box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+  padding: 12px;
+}
+
+/* Separator Line */
+.win95-separator {
+  height: 2px;
+  background: #808080;
+  box-shadow: 0 1px 0 #ffffff;
+  margin: 8px 0;
+}
+
+/* Dotted Focus Rectangle */
+.win95-focus {
+  outline: 1px dotted #000000;
+  outline-offset: -4px;
+}
+
+/* Classic Dialog Box */
+.win95-dialog {
+  background: #c0c0c0;
+  border: 3px solid;
+  border-color: #ffffff #000000 #000000 #ffffff;
+  box-shadow:
+    inset 1px 1px 0 #dfdfdf,
+    inset -1px -1px 0 #808080,
+    3px 3px 8px rgba(0, 0, 0, 0.4);
+  min-width: 300px;
+}
+
+.win95-dialog-title {
+  background: linear-gradient(90deg, #000080, #1084d0);
+  color: #ffffff;
+  padding: 4px 8px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.win95-dialog-content {
+  padding: 16px;
+}
+
+.win95-dialog-buttons {
+  padding: 8px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Tab Control */
+.win95-tabs {
+  display: flex;
+  border-bottom: 2px solid #808080;
+  margin-bottom: -2px;
+}
+
+.win95-tab {
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #ffffff #000000 transparent #ffffff;
+  padding: 4px 16px;
+  cursor: pointer;
+  margin-right: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.win95-tab.active {
+  border-bottom-color: #c0c0c0;
+  z-index: 2;
+}
+
+.win95-tab:hover:not(.active) {
+  background: #d0d0d0;
+}
+
+/* Tooltip */
+.win95-tooltip {
+  background: #ffffcc;
+  border: 1px solid #000000;
+  padding: 2px 4px;
+  font-size: 0.8rem;
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
