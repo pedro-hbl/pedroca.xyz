@@ -48,7 +48,7 @@
 
             <!-- Menu Bar / Navigation -->
             <nav class="menu-bar">
-                <a href="https://pedroca.xyz">Home</a>
+                <a href="./">Home</a>
                 
                 <a href="tags.html">Tags</a>
                 
@@ -71,7 +71,7 @@
 
             
             <span class="post-author">
-                👤 by <a href="author-pedrohbl_.html">Pedro Lopes</a>
+                👤 by <a href="authors.html">Pedro Lopes</a>
             </span>
             
 
@@ -126,8 +126,8 @@
 <li>Unintended disruptions.</li>
 <li>Increased difficulty in ensuring consistent error handling.</li>
 </ul>
-<p>A better approach would make errors explicit and handle them systematically.
-* <strong>The Checked vs. Unchecked Dilemma:</strong> Checked exceptions in Java force developers to catch and handle exceptions at every step, cluttering codebases:</p>
+<p>A better approach would make errors explicit and handle them systematically.</p>
+<p><strong>The Checked vs. Unchecked Dilemma:</strong> Checked exceptions in Java force developers to catch and handle exceptions at every step, cluttering codebases:</p>
 <p><code>try {
       fileOperation()  // throws IOException
       networkCall()    // throws NetworkException
@@ -139,8 +139,8 @@
   } catch (SQLException e) {
       // Handle DB error
   }</code></p>
-<p>Unchecked exceptions, while more flexible, introduce uncertainty, as function signatures do not explicitly indicate possible failure cases.
-* <strong>Resource Management Complexity:</strong> Managing resources manually often leads to nested <code>try-finally</code> blocks that makes code difficult to maintain and understand later on:</p>
+<p>Unchecked exceptions, while more flexible, introduce uncertainty, as function signatures do not explicitly indicate possible failure cases.</p>
+<p><strong>Resource Management Complexity:</strong> Managing resources manually often leads to nested <code>try-finally</code> blocks that make code difficult to maintain and understand later on:</p>
 <p><code>fun processOrders() {
       val connection = dataSource.connection
       try {
@@ -165,8 +165,8 @@
 <li>Vulnerable to resource leaks if exceptions are not handled correctly.</li>
 <li>Hard to maintain.</li>
 </ul>
-<p>This just looks ugly overall, let's be honest.
-* <strong>Loss of Type Safety:</strong> Traditional exceptions break type safety because failure conditions are not represented in function signatures:</p>
+<p>This just looks ugly overall, let's be honest.</p>
+<p><strong>Loss of Type Safety:</strong> Traditional exceptions break type safety because failure conditions are not represented in function signatures:</p>
 <p><code>fun getUserProfile(id: String): UserProfile {
       // This function might throw exceptions that aren’t apparent from the signature. That's one of the most important points of the post
       throw new UserNotFoundException()
@@ -179,8 +179,8 @@
 </ul>
 <h2 id="core-functional-programming-concepts-relevant-to-error-handling">Core Functional Programming Concepts Relevant to Error Handling</h2>
 <h3 id="what-is-functional-programming">What is Functional Programming?</h3>
-<p>Functional programming is a paradigm where functions are treated as first-class citizens, and computation is done through the evaluation of EXPRESSIONS rather than the execution of statements(like mostly done in imperative languages C, java, cpp...). It emphasizes immutability, no side effects, and the use of pure functions. This paradigm, while vast with numerous research areas like lambda calculus, category theory, and type systems, provides a lot of nerdy tools for managing complexity in software.
-I'd recommend this lecture if you want to dive deeper in some o these topics or if you really hate yourself -&gt; "Learn You a Haskell for Great Good!" by Miran Lipovaca (<a href="http://learnyouahaskell.com/">link</a>) and <a href="https://www.haskell.org/">Haskell.org</a> for deeper dives into functional concepts.</p>
+<p>Functional programming is a paradigm where functions are treated as first-class citizens, and computation is done through the evaluation of EXPRESSIONS rather than the execution of statements(like mostly done in imperative languages C, Java, cpp...). It emphasizes immutability, no side effects, and the use of pure functions. This paradigm, while vast with numerous research areas like lambda calculus, category theory, and type systems, provides a lot of nerdy tools for managing complexity in software.
+I'd recommend this lecture if you want to dive deeper in some of these topics or if you really hate yourself -&gt; "Learn You a Haskell for Great Good!" by Miran Lipovaca (<a href="http://learnyouahaskell.com/">link</a>) and <a href="https://www.haskell.org/">Haskell.org</a> for deeper dives into functional concepts.</p>
 <p><strong>Key Points:</strong></p>
 <ul>
 <li><strong>Immutability:</strong> Data cannot be changed once created, promoting safer parallel processing.</li>
@@ -189,20 +189,20 @@ I'd recommend this lecture if you want to dive deeper in some o these topics or 
 </ul>
 <p>This post will focus only on a few of these concepts, particularly functors and monads.</p>
 <h3 id="functors-safe-value-transformations">Functors: Safe Value Transformations</h3>
-<p>Functor is like a box or container. You can apply a transformation (or function) to what's inside the box without opening it. In programming terms, this means you can alter or map over the contents of a data structure without changing its structure:</p>
+<p>A functor is like a box or container. You can apply a transformation (or function) to what's inside the box without opening it. In programming terms, this means you can alter or map over the contents of a data structure without changing its structure:</p>
 <ul>
 <li><strong>List as a Functor:</strong> If you have a list of numbers, you can double each number without altering the list itself:</li>
 </ul>
 <p><code>val numbers = listOf(1, 2, 3)
-    val doubled = numbers.map { it * 2 } // [2, 4, 6]</code>
-* <strong>Conceptually:</strong> Functors allow you to work with data in a way that's safe and predictable because you're not directly manipulating the data but rather transforming it through a mapping operation.</p>
+    val doubled = numbers.map { it * 2 } // [2, 4, 6]</code></p>
+<p><strong>Conceptually:</strong> Functors allow you to work with data in a way that's safe and predictable because you're not directly manipulating the data but rather transforming it through a mapping operation.</p>
 <h3 id="monads-chaining-operations-with-context">Monads: Chaining Operations with Context</h3>
 <p>Monads extend the concept of functors by allowing operations to be chained together while preserving some form of 'context' or 'state':</p>
 <ul>
-<li><strong>Monad:</strong> Monads help to ensure that each step in the sequence is checked before proceeding. It sounds complex(and it possibly is a little bit) but it's a way to wrapping things and provide methods to do operations on the wrapped stuff without unwrapping it.</li>
+<li><strong>Monad:</strong> Monads help to ensure that each step in the sequence is checked before proceeding. It sounds complex(and it possibly is a little bit) but it's a way to wrap things and provide methods to do operations on the wrapped stuff without unwrapping it.</li>
 </ul>
-<p>Let's take an example to make it more practical, consider monads as the operation of baking a cake. You need flour before you can add eggs. If there's no flour, you don't add the eggs.
-* <strong>In Code:</strong> Monads provide a way to wrap values in context, manage that context through operations, and decide on the next step based on the outcome of the previous one:</p>
+<p>Let's take an example to make it more practical, consider monads as the operation of baking a cake. You need flour before you can add eggs. If there's no flour, you don't add the eggs.</p>
+<p><strong>In Code:</strong> Monads provide a way to wrap values in context, manage that context through operations, and decide on the next step based on the outcome of the previous one:</p>
 <p><code>val maybeFlour = checkForFlour()
     val maybeCake = maybeFlour.flatMap { flour -&gt; 
         if (flour) {
@@ -210,10 +210,10 @@ I'd recommend this lecture if you want to dive deeper in some o these topics or 
         } else {
             Result.failure(NoFlourException())
         }
-    }</code>
-* <strong>Practical Use:</strong> In error handling, monads can encapsulate whether an operation was successful or not, allowing you to sequence operations where one depends on the success of another without explicit exception checks.</p>
+    }</code></p>
+<p><strong>Practical Use:</strong> In error handling, monads can encapsulate whether an operation was successful or not, allowing you to sequence operations where one depends on the success of another without explicit exception checks.</p>
 <h2 id="how-kotlin-result-addresses-these-concerns">How <code>kotlin-result</code> Addresses These Concerns</h2>
-<p><code>kotlin-result</code> is a Kotlin library that encapsulates the monadic approach to error handling, offering a <code>Result</code> type which is <strong>a monadic type that holds either a successful value or an error</strong>. Here's how it adress some issues:</p>
+<p><code>kotlin-result</code> is a Kotlin library that encapsulates the monadic approach to error handling, offering a <code>Result</code> type which is <strong>a monadic type that holds either a successful value or an error</strong>. Here's how it addresses some issues:</p>
 <ul>
 <li><strong>Explicit Success or Failure:</strong> Rather than using exceptions, <code>Result</code> explicitly represents outcomes as either success (<code>Result.Success</code>) or failure (<code>Result.Failure</code>). This makes error paths clear and predictable, every call should return success or failure.</li>
 <li><strong>Type-Safe Error Handling:</strong> By leveraging sealed classes for error types, <code>kotlin-result</code> ensures at compile-time that all possible outcomes are accounted for. This prevents runtime surprises, similar to how a monadic type system ensures all paths are considered.</li>
@@ -234,16 +234,16 @@ I'd recommend this lecture if you want to dive deeper in some o these topics or 
 <li><strong>Use <code>Result</code> for Flow:</strong> For scenarios where failure is part of normal operation (like validation, network calls, or data parsing), return <code>Result</code> types. This makes error handling explicit, giving you control over how failures are managed without resorting to exceptions.</li>
 <li><strong>Wrap logic and adapt it:</strong> When you're interfacing with legacy or external APIs that throw exceptions for conditions that aren't logic errors, wrap these calls. Create functions that transform exceptions into <code>Result</code> types, giving your API users a cleaner, more predictable interface:</li>
 </ul>
-<p>```
-    fun fetchUserData(userId: Int): Result<UserData, NetworkError> =
-        runCatching { api.getUserData(userId) }
-            .mapError {
-                when (it) {
-                    is IOException -&gt; NetworkError.IOError(it.message ?: "Network error")
-                    is TimeoutException -&gt; NetworkError.Timeout("Request timed out")
-                    else -&gt; throw it // ou mapear para outro erro genérico, se necessário
-                }
-            }</p>
+<div class="codehilite"><pre><span></span><code>fun fetchUserData(userId: Int): Result&lt;UserData, NetworkError&gt; =
+    runCatching { api.getUserData(userId) }
+        .mapError {
+            when (it) {
+                is IOException -&gt; NetworkError.IOError(it.message ?: "Network error")
+                is TimeoutException -&gt; NetworkError.Timeout("Request timed out")
+                else -&gt; throw it // or map to another generic error, if needed
+            }
+        }
+</code></pre></div>
 <div class="codehilite"><pre><span></span><code>//<span class="w"> </span>Where<span class="w"> </span>NetworkError<span class="w"> </span>could<span class="w"> </span>be<span class="w"> </span>defined<span class="w"> </span>as:
 sealed<span class="w"> </span>class<span class="w"> </span>NetworkError<span class="w"> </span>{
 <span class="w">    </span>data<span class="w"> </span>class<span class="w"> </span>IOError(val<span class="w"> </span>message:<span class="w"> </span>String)<span class="w"> </span>:<span class="w"> </span>NetworkError()
@@ -251,14 +251,13 @@ sealed<span class="w"> </span>class<span class="w"> </span>NetworkError<span cla
 }
 </code></pre></div>
 
-<p>```
-* <strong>Multiple Error Scenarios:</strong> For functions that can fail in various ways, define a sealed class to represent these outcomes:</p>
+<p><strong>Multiple Error Scenarios:</strong> For functions that can fail in various ways, define a sealed class to represent these outcomes:</p>
 <p><code>sealed class InputError {
         data class Empty(val field: String) : InputError()
         data class InvalidFormat(val field: String, val reason: String) : InputError()
         data class OutOfRange(val field: String) : InputError()
     }</code></p>
-<h2 id="addressing-the-problems-listed-in-first-section-using-kotlin-result">Addressing the Problems Listed in first section Using <code>kotlin-result</code></h2>
+<h2 id="addressing-the-problems-listed-in-first-section-using-kotlin-result">Addressing the Problems Listed in the First Section Using <code>kotlin-result</code></h2>
 <h3 id="example-1-hidden-control-flow">Example 1: Hidden Control Flow</h3>
 <p>Instead of implicit exception flow:</p>
 <ul>
@@ -268,19 +267,19 @@ sealed<span class="w"> </span>class<span class="w"> </span>NetworkError<span cla
 <p><code>fun processUser(user: User): Result&lt;ProcessedUser, UserError&gt; =
         validateUser(user)
             .andThen { updateProfile(it) }
-            .andThen { notifyUser(it) }</code>
-* <strong>Why It Works:</strong> Instead of invisible jumps, each function returns a <code>Result</code>, letting you handle success or failure explicitly. The flow stays linear and predictable, directly addressing the "non-local goto" issue.</p>
+            .andThen { notifyUser(it) }</code></p>
+<p><strong>Why It Works:</strong> Instead of invisible jumps, each function returns a <code>Result</code>, letting you handle success or failure explicitly. The flow stays linear and predictable, directly addressing the "non-local goto" issue.</p>
 <h3 id="example-2-checked-vs-unchecked-dilemma">Example 2: Checked vs. Unchecked Dilemma</h3>
 <ul>
 <li><strong>Problem:</strong> The approach listed in 1 bloats code with repetitive handling or leaves failures undocumented if unchecked exceptions are used.</li>
 <li><strong>Solution with <code>Result</code>:</strong> Consolidate errors into a single, type-safe return type:</li>
 </ul>
-<p>```
-    sealed class OperationError {
-        data class FileError(val message: String) : OperationError()
-        data class NetworkError(val message: String) : OperationError()
-        data class DatabaseError(val message: String) : OperationError()
-    }</p>
+<div class="codehilite"><pre><span></span><code>sealed class OperationError {
+    data class FileError(val message: String) : OperationError()
+    data class NetworkError(val message: String) : OperationError()
+    data class DatabaseError(val message: String) : OperationError()
+}
+</code></pre></div>
 <div class="codehilite"><pre><span></span><code>fun performOperations(): Result&lt;SuccessData, OperationError&gt; =
     fileOperation().andThen { networkCall() }.andThen { dbOperation() }
 
@@ -310,7 +309,7 @@ fun dbOperation(): Result&lt;SuccessData, OperationError.DatabaseError&gt; = try
 * **Why It Works:** Instead of the messy code with multiple catch blocks or risking hidden unchecked exceptions,</code>Result<code>wraps all possible failures into a single</code>OperationError<code>hierarchy. The</code>andThen<code>chaining ensures each step only proceeds if the previous one succeeds, making errors explicit in the function signatures. This eliminates verbosity, ensures type-safe handling with Kotlin</code>when` expression downstream, and resolves the checked vs. unchecked trade-off by making every failure mode clear and manageable.</p>
 <h3 id="example-3-resource-management-complexity">Example 3: Resource Management Complexity</h3>
 <ul>
-<li><strong>Problem:</strong> Managing resources with <code>try-finally</code> blocks are verbose and leak-prone.</li>
+<li><strong>Problem:</strong> Managing resources with <code>try-finally</code> blocks is verbose and leak-prone.</li>
 <li><strong>Solution with <code>Result</code>:</strong> Combine <code>Result</code> with Kotlin functions <code>use</code>:</li>
 </ul>
 <p><code>fun processOrders(): Result&lt;List&lt;Order&gt;, DBError&gt; =
@@ -321,19 +320,19 @@ fun dbOperation(): Result&lt;SuccessData, OperationError.DatabaseError&gt; = try
                         .mapError { DBError.QueryFailed(it.message) }
                 }
             }
-        }</code>
-* <strong>Why It Works:</strong> <code>use</code> auto-closes resources, and <code>Result</code> captures errors, eliminating nesting. This directly simplifies the ugly, error-prone structure from before.</p>
+        }</code></p>
+<p><strong>Why It Works:</strong> <code>use</code> auto-closes resources, and <code>Result</code> captures errors, eliminating nesting. This directly simplifies the ugly, error-prone structure from before.</p>
 <h3 id="example-4-loss-of-type-safety">Example 4: Loss of Type Safety</h3>
 <ul>
 <li><strong>Problem:</strong> Exceptions hide failure modes, breaking type safety. This is a very simple example, but possibly the biggest catch of the post. See how calling the function <code>getUserProfile</code> makes it now easier to understand and manage errors in the domain of the codebase.</li>
-<li><strong>Solution with <code>Result</code>:</strong> Functions return <code>Result</code> with explicit error type:</li>
+<li><strong>Solution with <code>Result</code>:</strong> Functions return <code>Result</code> with an explicit error type:</li>
 </ul>
 <p><code>fun getUserProfile(id: String): Result&lt;UserProfile, UserFetchError&gt; = try {
         Result.success(database.getUserProfile(id))
     } catch (e: SQLException) {
         Result.failure(UserFetchError.DatabaseError(e.message ?: "Unknown error"))
-    }</code>
-* <strong>Why It Works:</strong> The signature now declares possible failures, ensuring errors are handled upfront. This eliminates runtime surprises and strengthens the API contract, fixing the type safety gap.</p>
+    }</code></p>
+<p><strong>Why It Works:</strong> The signature now declares possible failures, ensuring errors are handled upfront. This eliminates runtime surprises and strengthens the API contract, fixing the type safety gap.</p>
 <h2 id="conclusion">Conclusion</h2>
 <p>Functional programming and monads, via <code>kotlin-result</code>, transform error handling into something explicit, type-safe, and composable. They tackle hidden control flow with clear paths, resolve the checked/unchecked mess with typed errors, simplify resource management, and restore type safety—all while boosting readability and maintainability.</p>
 <p>So, when should you go for <code>Result</code> or <code>try-catch</code>?</p>
@@ -366,7 +365,7 @@ fun dbOperation(): Result&lt;SuccessData, OperationError.DatabaseError&gt; = try
 </ul>
 <hr />
 <ul>
-<li><a href="author-pedrohbl_.html"><img alt="Pedro Lopes" src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" />
+<li><a href="authors.html"><img alt="Pedro Lopes" src="https://github.com/pedro-hbl.png" />
   Pedro Lopes</a></li>
 </ul>
 <p>Mar 3, 2025 - ⧖ 15 min</p>
@@ -403,7 +402,7 @@ fun dbOperation(): Result&lt;SuccessData, OperationError.DatabaseError&gt; = try
         <h3>About the Author</h3>
         <div style="display: flex; gap: 1rem; align-items: center;">
             
-            <img src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" alt="Pedro Lopes" style="width: 60px; height: 60px; border-radius: 50%;">
+            <img src="https://github.com/pedro-hbl.png" alt="Pedro Lopes" style="width: 60px; height: 60px; border-radius: 50%;">
             
             <div>
                 <strong>Pedro Lopes</strong>

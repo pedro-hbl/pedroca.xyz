@@ -48,7 +48,7 @@
 
             <!-- Menu Bar / Navigation -->
             <nav class="menu-bar">
-                <a href="https://pedroca.xyz">Home</a>
+                <a href="./">Home</a>
                 
                 <a href="tags.html">Tags</a>
                 
@@ -71,7 +71,7 @@
 
             
             <span class="post-author">
-                👤 by <a href="author-pedrohbl_.html">Pedro Lopes</a>
+                👤 by <a href="authors.html">Pedro Lopes</a>
             </span>
             
 
@@ -100,7 +100,7 @@
         <p>Feb 8, 2025 - ⧖ 9 min</p>
 <h2 id="introduction">Introduction</h2>
 <p>These days, I keep seeing microservices being treated as the answer to every software problem. Having worked with various architectures throughout my career, I've noticed how many players often jump into microservices without considering the long-term implications. It reminds me of a project where we turned a perfectly functional monolith into a distributed system just because "that's what modern companies do."</p>
-<p>But here's the thing: microservices aren't a silver bullet. In fact, they can become a massive technical debt that's incredibly hard to pay off. Matt Ranney, DoorDash's Scalability Engineer Lead, makes this point brilliantly in his talk "Microservices are Technical Debt." After experiencing similar challenges, I decided to dive into this topic, including some cientific papers that covered similar issues like "Microservices Anti-Patterns: A Taxonomy," to understand what's really going on.</p>
+<p>But here's the thing: microservices aren't a silver bullet. In fact, they can become a massive technical debt that's incredibly hard to pay off. Matt Ranney, DoorDash's Scalability Engineer Lead, makes this point brilliantly in his talk "Microservices are Technical Debt." After experiencing similar challenges, I decided to dive into this topic, including some scientific papers that covered similar issues like "Microservices Anti-Patterns: A Taxonomy," to understand what's really going on.</p>
 <p>In this post, I'll try to cover:</p>
 <ol>
 <li>Why microservices are often misunderstood and misused</li>
@@ -160,7 +160,7 @@
 <span class="w">  </span><span class="p">}</span>
 </code></pre></div>
 
-<p>Now, a simple password reset requires four services to work perfectly together. Miss one, and you’ve got angry users or security holes and a fresh war room to deal.</p>
+<p>Now, a simple password reset requires four services to work perfectly together. Miss one, and you’ve got angry users or security holes and a fresh war room to deal with.</p>
 <h2 id="2-the-distributed-monolith-trap">2. The Distributed Monolith Trap</h2>
 <p>Let’s get real: most companies end up with distributed monoliths, not true microservices. Here’s why this happens and why it’s worse than a traditional monolith.</p>
 <h3 id="practical-example-the-loyalty-points-nightmare">Practical Example: The Loyalty Points Nightmare</h3>
@@ -171,8 +171,8 @@
 <p><code>public class User {
        private String id;
        private int loyaltyPoints; // New field
-   }</code>
-2. <strong>Payments Service:</strong></p>
+   }</code></p>
+<p>2. <strong>Payments Service:</strong></p>
 <p><code>public class PaymentProcessor {
        public void applyDiscount(String userId) {
            User user = userService.getUser(userId);
@@ -180,8 +180,8 @@
                applyDiscount();
            }
        }
-   }</code>
-3. <strong>Analytics Service:</strong></p>
+   }</code></p>
+<p>3. <strong>Analytics Service:</strong></p>
 <p><code>public class Analytics {
        public void trackPurchase(String userId) {
            User user = userService.getUser(userId);
@@ -198,7 +198,7 @@
 <h2 id="3-hidden-costs-of-microservices">3. Hidden Costs of Microservices</h2>
 <ul>
 <li>Microservices introduce hidden costs, such as network latency, service discovery, and inter-service communication.</li>
-<li><strong>Example:</strong> Imagine you’re debugging why user sessions expire randomly. After days of checking code, you discover a 200ms delay between the auth service and session service. The timeout configuration didn’t account for this latency, causing sporadic failures. The fix? Hours and hours wasted of meaningless debugging time, as the root cause for the problem was a bad-optimized code deployed by the auth team.</li>
+<li><strong>Example:</strong> Imagine you’re debugging why user sessions expire randomly. After days of checking code, you discover a 200ms delay between the auth service and session service. The timeout configuration didn’t account for this latency, causing sporadic failures. The fix? Hours and hours of meaningless debugging time wasted, as the root cause for the problem was badly optimized code deployed by the auth team.</li>
 </ul>
 <hr />
 <h2 id="common-anti-patterns-in-microservices">Common Anti-Patterns in Microservices</h2>
@@ -229,7 +229,7 @@
 </ul>
 <h3 id="3-the-too-many-services-problem">3. <strong>The "Too Many Services" Problem</strong></h3>
 <ul>
-<li>This one is a classig example... Splitting your system into too many tiny services can lead to chaos. Each service adds overhead in terms of deployment, monitoring, and maintenance.</li>
+<li>This one is a classic example... Splitting your system into too many tiny services can lead to chaos. Each service adds overhead in terms of deployment, monitoring, and maintenance.</li>
 <li><strong>Example:</strong> Imagine you’re working on a food delivery app with these services:</li>
 <li><code>user-service</code></li>
 <li><code>restaurant-service</code></li>
@@ -270,7 +270,7 @@
 <li>Automated tests are available for each service.</li>
 <li>Automated deployments are available for each service.</li>
 <li>Live monitoring, distributed tracing and health checks are available for each service.</li>
-<li>Automated rollback during deployment are also available for each service.</li>
+<li>Automated rollback during deployment is also available for each service.</li>
 </ul>
 <h3 id="2-domain-driven-design-ddd">2. <strong>Domain-Driven Design (DDD)</strong></h3>
 <ul>
@@ -283,13 +283,13 @@
 <p>Each context has its own database and API boundaries. Changes to payment logic don’t affect shipping =D.</p>
 <h3 id="3-the-reverse-conway-maneuver">3. <strong>The Reverse Conway Maneuver</strong></h3>
 <ul>
-<li>The <strong>Conway’s Law</strong> states that organizations design systems that mirror their communication structures. The <strong>Reverse Conway Maneuver</strong> flips this around: design your teams to match the architecture you want, basically, the teams designing a go-to system architecture based on current needs, tech debts and throttles. Just like a "reference architecture" based on reverse engineering. This way you have clear boundaries designed for each team and let they execute their goal software architecture independently.</li>
+<li><strong>Conway’s Law</strong> states that organizations design systems that mirror their communication structures. The <strong>Reverse Conway Maneuver</strong> flips this around: design your teams to match the architecture you want, basically, the teams designing a go-to system architecture based on current needs, tech debts and throttles. Just like a "reference architecture" based on reverse engineering. This way you have clear boundaries designed for each team and let them execute their goal software architecture independently.</li>
 <li><strong>Example:</strong> Consider a given company X, instead of having frontend, backend, and ops teams working in silos, they restructured teams around business capabilities: a 'Payments Team' owning both backend and UI for payments, and a 'Shipping Team' handling logistics end-to-end. This allowed them to scale services independently while keeping architecture cohesive.</li>
 </ul>
 <hr />
 <h2 id="conclusion">Conclusion</h2>
 <p>I didn't mean to be the devil’s advocate here, but I tried to highlight some key points because, in many cases, the direction that microservices adoption takes ends up being unsustainable. That’s why it’s crucial to pay attention to the trade-offs and pitfalls discussed.</p>
-<p>This is not supposed to be an exhaustive analysis—far from it. As microservices, technical debt, and distributed architectures are vast and evolving fields, hundreds of thousands of cientific papers already discussed these topics. My goal was to cover some of the major issues I’ve encountered, and hopefully, this discussion helps you navigate the complexities of microservices with a more critical perspective.</p>
+<p>This is not supposed to be an exhaustive analysis—far from it. As microservices, technical debt, and distributed architectures are vast and evolving fields, hundreds of thousands of scientific papers already discussed these topics. My goal was to cover some of the major issues I’ve encountered, and hopefully, this discussion helps you navigate the complexities of microservices with a more critical perspective.</p>
 <hr />
 <h2 id="references">References</h2>
 <ol>
@@ -300,7 +300,7 @@
 <p>Conway’s Law and the Reverse Conway Maneuver (Various Sources).</p>
 </li>
 <li>
-<p><a href="author-pedrohbl_.html"><img alt="Pedro Lopes" src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" />
+<p><a href="authors.html"><img alt="Pedro Lopes" src="https://github.com/pedro-hbl.png" />
   Pedro Lopes</a></p>
 </li>
 </ol>
@@ -338,7 +338,7 @@
         <h3>About the Author</h3>
         <div style="display: flex; gap: 1rem; align-items: center;">
             
-            <img src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" alt="Pedro Lopes" style="width: 60px; height: 60px; border-radius: 50%;">
+            <img src="https://github.com/pedro-hbl.png" alt="Pedro Lopes" style="width: 60px; height: 60px; border-radius: 50%;">
             
             <div>
                 <strong>Pedro Lopes</strong>

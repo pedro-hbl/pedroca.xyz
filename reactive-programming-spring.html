@@ -48,7 +48,7 @@
 
             <!-- Menu Bar / Navigation -->
             <nav class="menu-bar">
-                <a href="https://pedroca.xyz">Home</a>
+                <a href="./">Home</a>
                 
                 <a href="tags.html">Tags</a>
                 
@@ -71,7 +71,7 @@
 
             
             <span class="post-author">
-                👤 by <a href="author-pedrohbl_.html">Pedro Lopes</a>
+                👤 by <a href="authors.html">Pedro Lopes</a>
             </span>
             
 
@@ -117,7 +117,7 @@
     <div class="post-content">
         <p>Apr 29, 2025 - ⧖ 23 min</p>
 <h2 id="introduction">Introduction</h2>
-<p>It is evident that modern applications are facing increasingly demanding requirements. The systems we built just a few years ago, monolithic applications or even some simple CRUD microservices serving modest user bases are now becoming to struggle when needed to handle thousands of concurrent users, each expecting near-instantaneous responses. This shift has pushed some developers to rethink fundamental architectural patterns.</p>
+<p>It is evident that modern applications are facing increasingly demanding requirements. The systems we built just a few years ago, monolithic applications or even some simple CRUD microservices serving modest user bases are now starting to struggle when needed to handle thousands of concurrent users, each expecting near-instantaneous responses. This shift has pushed some developers to rethink fundamental architectural patterns.</p>
 <p>So, there's this book called "Designing Data-Intensive Applications" where Martin Kleppmann describes this evolution perfectly. Today's users expect millisecond responses whether they're the only person on your site or sharing it with thousands of others. It's a reality that forces us to build applications that are more scalable, elastic, robust, and resilient than ever before.</p>
 <p>In this environment of high performance APIs, there's a paradigm called "Reactive Programming", which has emerged as a compelling solution to these challenges. What started as a niche paradigm has moved toward the mainstream, particularly for applications dealing with high concurrency or integration with asynchronous systems. If you've attended a Java/Kotlin technical interview recently, you've likely encountered questions about reactive programming—perhaps wondering if it's just another industry buzzword or genuinely the answer to modern performance requirements.</p>
 <p>In this post I'll be focusing on reactive programming in Spring. Basically covering some topics below:</p>
@@ -141,7 +141,7 @@
 </ul>
 <p>This isn't just theoretical as these principles directly address real-world challenges in modern distributed systems, as our applications scaled up to serve thousands of concurrent users, the limitations of thread-per-request models became really painful.</p>
 <h3 id="the-shift-is-basically-threads-events">The shift is basically: Threads -&gt; Events</h3>
-<p>Traditional Spring MVC applications typically use a thread-per-request model. If your application receives 200 concurrent requests, it needs approximately 200 threads to handle them. This is actually fine for modest concurrency and standard applications, but there are some points to take care when it comes to high concurrency levels and higher tps(lets say above 1000tps):</p>
+<p>Traditional Spring MVC applications typically use a thread-per-request model. If your application receives 200 concurrent requests, it needs approximately 200 threads to handle them. This is actually fine for modest concurrency and standard applications, but there are some points to take care of when it comes to high concurrency levels and higher tps(lets say above 1000tps):</p>
 <ol>
 <li><strong>Threads are expensive</strong>: Each thread consumes memory (often ~1MB of stack space)</li>
 <li><strong>Context switching is costly</strong>: The CPU spends time switching between threads</li>
@@ -176,7 +176,7 @@
 <li><strong>Error Handling</strong>: Errors propagate through the stream and can be handled at any point</li>
 </ol>
 <blockquote>
-<p><strong><em>NOTE:</em></strong> <em>(Easter Egg)</em> If you look closely at reactive programming composition model, you might notice there's a reference to functional programming concepts like monads, functors, and applicatives. This is not a coincidence :) ... In fact, <code>Mono&lt;T&gt;</code> and <code>Flux&lt;T&gt;</code> are essentially monadic containers that let you compose operations while maintaining context around success, failure, and completion. If you're interested in some of this topics, check out my previous post on <a href="kotlin-result-functional.html">how monads can improve error handling in Kotlin</a> - many of the same principles apply to reactive streams</p>
+<p><strong><em>NOTE:</em></strong> <em>(Easter Egg)</em> If you look closely at the reactive programming composition model, you might notice there's a reference to functional programming concepts like monads, functors, and applicatives. This is not a coincidence :) ... In fact, <code>Mono&lt;T&gt;</code> and <code>Flux&lt;T&gt;</code> are essentially monadic containers that let you compose operations while maintaining context around success, failure, and completion. If you're interested in some of these topics, check out my previous post on <a href="kotlin-result-functional.html">how monads can improve error handling in Kotlin</a> - many of the same principles apply to reactive streams</p>
 </blockquote>
 <h2 id="reactive-programming-in-spring">Reactive Programming in Spring</h2>
 <p>Spring's reactive support is primarily built on <a href="https://projectreactor.io/">Project Reactor</a>, which implements the Reactive Streams specification and provides two main types:</p>
@@ -191,7 +191,7 @@
 <li><strong>Spring Cloud Gateway</strong>: A reactive API gateway</li>
 <li><strong>Spring Security Reactive</strong>: Security for reactive applications</li>
 </ul>
-<p>This is how a reactive Spring application looks like:</p>
+<p>This is what a reactive Spring application looks like:</p>
 <div class="codehilite"><pre><span></span><code>@RestController
 class<span class="w"> </span>CustomerController(private<span class="w"> </span>val<span class="w"> </span>customerRepository:<span class="w"> </span>ReactiveCustomerRepository)<span class="w"> </span>{
 
@@ -297,7 +297,7 @@ class<span class="w"> </span>ReactiveProcessor(private<span class="w"> </span>va
 <p><strong>What is the KafkaReceiver?</strong><br />
 <code>KafkaReceiver</code> comes from the <code>reactor-kafka</code> library, a reactive Kafka client built on Project Reactor. Unlike the traditional <code>@KafkaListener</code> which processes messages one by one with blocking threads, <code>KafkaReceiver</code> connects to Kafka topics and transforms the incoming messages into a <code>Flux</code> stream. This allows you to process Kafka messages using the full reactive streams toolkit - applying transformations, filtering, error handling, and backpressure - all non-blocking.</p>
 <h3 id="4-enhanced-resilience-patterns">4. Enhanced Resilience Patterns</h3>
-<p>The reactive programming model makes it easier to implement resilience patterns like circuit breakers, bulkheads, and timeouts. For example, implementing a timeout pattern is really simples, look:</p>
+<p>The reactive programming model makes it easier to implement resilience patterns like circuit breakers, bulkheads, and timeouts. For example, implementing a timeout pattern is really simple, look:</p>
 <div class="codehilite"><pre><span></span><code><span class="n">fun</span><span class="w"> </span><span class="n">getProductDetails</span><span class="p">(</span><span class="n">id</span><span class="o">:</span><span class="w"> </span><span class="n">String</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Mono</span><span class="o">&lt;</span><span class="n">ProductDetails</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="n">webClient</span><span class="p">.</span><span class="n">get</span><span class="p">()</span>
 <span class="w">        </span><span class="p">.</span><span class="n">uri</span><span class="p">(</span><span class="s">&quot;/products/{id}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">)</span>
@@ -337,7 +337,7 @@ class<span class="w"> </span>ReactiveProcessor(private<span class="w"> </span>va
 <li><code>log()</code> to see the data flow at specific points (no miracle here :c)</li>
 </ul>
 <h3 id="3-ecosystem-maturity">3. Ecosystem Maturity</h3>
-<p>While the core reactive libraries in Spring are mature, some parts of the ecosystem are still beign built. Many third-party libraries and legacy systems don't provide reactive APIs, requiring you to integrate reactive and non-reactive code carefully.</p>
+<p>While the core reactive libraries in Spring are mature, some parts of the ecosystem are still being built. Many third-party libraries and legacy systems don't provide reactive APIs, requiring you to integrate reactive and non-reactive code carefully.</p>
 <ul>
 <li><strong>Database Drivers</strong>: While R2DBC provides reactive SQL access, many specialized database drivers still only offer blocking APIs</li>
 <li><strong>Third-Party Integrations</strong>: Many payment gateways, external APIs, and legacy systems haven't adopted reactive patterns</li>
@@ -352,7 +352,7 @@ class<span class="w"> </span>ReactiveProcessor(private<span class="w"> </span>va
 }
 </code></pre></div>
 
-<p>Basically <code>Schedulers.boundedElastic()</code> creates a dedicated pool of threads specifically designed for blocking operations. These threads are separate from your application's main event loop threads, so it should not mess your entire codebase with a single blocking code.</p>
+<p>Basically <code>Schedulers.boundedElastic()</code> creates a dedicated pool of threads specifically designed for blocking operations. These threads are separate from your application's main event loop threads, so it should not mess up your entire codebase with a single blocking code.</p>
 <h3 id="4-operational-complexity">4. Operational Complexity</h3>
 <p>Reactive systems introduce some operational challenges that differ from traditional applications. Here you can find some:</p>
 <h4 id="metrics-collection">Metrics Collection</h4>
@@ -420,7 +420,7 @@ class<span class="w"> </span>OrderController(private<span class="w"> </span>val<
 
 <p>The <code>.use { }</code> syntax from Kotlin ensures the span is closed even if an exception occurs, similar to a try-with-resources in Java.</p>
 <h2 id="common-anti-patterns-in-reactive-spring">Common Anti-Patterns in Reactive Spring</h2>
-<p>I've done some research over anti patterns around the use of reactive programming in Spring, but being really honest I did not found a lot of useful stuff, so I'll put some points that I've faced in production environments I've worked on, so you should probably avoid them.</p>
+<p>I've done some research over anti patterns around the use of reactive programming in Spring, but being really honest I did not find a lot of useful stuff, so I'll put some points that I've faced in production environments I've worked on, so you should probably avoid them.</p>
 <h3 id="1-blocking-inside-reactive-code">1. Blocking Inside Reactive Code</h3>
 <p>The cardinal sin of reactive programming is introducing blocking calls in your reactive pipeline:</p>
 <div class="codehilite"><pre><span></span><code><span class="c1">// DON&#39;T DO THIS</span>
@@ -582,7 +582,7 @@ class<span class="w"> </span>ResilientProductService(
 <p><strong><em>NOTE:</em></strong> The reactive landscape continues to evolve, with improvements in tools, libraries, and best practices. Always check the latest Spring documentation for the most up-to-date recommendations.</p>
 </blockquote>
 <ul>
-<li><a href="author-pedrohbl_.html"><img alt="Pedro Lopes" src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" />
+<li><a href="authors.html"><img alt="Pedro Lopes" src="https://github.com/pedro-hbl.png" />
   Pedro Lopes</a></li>
 </ul>
 <p>Apr 29, 2025 - ⧖ 23 min</p>
@@ -605,13 +605,13 @@ class<span class="w"> </span>ResilientProductService(
     <footer class="post-footer" style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid rgba(255, 255, 255, 0.1);">
         <div style="display: flex; justify-content: space-between; gap: 1rem;">
             
-            <a href="test.html" class="button" style="flex: 1;">
+            <a href="kotlin-result-functional.html" class="button" style="flex: 1;">
                 ← How Monads and Functional Programming Can Improve Your Exception Handling in Kotlin
             </a>
             
 
             
-            <a href="post1.html" class="button" style="flex: 1; text-align: right;">
+            <a href="lambda-throttling.html" class="button" style="flex: 1; text-align: right;">
                 Understanding and Mitigating AWS Lambda Throttling in High-Concurrency Workloads →
             </a>
             
@@ -625,7 +625,7 @@ class<span class="w"> </span>ResilientProductService(
         <h3>About the Author</h3>
         <div style="display: flex; gap: 1rem; align-items: center;">
             
-            <img src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" alt="Pedro Lopes" style="width: 60px; height: 60px; border-radius: 50%;">
+            <img src="https://github.com/pedro-hbl.png" alt="Pedro Lopes" style="width: 60px; height: 60px; border-radius: 50%;">
             
             <div>
                 <strong>Pedro Lopes</strong>

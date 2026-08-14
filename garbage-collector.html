@@ -48,7 +48,7 @@
 
             <!-- Menu Bar / Navigation -->
             <nav class="menu-bar">
-                <a href="https://pedroca.xyz">Home</a>
+                <a href="./">Home</a>
                 
                 <a href="tags.html">Tags</a>
                 
@@ -71,7 +71,7 @@
 
             
             <span class="post-author">
-                👤 by <a href="author-pedrohbl_.html">Pedro Lopes</a>
+                👤 by <a href="authors.html">Pedro Lopes</a>
             </span>
             
 
@@ -128,8 +128,8 @@
 <p><code>for (int i = 0; i &lt; 1000; i++) {
      Minion minion = new Minion("Minion " + i);
  }</code></p>
-<p>All these minions will initially be created in the Eden space. If they are not referenced anymore after their creation, they will be collected during the next minor GC.
-2. <strong>Survivor Spaces (in the Young Generation):</strong></p>
+<p>All these minions will initially be created in the Eden space. If they are not referenced anymore after their creation, they will be collected during the next minor GC.</p>
+<p>2. <strong>Survivor Spaces (in the Young Generation):</strong></p>
 </li>
 <li>
 <p><strong>Purpose:</strong> Objects that survive one or more minor GC cycles in Eden are moved to Survivor spaces.</p>
@@ -145,20 +145,18 @@
 <li><strong>Garbage Collection Behavior:</strong> Garbage collection here is less frequent but more time-consuming.</li>
 <li>
 <p><strong>Example:</strong> Imagine you’re building a game where each <code>Player</code> represents a connected user on the match. These objects are long-lived compared to temporary data like minions or projectiles and may look like this:</p>
-<p>```
- public class Player {
-     private final String name;
-     private final Inventory inventory;</p>
-<div class="codehilite"><pre><span></span><code> public Player(String name) {
-     this.name = name;
-     this.inventory = new Inventory();
- }
-</code></pre></div>
+<div class="codehilite"><pre><span></span><code>public class Player {
+    private final String name;
+    private final Inventory inventory;
 
-<p>}
- ```</p>
-<p>A <code>Player</code> object, which holds data such as the player’s inventory and stats, will likely reside in the Old Generation as it persists for the entire application session.
-4. <strong>Metaspace:</strong></p>
+    public Player(String name) {
+        this.name = name;
+        this.inventory = new Inventory();
+    }
+}
+</code></pre></div>
+<p>A <code>Player</code> object, which holds data such as the player’s inventory and stats, will likely reside in the Old Generation as it persists for the entire application session.</p>
+<p>4. <strong>Metaspace:</strong></p>
 </li>
 <li>
 <p><strong>Purpose:</strong> Think of Metaspace as the library(outside the heap) of your application—it keeps the blueprints (class metadata) for all the objects your application creates.</p>
@@ -183,8 +181,8 @@
 <p><strong>Practical Example:</strong> Consider this code:</p>
 <p><code>Player player = new Player("Hero");
  player.hitMinion();</code></p>
-<p>The <code>player</code> object is reachable because it’s referenced in the method. During the Mark phase, the GC identifies <code>player</code> and its dependencies as live objects.
-2. <strong>Sweep:</strong></p>
+<p>The <code>player</code> object is reachable because it’s referenced in the method. During the Mark phase, the GC identifies <code>player</code> and its dependencies as live objects.</p>
+<p>2. <strong>Sweep:</strong></p>
 </li>
 <li>
 <p><strong>Purpose:</strong> Reclaim memory occupied by objects not marked as live.</p>
@@ -192,8 +190,8 @@
 <li>
 <p><strong>Practical Example:</strong> If the <code>player</code> reference is set to <code>null</code>:</p>
 <p><code>player = null;</code></p>
-<p>The next GC cycle’s Sweep phase will reclaim the memory occupied by the <code>player</code> object and its associated data.
-3. <strong>Compact:</strong></p>
+<p>The next GC cycle’s Sweep phase will reclaim the memory occupied by the <code>player</code> object and its associated data.</p>
+<p>3. <strong>Compact:</strong></p>
 </li>
 <li>
 <p><strong>Purpose:</strong> Reduce fragmentation by moving objects closer together in memory.</p>
@@ -231,7 +229,7 @@ CMD java -XX:+UseSerialGC -Xmx512m -jar app.jar
 <hr />
 <h3 id="2-parallel-garbage-collector-parallel-gc">2. Parallel Garbage Collector (Parallel GC)</h3>
 <h4 id="overview_1">Overview:</h4>
-<p>Parallel GC, also known as the Throughput Collector, uses multiple threads to speed up garbage collection. It aims to maximize application throughput by minimizing the total GC time. You can check some crazy a** graphs and get better explanation at the official documentation <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/parallel.html#gen_arrangement_parallel">here</a>.</p>
+<p>Parallel GC, also known as the Throughput Collector, uses multiple threads to speed up garbage collection. It aims to maximize application throughput by minimizing the total GC time. You can check some crazy a** graphs and get a better explanation in the official documentation <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/vm/gctuning/parallel.html#gen_arrangement_parallel">here</a>.</p>
 <h4 id="when-to-use_1">When to Use:</h4>
 <ul>
 <li>Batch processing systems.</li>
@@ -277,9 +275,9 @@ CMD java -XX:+UseG1GC -Xmx4g -XX:MaxGCPauseMillis=200 -jar app.jar
 <li>Real-time systems.</li>
 <li>Applications with very large heaps.</li>
 </ul>
-<h4 id="when-to-do-not-use">When to DO NOT use:</h4>
+<h4 id="when-to-do-not-use">When NOT to use:</h4>
 <ul>
-<li>Imagine you have a batch processing system using ZGC. There is very high chance of facing inceased CPU utilization($$$) without any latency benefit. For example, a data ingestion pipeline optimized for high throughput but insensitive to pause times would waste resources managing unnecessary low-latency GC cycles.</li>
+<li>Imagine you have a batch processing system using ZGC. There is a very high chance of facing increased CPU utilization($$$) without any latency benefit. For example, a data ingestion pipeline optimized for high throughput but insensitive to pause times would waste resources managing unnecessary low-latency GC cycles.</li>
 </ul>
 <h4 id="example_3">Example:</h4>
 <p>A trading system processing market data streams in real time.</p>
@@ -298,9 +296,9 @@ CMD java -XX:+UseZGC -Xmx16g -jar app.jar
 <li><strong>APIs with spiky traffic</strong> patterns, such as social media feeds or live voting systems.</li>
 <li>Applications where reducing GC pause time is critical to user experience, such as gaming servers or interactive web applications.</li>
 </ul>
-<h4 id="when-to-do-not-use_1">When to DO NOT use:</h4>
+<h4 id="when-to-do-not-use_1">When NOT to use:</h4>
 <p>Using Shenandoah GC for batch processing systems or workloads optimized for high throughput over low latency (e.g., nightly data aggregation) may lead to inefficient CPU utilization. The additional overhead of concurrent compaction provides no benefits when predictable pauses are acceptable, reducing overall throughput compared to <strong>Parallel GC</strong>.</p>
-<p>For exampe, a financial reconciliation batch process configured with Shenandoah might experience reduced throughput due to unnecessary focus on low pause times, delaying report generation.</p>
+<p>For example, a financial reconciliation batch process configured with Shenandoah might experience reduced throughput due to unnecessary focus on low pause times, delaying report generation.</p>
 <h4 id="example_4">Example:</h4>
 <p>A payment processing API handling high transaction volumes cannot afford GC-induced latency spikes during peak hours. Shenandoah’s low-pause nature ensures that transaction processing continues smoothly even under heavy load.</p>
 <p>Another example is a real-time multiplayer gaming server, where latency spikes could lead to a poor player experience. Shenandoah ensures consistent frame updates and server responsiveness.</p>
@@ -311,7 +309,7 @@ CMD java -XX:+UseShenandoahGC -Xmx8g -XX:+UnlockExperimentalVMOptions -jar app.j
 
 <hr />
 <h2 id="choosing-the-right-garbage-collector">Choosing the Right Garbage Collector</h2>
-<p>Here you can find a cheatsheet. But remember... you should always evaluate your own workload before choosing it's garbage collector.</p>
+<p>Here you can find a cheatsheet. But remember... you should always evaluate your own workload before choosing its garbage collector.</p>
 <table>
 <thead>
 <tr>
@@ -350,7 +348,7 @@ CMD java -XX:+UseShenandoahGC -Xmx8g -XX:+UnlockExperimentalVMOptions -jar app.j
 </table>
 <hr />
 <h2 id="conclusion">Conclusion</h2>
-<p>Choosing the right garbage collector for your application requires some knowledge over the tools I discussed in this post. But once you learn about it, you may have the power of taking decisions, and this is extremely valuable in Software Engineering field, also, by selecting the right GC you can significantly improve performance, stability and save some costs for your future applications based on JVM. Don’t let GC be a black box—embrace it, tune it, and let it work for you.</p>
+<p>Choosing the right garbage collector for your application requires some knowledge over the tools I discussed in this post. But once you learn about it, you may have the power of taking decisions, and this is extremely valuable in the Software Engineering field, also, by selecting the right GC you can significantly improve performance, stability and save some costs for your future applications based on JVM. Don’t let GC be a black box—embrace it, tune it, and let it work for you.</p>
 <hr />
 <h2 id="training-real-world-scenarios-and-solutions">Training: Real-World Scenarios and Solutions</h2>
 <h3 id="scenario-1-payment-gateway-latency">Scenario 1: Payment Gateway Latency</h3>
@@ -373,7 +371,7 @@ CMD java -XX:+UseShenandoahGC -Xmx8g -XX:+UnlockExperimentalVMOptions -jar app.j
 </ol>
 <hr />
 <ul>
-<li><a href="author-pedrohbl_.html"><img alt="Pedro Lopes" src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" />
+<li><a href="authors.html"><img alt="Pedro Lopes" src="https://github.com/pedro-hbl.png" />
   Pedro Lopes</a></li>
 </ul>
 <p>Jan 12, 2025 - ⧖ 10 min</p>
@@ -393,13 +391,7 @@ CMD java -XX:+UseShenandoahGC -Xmx8g -XX:+UnlockExperimentalVMOptions -jar app.j
             <a href="immutable-databases.html" class="button" style="flex: 1;">
                 ← Immutable Databases: When Data Never Dies
             </a>
-            
 
-            
-            <a href="2025-01-12.html" class="button" style="flex: 1; text-align: right;">
-                 →
-            </a>
-            
         </div>
     </footer>
     
@@ -410,7 +402,7 @@ CMD java -XX:+UseShenandoahGC -Xmx8g -XX:+UnlockExperimentalVMOptions -jar app.j
         <h3>About the Author</h3>
         <div style="display: flex; gap: 1rem; align-items: center;">
             
-            <img src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" alt="Pedro Lopes" style="width: 60px; height: 60px; border-radius: 50%;">
+            <img src="https://github.com/pedro-hbl.png" alt="Pedro Lopes" style="width: 60px; height: 60px; border-radius: 50%;">
             
             <div>
                 <strong>Pedro Lopes</strong>

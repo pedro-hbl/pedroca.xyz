@@ -48,7 +48,7 @@
 
             <!-- Menu Bar / Navigation -->
             <nav class="menu-bar">
-                <a href="https://pedroca.xyz">Home</a>
+                <a href="./">Home</a>
                 
                 <a href="tags.html">Tags</a>
                 
@@ -71,7 +71,7 @@
 
             
             <span class="post-author">
-                👤 by <a href="author-pedrohbl_.html">Pedro Lopes</a>
+                👤 by <a href="authors.html">Pedro Lopes</a>
             </span>
             
 
@@ -102,7 +102,7 @@ The article will:</p>
 <li><strong>Outline the problem</strong> faced while processing high-concurrency workloads.</li>
 <li><strong>Explain AWS Lambda throttling mechanisms</strong>, based on the <a href="https://aws.amazon.com/blogs/compute/understanding-aws-lambdas-invoke-throttle-limits/">AWS Compute Blog article by James Beswick</a>.</li>
 <li><strong>Discuss solutions</strong> to mitigate throttling.</li>
-<li><strong>TBD</strong> Maybe in the future I'll Provide a real-world proof of concept <strong>(POC)</strong> to evaluate each mitigation technique.</li>
+<li><strong>TBD</strong> Maybe in the future I'll provide a real-world proof of concept <strong>(POC)</strong> to evaluate each mitigation technique.</li>
 </ol>
 <hr />
 <h2 id="use-case">Use Case</h2>
@@ -175,7 +175,7 @@ The article will:</p>
 <h3 id="observed-errors">Observed Errors</h3>
 <ul>
 <li><strong>429 Too Many Requests</strong>: Errors indicate that the Lambda invocations exceeded allowed concurrency or burst limits.</li>
-<li><strong>DynamoDB “Provisioned Throughput Exceeded”</strong>: Errors occurred during spikes in DynamoDB writes. But this error won't be covered in this post, maybe in the future I can discuss strategies to work directly with dynamodb IO optimization, for now let's just ignore this one.</li>
+<li><strong>DynamoDB “Provisioned Throughput Exceeded”</strong>: Errors occurred during spikes in DynamoDB writes. But this error won't be covered in this post, maybe in the future I can discuss strategies to work directly with DynamoDB IO optimization, for now let's just ignore this one.</li>
 </ul>
 <hr />
 <h2 id="aws-lambda-throttling-mechanisms">AWS Lambda Throttling Mechanisms</h2>
@@ -210,7 +210,7 @@ The article will:</p>
 <span class="p">}</span>
 </code></pre></div>
 
-<p>This implementation leverages coroutines in Kotlin to handle asynchronous operations efficiently. We don't want to deep dive here in how coroutines work, but think of it as a tool that allow lightweight threads to run without blocking, making it possible to manage multiple tasks concurrently without overwhelming system resources.</p>
+<p>This implementation leverages coroutines in Kotlin to handle asynchronous operations efficiently. We don't want to deep dive here in how coroutines work, but think of it as a tool that allows lightweight threads to run without blocking, making it possible to manage multiple tasks concurrently without overwhelming system resources.</p>
 <p>In the use case described, where the workload involves processing millions of records within 100 concurrent coroutines, the concurrency level of 100 was chosen as a reasonable limit. This decision balances the capacity of the node, configured with 4 vCPUs and 8 GB of RAM, against the resource requirements of each coroutine. For example, each coroutine processes records with a memory overhead of approximately 28.8 KB per record, plus 20 KB for runtime management. This setup ensures stability while maximizing throughput within the system’s constraints.</p>
 <p>By introducing a Semaphore, the number of concurrent tasks can be restricted to this specified level. This prevents overloading the Lambda concurrency limits and reduces the risk of 429 Too Many Requests errors, ensuring that the system remains stable and performs reliably.</p>
 <h4 id="estimated-time-to-process">Estimated Time to Process</h4>
@@ -312,7 +312,7 @@ Total Time = 16.67 minutes + 23.33 minutes = 40 minutes
 </ul>
 <h4 id="cons">Cons:</h4>
 <ul>
-<li><strong>Adds latency:</strong> The exponential backoff mechanism inherently increases the time taken to complete processing, can take even BIGGER times when considering worst case scenarios(potentially 10x more the total time discussed).</li>
+<li><strong>Adds latency:</strong> The exponential backoff mechanism inherently increases the time taken to complete processing, can take even BIGGER times when considering worst case scenarios(potentially 10x more than the total time discussed).</li>
 <li><strong>Increases code complexity and testability:</strong> Requires additional logic to manage retries and delays and testing those scenarios when only part of the requests fail.</li>
 </ul>
 <h3 id="3-use-sqs-for-decoupling">3. <strong>Use SQS for Decoupling</strong></h3>
@@ -405,7 +405,7 @@ Total Time = (1,000,000 / 1,000) <span class="gs">* 120 ms</span>
 <h4 id="the-importance-of-fifo-queues">The Importance of FIFO Queues</h4>
 <p>To maintain consistency in DynamoDB, it is essential to configure the SQS queue as FIFO (First-In, First-Out) in this case. This ensures that messages are processed in the exact order they are received, which is critical in systems where the order of operations affects the final state of the database. For example:</p>
 <ol>
-<li><strong>Out-of-Order Processing Issues:</strong> If two updates to the same DynamoDB record are processed out of order (e.g., Update1 followed by Update2), but Update2 depends on Update1, the database could end up in an inconsistent state. FIFO queues prevent this by enforcing strict order. For our case, there was not duplicated entries on the file so FIFO was not in considerated despite being absolutely important for this usecase.</li>
+<li><strong>Out-of-Order Processing Issues:</strong> If two updates to the same DynamoDB record are processed out of order (e.g., Update1 followed by Update2), but Update2 depends on Update1, the database could end up in an inconsistent state. FIFO queues prevent this by enforcing strict order. For our case, there were no duplicated entries in the file so FIFO was not considered despite being absolutely important for this use case.</li>
 <li><strong>Idempotency Challenges:</strong> Even when Lambda functions are designed to be idempotent, out-of-order processing can lead to unexpected behavior if operations rely on sequential execution. For instance, appending logs or incrementing counters requires a guarantee of order.</li>
 <li>
 <p><strong>Trade-offs with FIFO:</strong> While FIFO queues provide consistency, they come with some limitations:</p>
@@ -425,7 +425,7 @@ Total Time = (1,000,000 / 1,000) <span class="gs">* 120 ms</span>
 <h4 id="cons_1">Cons:</h4>
 <ul>
 <li><strong>Adds architectural complexity:</strong> Introducing SQS requires additional components and configuration.</li>
-<li><strong>Adds code complexity:</strong> Introduce code complexity to the insertion lambda, so its responsible for managing sqs batch write operations, reading on SQS source and also being able to operate by asynchronous invocation for legacy systems.</li>
+<li><strong>Adds code complexity:</strong> Introduce code complexity to the insertion lambda, so it's responsible for managing SQS batch write operations, reading on SQS source and also being able to operate by asynchronous invocation for legacy systems.</li>
 <li><strong>Introduces latency:</strong> Messages may wait in the queue before being processed, depending on the Lambda polling rate and queue depth. For example, a queue depth of 10,000 messages and a polling rate of 1,000 messages per second would result in a processing delay.</li>
 </ul>
 <hr />
@@ -441,7 +441,7 @@ Total Time = (1,000,000 / 1,000) <span class="gs">* 120 ms</span>
 <p>While this post has focused on explaining the challenges, strategies, and theoretical calculations for mitigation, an actual Proof of Concept (POC) would be very cool to validate and visualize these solutions in practice. A future post might explore how to design and execute a POC to measure the overall performance in a real-world scenario.</p>
 <p>For more details on Lambda throttling, refer to the <a href="https://docs.aws.amazon.com/lambda/latest/dg/invocation-scaling.html">AWS Lambda Developer Guide</a> and the <a href="https://aws.amazon.com/blogs/compute/understanding-aws-lambdas-invoke-throttle-limits/">AWS Compute Blog</a>.</p>
 <ul>
-<li><a href="author-pedrohbl_.html"><img alt="Pedro Lopes" src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" />
+<li><a href="authors.html"><img alt="Pedro Lopes" src="https://github.com/pedro-hbl.png" />
   Pedro Lopes</a></li>
 </ul>
 <p>Jan 25, 2025 - ⧖ 15 min</p>
@@ -477,7 +477,7 @@ Total Time = (1,000,000 / 1,000) <span class="gs">* 120 ms</span>
         <h3>About the Author</h3>
         <div style="display: flex; gap: 1rem; align-items: center;">
             
-            <img src="https://s3.us-east-1.amazonaws.com/pedroca.io/pedropedroca.jpg" alt="Pedro Lopes" style="width: 60px; height: 60px; border-radius: 50%;">
+            <img src="https://github.com/pedro-hbl.png" alt="Pedro Lopes" style="width: 60px; height: 60px; border-radius: 50%;">
             
             <div>
                 <strong>Pedro Lopes</strong>
